@@ -27,5 +27,6 @@
 | **F8**                    | Step Over (depuração)                            |
 | **F7**                    | Step Into (depuração)                            |
 | **Shift + F8**            | Step Out (depuração)                             |
+| **CTRL + SHIFT + D**       | DUPLICAR A LINHA                            |
 
 
