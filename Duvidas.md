@@ -167,3 +167,228 @@ end;
 ```
 
 ---
+
+## 📅 08/08/25 –🟢 Migração: BotaoMovimentos: Tradicional → ConversaoBuilder
+
+
+
+## **1. Criação dos Objetos de Conversão**
+
+### **Antes (Tradicional):**
+
+- Instancia as classes manualmente:
+    
+    Pascal
+    
+    `var ParametroMovimento: TParametrosConversao := TParametrosConversao.Create(nil);
+    ParametroMovimento.Tabelas.Create(TTabelaMovimentos.Create(VPedido));`
+    
+
+### **Depois (Builder):**
+
+- Usa o método fluente do Builder:
+    
+    Pascal
+    
+    `var ParametroMovimento: TParametrosConversao := 
+      TConversaoBuilder.Create
+        .SetTabelaConversao(TTabelaMovimentos.Create(VPedido), 'STKDOC MV')
+        //...
+        .Build;`
+    
+
+**✔️ Troca:**
+
+Substitui a criação manual e o método `.Tabelas.Create` por `.SetTabelaConversao` no Builder.
+
+---
+
+## **2. Configuração do SQL de Origem**
+
+### **Antes:**
+
+- Instancia manualmente o objeto SQL:
+    
+    Pascal
+    
+    `var ParametroSQLMovimento: TParametroSQL := TParametroSQL.Create('STKDOC MV');
+    ParametroSQLMovimento.AdicionarCamposPk('ID_MOVIMENTO', 'M.ID_MOVIMENTO');`
+    
+
+### **Depois:**
+
+- Usa método fluente no Builder:
+    
+    Pascal
+    
+    `.SetTabelaConversao(TTabelaMovimentos.Create(VPedido), 'STKDOC MV')
+    .AddPrimaryKey('M.ID_MOVIMENTO')`
+    
+
+**✔️ Troca:**
+
+Substitui criação manual do SQL e chamada de chave primária por método fluente.
+
+---
+
+## **3. Adição dos Campos**
+
+### **Antes:**
+
+- Bloco `with ... do` para adicionar campos:
+    
+    Pascal
+    
+    `with ParametroSQLMovimento.ListaCampos do
+    begin
+      AddCampo('NUMERO_DOCUMENTO', 'NUMDOC');
+      AddCampo(...);
+      // ...
+    end;`
+    
+
+### **Depois:**
+
+- Encadeia `.AddCampo` diretamente no Builder:
+    
+    Pascal
+    
+    `.AddCampo('NUMERO_DOCUMENTO', 'NUMDOC')
+    .AddCampo(...)
+    // ...`
+    
+
+**✔️ Troca:**
+
+Remove o `with`, substitui por encadeamento direto no Builder.
+
+---
+
+## **4. Adição dos JOINs**
+
+### **Antes:**
+
+- Adiciona via lista manual:
+    
+    Pascal
+    
+    `ParametroSQLMovimento.SqlJoin.Add('LEFT JOIN REQSRVNFE NF ON ...');`
+    
+
+### **Depois:**
+
+- Encadeia `.AddJoin` no Builder:
+    
+    Pascal
+    
+    `.AddJoin('LEFT JOIN REQSRVNFE NF ON ...')`
+    
+
+**✔️ Troca:**
+
+Remove `SqlJoin.Add`, usa encadeamento.
+
+---
+
+## **5. Adição dos Parâmetros SQL ao Conversor**
+
+### **Antes:**
+
+- Adiciona manualmente ao objeto de parâmetros:
+    
+    Pascal
+    
+    `ParametroMovimento.AddParametro(ParametroSQLMovimento);`
+    
+
+### **Depois:**
+
+- Não precisa, o Builder já gerencia e retorna tudo pronto no `.Build`.
+
+**✔️ Troca:**
+
+Remove necessidade de adicionar manualmente.
+
+---
+
+## **6. Configuração dos Itens do Movimento**
+
+### **Antes:**
+
+- Criação manual dos objetos e campos dos itens:
+    
+    Pascal
+    
+    `var ParametroMovimentoItem: TParametrosSubConversao := TParametrosSubConversao.Create(nil);
+    ParametroMovimentoItem.Tabelas.Create('MOVIMENTOS_ITENS');
+    var ParametroSQLMovimentoItem: TParametroSQL := TParametroSQL.Create('STKPRD MVI');
+    ParametroSQLMovimentoItem.AdicionarCamposPk('ID_MOVIMENTO_ITEM');
+    ParametroMovimentoItem.CampoFK := 'ID_MOVIMENTO';
+    
+    with ParametroSQLMovimentoItem.ListaCampos do
+    begin
+      AddCampo(...);
+      // ...
+    end;
+    ParametroMovimentoItem.AddParametro(ParametroSQLMovimentoItem);`
+    
+
+### **Depois:**
+
+- Usa o Builder para criar todos os campos e joins de forma fluente:
+    
+    Pascal
+    
+    `var ParametroSQLMovimentoItem: TParametrosConversao :=
+      TConversaoBuilder.Create
+        .SetTabelaConversao(TTabelaMovimentos.Create(VPedido), 'STKPRD MV')
+        .AddPrimaryKey('ID_MOVIMENTO_ITEM')
+        .AddCampo(...)
+        .AddJoin(...)
+        .Build;
+    ParametroMovimentoItem.AddParametro(ParametroSQLMovimentoItem);`
+    
+
+**✔️ Troca:**
+
+Toda a configuração dos itens passa a ser feita pelo Builder, eliminando o bloco `with` e inicializações manuais.
+
+---
+
+## **7. Execução da Conversão**
+
+### **Antes e Depois:**
+
+- A chamada final de execução permanece igual:
+    
+    Pascal
+    
+    `ConversaoMovimentos(ParametroMovimento, ParametroMovimentoItem);`
+    
+
+---
+
+# **Resumo das Trocas**
+
+| **Tradicional** | **Builder** |
+| --- | --- |
+| Criação manual de objetos | Builder fluente com `.Create` e `.Build` |
+| `.Tabelas.Create(...)` | `.SetTabelaConversao(...)` |
+| `TParametroSQL.Create(...)` | `.SetTabelaConversao(..., 'Alias')` |
+| `AdicionarCamposPk(...)` | `.AddPrimaryKey(...)` |
+| Bloco `with ... do` para campos | Encadeamento `.AddCampo(...)` |
+| `SqlJoin.Add(...)` | Encadeamento `.AddJoin(...)` |
+| Adição manual de parâmetros | Builder já retorna objeto pronto |
+| Bloco manual para sub-conversão de itens | Builder para itens, igual ao principal |
+| Mais linhas e inicializações | Menos linhas, mais legível, menos erro |
+
+---
+
+## **Benefícios da Troca**
+
+- **Código mais limpo e curto**
+- **Menos propenso a erro**
+- **Melhor legibilidade**
+- **Facilidade de manutenção**
+- **Padronização para todas as rotinas futuras**
+
