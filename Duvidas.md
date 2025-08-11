@@ -451,4 +451,36 @@ end;
 
 A migração do método tradicional para o uso do ConversaoBuilder traz maior clareza, modularidade e facilidade para futuras expansões, seguindo boas práticas de design de software.
 
+###UPDATE 
+ADICIONADO UM INTEM .AddCampo('TIPO_ITEM','IIF(P.TipoItem = ''S'', 1, 0)'). UTILIZANDO O IIF
+Sobre a expressão IIF
+IIF(condição, valor_se_verdadeiro, valor_se_falso)
+É aceito tanto em Firebird quanto em SQL Server (compatível com o padrão do projeto).
+
+P.TipoItem é CHAR na origem, então a comparação 'P.TipoItem = ''S''' está correta.
+
+Valores retornados:
+
+Se TipoItem = 'S' → retorna 1
+Senão → retorna 0
+Isso converte perfeitamente para INT no destino.
+3. Observações do projeto
+O campo de destino (TIPO_ITEM) é INT — ok!
+O campo de origem (TipoItem) é CHAR — ok!
+Não é necessário informar tabela auxiliar, pois não há lookup de ID (é apenas uma conversão de valor).
+4. Sintaxe correta
+A sintaxe está correta para o padrão do ConversaoBuilder e para a estrutura do Sol.NET.
+Você está convertendo um campo CHAR para INT usando uma expressão SQL condicional.
+
+5. Exemplo completo
+Pascal
+.AddCampo('TIPO_ITEM', 'IIF(P.TipoItem = ''S'', 1, 0)')
+6. Dicas
+Se você usar Firebird, pode usar IIF.
+Se for SQL Server, o IIF também é aceito (desde SQL Server 2012).
+Se quiser garantir compatibilidade máxima, pode usar CASE WHEN, mas o projeto aceita IIF.
+Resumo
+Sua sintaxe está correta!
+O ConversaoBuilder vai gerar o campo TIPO_ITEM como INT conforme esperado.
+
 
