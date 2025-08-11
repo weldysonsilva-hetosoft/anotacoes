@@ -392,3 +392,63 @@ Toda a configuração dos itens passa a ser feita pelo Builder, eliminando o blo
 - **Facilidade de manutenção**
 - **Padronização para todas as rotinas futuras**
 
+## 📅 11/08/25 –🟢 Migração: BotaoProdutos: Tradicional → ConversaoBuilder
+
+### Pascal Procedure: Migração para ConversãoBuilder
+
+
+
+#### Depois (Utilizando ConversaoBuilder):
+
+```pascal
+procedure TFrmSDX.BotaoProduto;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaProduto.Create(Produto), 'ITENS P')
+      .AddPrimaryKey('P.IDREG')
+      .AddCampo('DESCRICAO', 'P.Descricao')
+    // .AddCampo('ID_FORNECEDOR', 'P.CODFAB', TTabelaPessoa.Create(Pessoa));
+      .AddCampo('ID_UNIDADE', 'P.IDUNIDMED', TTabelaUnidade.Create)
+      .AddCampo('ID_FAMILIA_PRODUTO', 'P._IDGRUPO', TTabelaFamilia.Create)
+      .AddCampo('ID_NCM', 'P._IDNCM', TTabelaNcm.Create)
+      .AddCampo('PRECO_VENDA_1', 'PRECO.PRCVDAPADRAO')
+      .AddCampo('CUSTO_INICIAL', 'PRECO.CUSTOINFPADRAO')
+      .AddCampo('CUSTO_MEDIO_UNITARIO', 'PRECO.CUSTOINFPADRAO')
+      .AddCampo('APLICACAO', 'P.TXTAPLIC')
+      .AddJoin('LEFT JOIN LSTPRECOITENS AS PRECO ON (PRECO.IDREG = ESTL._IDLSTPRECOITENSPADRAO)')
+      .build;
+  ConversaoProduto(ParametrosConversao);
+end;
+```
+
+#### Pontos importantes da migração
+
+- Utilização do padrão **Builder** para organizar e encapsular os parâmetros de conversão.
+- Os campos obrigatórios e joins agora são definidos fluentemente.
+- Facilita manutenção, extensão e testes.
+- O método `ConversaoProduto` recebe agora um objeto de parâmetros estruturado.
+- Comentários indicam campos opcionais ou em análise.
+
+#### Campos convertidos:
+
+| Campo                 | Origem               | Tipo de Conversão             |
+|-----------------------|----------------------|-------------------------------|
+| DESCRICAO             | P.Descricao          | Campo direto                   |
+| ID_UNIDADE            | P.IDUNIDMED          | Tabela relacionada (Unidade)   |
+| ID_FAMILIA_PRODUTO    | P._IDGRUPO           | Tabela relacionada (Familia)   |
+| ID_NCM                | P._IDNCM             | Tabela relacionada (NCM)       |
+| PRECO_VENDA_1         | PRECO.PRCVDAPADRAO   | Join com tabela de preços      |
+| CUSTO_INICIAL         | PRECO.CUSTOINFPADRAO | Join com tabela de preços      |
+| CUSTO_MEDIO_UNITARIO  | PRECO.CUSTOINFPADRAO | Join com tabela de preços      |
+| APLICACAO             | P.TXTAPLIC           | Campo direto                   |
+
+#### Observação
+
+- O campo `ID_FORNECEDOR` está comentado, indicando análise ou futura implementação.
+- O join principal é realizado com a tabela `LSTPRECOITENS` para obter preços e custos.
+
+#### Resumo
+
+A migração do método tradicional para o uso do ConversaoBuilder traz maior clareza, modularidade e facilidade para futuras expansões, seguindo boas práticas de design de software.
+
+
