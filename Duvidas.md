@@ -484,3 +484,80 @@ Sua sintaxe está correta!
 O ConversaoBuilder vai gerar o campo TIPO_ITEM como INT conforme esperado.
 
 
+# Duvidas
+
+pelo que vi quase não será usado o callback. ja o auxiliar e o join será usado em todas conversoes. eu ainda não entendi a diferenã dos dois
+
+### **Copilot said: Ótima observação! Vou esclarecer a diferença entre**
+
+Ótima observação! Vou esclarecer a diferença entre **auxiliar** e **join** no contexto do Sol.NET_Conversao, conforme a documentação oficial do projeto.
+
+---
+
+## **JOIN**
+
+O **JOIN** é um comando SQL utilizado para **relacionar duas ou mais tabelas** diretamente na consulta de origem.
+
+- É usado quando você precisa que o SELECT de origem já traga campos de outra tabela relacionada.
+- O relacionamento é feito via chave estrangeira ou campo comum.
+
+**Exemplo:**
+
+Pascal
+
+`.AddJoin('LEFT JOIN tb_fabricante F ON F.Id_fabricante = P.Id_fabricante')
+.AddCampo('NumFabricante', 'F.NumFabricante')`
+
+Nesse caso, você está dizendo explicitamente que quer buscar o campo `NumFabricante` da tabela `tb_fabricante` (apelidada como F), usando o relacionamento.
+
+---
+
+## **Auxiliar (Lookup via Framework)**
+
+O **auxiliar** é um recurso do framework de conversão que permite, no mapeamento de campo, **informar uma tabela auxiliar** para buscar o valor desejado.
+
+- Você não precisa escrever o SQL do JOIN manualmente; o framework entende que, para preencher aquele campo, deve buscar na tabela auxiliar usando a chave estrangeira disponível.
+- O relacionamento é resolvido automaticamente pela engine de conversão.
+
+**Exemplo:**
+
+Pascal
+
+`.AddCampo('ID_FABRICANTE', 'NumFabricante', TTabelaPessoa.Create(Fab))`
+
+Aqui, você informa ao Builder que o campo `ID_FABRICANTE` deve ser preenchido pegando o valor `NumFabricante` na tabela auxiliar do fabricante (`TTabelaPessoa.Create(Fab)`), que será localizado via o campo de referência presente na tabela de origem (`Id_fabricante`).
+
+---
+
+## **Resumo das Diferenças**
+
+| **JOIN (SQL)** | **Auxiliar (Framework/Lookup)** |
+| --- | --- |
+| Você escreve o comando SQL JOIN manualmente | Você só informa a tabela auxiliar no campo |
+| O SELECT já traz todos os dados relacionados | O framework faz o relacionamento automático |
+| Mais flexível, mas exige mais código | Mais simples, mas depende da estrutura do framework |
+| Usado para campos de múltiplas tabelas | Usado para campos lookup (1:1) |
+| Exemplo: AddJoin + AddCampo com alias | Exemplo: AddCampo com TabelaAuxBuscar |
+
+---
+
+### **Quando usar cada um?**
+
+- **JOIN:**
+    - Quando precisa trazer vários campos de uma tabela auxiliar
+    - Quando o relacionamento é complexo ou envolve múltiplas condições
+    - Quando quer controlar o SQL e filtros manualmente
+- **Auxiliar:**
+    - Quando só precisa buscar um campo simples via chave estrangeira
+    - Quando quer reduzir código e usar o poder do framework
+    - Quando o relacionamento é direto (1:1 ou lookup simples)
+
+---
+
+**Na prática:**
+
+- O framework do Sol.NET_Conversao permite que você use ambos, mas o **auxiliar** torna o mapeamento mais rápido e limpo para casos comuns.
+- O **JOIN** ainda é necessário para situações mais complexas ou múltiplos campos da tabela relacionada.
+
+Se quiser exemplos de como ficaria o SQL gerado em cada caso, ou como ficaria no Builder, só pedir!
+
