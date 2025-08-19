@@ -1,0 +1,58 @@
+Aqui estão 50 exercícios somente com os enunciados, cada um sugerindo a(s) função(ões) a usar, baseados na tabela MolasFerrari.dbo.PESSOAS.
+
+1) Exiba ID_PESSOA, NOME e uma coluna StatusAtivo transformando INATIVO (0/1) em ATIVO/INATIVO. Sugestão: IIF.
+2) Exiba ID_PESSOA, CPF e uma coluna TemCPF indicando 1 se CPF preenchido e 0 se vazio/nulo. Sugestão: IIF + NULLIF.
+3) Exiba ID_PESSOA, CPF, CNPJ e uma coluna TipoPessoa indicando Física se CPF preenchido, senão Jurídica se CNPJ preenchido, senão Desconhecida. Sugestão: IIF ou CASE + COALESCE + NULLIF.
+4) Exiba ID_PESSOA e uma coluna Localidade indicando Exterior quando EXTERIOR=1, senão Brasil. Sugestão: IIF.
+5) Exiba ID_PESSOA, VL_LIMITE_CREDITO e TemLimite indicando 1 se o limite for maior que zero (tratando nulos como 0), senão 0. Sugestão: IIF + COALESCE.
+6) Exiba ID_PESSOA, SEXO e SexoTexto mapeando 1=Masculino, 2=Feminino, outros=Não informado. Sugestão: IIF aninhado ou CASE.
+7) Exiba ID_PESSOA, EMAIL e TemEmail indicando S se email preenchido (ignorando espaços), senão N. Sugestão: IIF + NULLIF.
+8) Exiba ID_PESSOA e PapelComercial priorizando: Cliente se TPCLIENTE=1; senão Fornecedor se TPFORNECEDOR=1; senão Outro. Sugestão: IIF ou CASE.
+9) Exiba ID_PESSOA e BloqueioGeral marcando Bloqueado se BLOQUEADO=1 ou BLOQUEADO_MOV=1 (tratando nulos), senão Liberado. Sugestão: IIF + COALESCE.
+10) Exiba ID_PESSOA, SITE e TemSite indicando 1 se site preenchido (ignorando espaços), senão 0. Sugestão: IIF + NULLIF.
+
+11) Classifique o perfil do registro como Cliente, Fornecedor, Funcionário ou Outro com base em TPCLIENTE, TPFORNECEDOR e TPFUNCIONARIO. Sugestão: CASE.
+12) Classifique VL_LIMITE_CREDITO em FaixaLimite (Alto, Médio, Baixo, Sem limite). Sugestão: CASE.
+13) Crie StatusCredito usando VL_DEBITO_EM_ABERTO e VL_LIMITE_DISPONIVEL (ex.: Crítico, Em débito, Ok, Indefinido). Sugestão: CASE.
+14) Mapeie TP_REGIME_TRIBUTACAO para nomes legíveis (ex.: Simples, Presumido, Real, Não informado). Sugestão: CASE.
+15) Mapeie ESTADO_CIVIL para texto (Casado, Solteiro, Viúvo, Divorciado, Não informado). Sugestão: CASE.
+16) Defina CanalPreferido priorizando CELULAR, depois TELEFONE, depois EMAIL, senão Nenhum. Sugestão: CASE + NULLIF.
+17) Monte DocumentoExibir indicando CPF: valor, CNPJ: valor ou Sem documento, conforme preenchimento. Sugestão: CASE + concatenação.
+18) Classifique VL_RENDA em Baixa, Média, Alta ou Não informada (tratando nulos). Sugestão: CASE.
+19) Crie StatusCadastro priorizando REGISTRO_PADRAO_SISTEMA, depois INATIVO, senão Ativo. Sugestão: CASE.
+20) Indique TipoTransportador como Transportador quando TPTRANSPORTADOR=1, senão Não transportador. Sugestão: CASE.
+
+21) Monte TelefonePreferencial escolhendo primeiro CELULAR, depois TELEFONE, depois TELEFONE_TRABALHO, senão Sem telefone (ignorar vazios). Sugestão: COALESCE + NULLIF.
+22) Monte NomeExibicao priorizando NOME, depois DESCRICAO, senão (Sem nome) (ignorar vazios). Sugestão: COALESCE + NULLIF.
+23) Normalize INSCRICAO_ESTADUAL para NULL quando for ISENTO ou vazia. Sugestão: COALESCE + NULLIF.
+24) Preencha EmailComDefault com EMAIL ou sem-email@example.com quando não houver email válido. Sugestão: COALESCE + NULLIF.
+25) Monte ContatoNomePreferido priorizando TELEFONECONTATO, depois CELULARCONTATO, depois EMAIL, senão Sem contato. Sugestão: COALESCE + NULLIF.
+26) Preencha UFNascimentoPadrao com UF_NASCIMENTO ou NA quando nulo. Sugestão: COALESCE.
+27) Substitua ID_VENDEDOR nulo por 0 em uma coluna VendedorPadrao. Sugestão: COALESCE.
+28) Monte ComissaoEfetiva escolhendo o primeiro valor disponível entre PC_COMISSAO, PC_COMISSAO1 e PC_COMISSAO2, senão 0. Sugestão: COALESCE.
+
+29) Converta VL_LIMITE_CREDITO para inteiro em uma coluna VL_LIMITE_INT. Sugestão: CAST.
+30) Construa DataHoraUltAtualizacao combinando DT_ULT_ATUALIZACAO e HR_ULT_ATUALIZACAO em um único campo de data e hora. Sugestão: CAST/CONVERT + concatenação.
+31) Gere OBS_256 truncando/convertendo OBS para no máximo 256 caracteres. Sugestão: CAST.
+32) Gere CodigoStr prefixando CODIGO com um rótulo (ex.: CLI-) e convertendo para texto. Sugestão: CAST + concatenação.
+33) Gere PessoaStr prefixando ID_PESSOA com um rótulo (ex.: P) e convertendo para texto. Sugestão: CAST + concatenação.
+34) Converta VL_RENDA para decimal com duas casas em uma coluna VL_RENDA_2C. Sugestão: CAST.
+35) Converta HR_ULT_ATUALIZACAO para texto no formato HH:MM:SS. Sugestão: CAST/CONVERT.
+36) Converta DT_CADASTRO (date) para datetime2 com hora zerada. Sugestão: CAST.
+
+37) Crie CPF_N retornando NULL quando CPF estiver vazio ou só com espaços. Sugestão: NULLIF (+ TRIM/LTRIM/RTRIM).
+38) Crie RG_N retornando NULL quando RG estiver vazio ou só com espaços. Sugestão: NULLIF (+ TRIM/LTRIM/RTRIM).
+39) Normalize EMAIL retornando NULL quando for não informado (ex.: marcador de sistema) ou vazio. Sugestão: NULLIF encadeado + COALESCE.
+40) Retorne NULL para INSCRICAO_ESTADUAL quando o valor indicar isenção. Sugestão: NULLIF.
+41) Trate TELEFONE com sequências inválidas (ex.: zeros) como NULL. Sugestão: NULLIF.
+42) Limpe USUARIO_GITHUB vazio ou com espaços para NULL. Sugestão: NULLIF (+ TRIM/LTRIM/RTRIM).
+
+43) Crie CHAVE_PESSOA concatenando ID_PESSOA e UF_NASCIMENTO com um separador, usando UF_NASCIMENTO padrão quando nulo. Sugestão: CAST + concatenação + COALESCE.
+44) Crie DOC_LABEL concatenando o rótulo e o documento escolhido (CPF ou CNPJ) conforme disponibilidade. Sugestão: CASE + concatenação.
+45) Crie CONTATO_COMPLETO juntando NomeExibicao e ContatoPreferencial com separador, tratando ausências. Sugestão: concatenação + COALESCE + NULLIF.
+46) Crie CHAVE_CONTA concatenando agência, dígitos e conta com separadores, tratando nulos. Sugestão: concatenação + COALESCE.
+47) Crie LOGIN_GH_UNICO unindo USUARIO_GITHUB (ou padrão) e ID_PESSOA com separador. Sugestão: COALESCE + CAST + concatenação.
+
+48) Liste pessoas cujo EMAIL contenha o domínio de um provedor específico (ex.: gmail.com). Sugestão: LIKE ou CHARINDEX.
+49) Liste pessoas cujo NOME contenha um sobrenome específico (ex.: SILVA), desconsiderando maiúsculas/minúsculas. Sugestão: UPPER + LIKE (ou collation case-insensitive).
+50) Crie TemTextoUrgente marcando 1 quando LEMBRETES contiver a palavra URGENTE (tratando nulos), e filtre somente as linhas com a marcação. Sugestão: IIF + CHARINDEX + COALESCE.
