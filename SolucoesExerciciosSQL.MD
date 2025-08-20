@@ -31,7 +31,6 @@ ID_PESSOA,
   END AS TipoPessoa
 
 FROM  PESSOAS;
-
 ```
 
 ### 4
@@ -43,7 +42,7 @@ FROM PESSOAS;
 ```
 
 ### 5
-
+``` sql
 SELECT
   ID_PESSOA,
   VL_LIMITE_CREDITO,
@@ -53,7 +52,7 @@ FROM PESSOAS;
 
 
 ### 6 
-
+``` sql
 SELECT
   ID_PESSOA,
   SEXO,
@@ -67,7 +66,7 @@ FROM PESSOAS;
 
 
 ### 7 
-
+``` sql
 SELECT
   ID_PESSOA,
   EMAIL,
@@ -76,7 +75,7 @@ FROM PESSOAS;
 
 ```
 ### 8 
-
+``` sql
 SELECT
   ID_PESSOA,
   CASE
@@ -88,7 +87,7 @@ FROM PESSOAS;
 
 ```
 ### 9
-
+``` sql
 SELECT
   ID_PESSOA,
   IIF(COALESCE(BLOQUEADO,0)=1 OR COALESCE(BLOQUEADO_MOV,0)=1, 'Bloqueado', 'Liberado') AS BloqueioGeral
@@ -96,7 +95,7 @@ FROM PESSOAS;
 ```
 
 ### 10
-
+``` sql
 SELECT
   ID_PESSOA,
   SITE,
@@ -104,6 +103,7 @@ SELECT
 FROM PESSOAS;
 ```
 ### 11
+``` sql
 SELECT
   ID_PESSOA,
   CASE
@@ -116,7 +116,7 @@ FROM PESSOAS;
 ```
 
 ###12
-
+``` sql
 SELECT 
 ID_PESSOA,
 VL_LIMITE_CREDITO,
