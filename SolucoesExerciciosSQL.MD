@@ -144,4 +144,33 @@ SELECT
 FROM PESSOAS;
 ```
 
+### 14) Mapeie TP_REGIME_TRIBUTACAO para nomes legíveis (ex.: Simples, Presumido, Real, Não informado). Sugestão: CASE.
+``` sql
+SELECT
+	ID_PESSOA,
+	TP_REGIME_TRIBUTACAO,
+	CASE
+		COALESCE(TP_REGIME_TRIBUTACAO, 0)
+		WHEN 1 THEN 'Simples'
+		WHEN 2 THEN 'Presumido'
+		WHEN 3 THEN 'Real'
+		ELSE 'Não informado'
+	END AS RegimeTributacao
+FROM PESSOAS;
+```
+
+### 15) Mapeie ESTADO_CIVIL para texto (Casado, Solteiro, Viúvo, Divorciado, Não informado). Sugestão: CASE.
+``` sql
+SELECT
+	ID_PESSOA,
+	ESTADO_CIVIL, 
+CASE COALESCE(ESTADO_CIVIL, 0)
+		WHEN 1 THEN 'CASADO'
+		WHEN 2 THEN 'SOLTEIRO'
+		WHEN 3 THEN 'VIÚVO'
+		WHEN 4 THEN 'DIVORCIADO'
+		ELSE 'NÃO INFORMADO'
+	END AS EstadoCivil
+FROM PESSOAS;
+```
 
