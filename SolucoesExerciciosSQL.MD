@@ -20,7 +20,7 @@ FROM
     PESSOAS;
 ```
 ### 3
-
+``` sql
 SELECT  
 ID_PESSOA,
   CPF, CNPJ,
@@ -35,7 +35,7 @@ FROM  PESSOAS;
 ```
 
 ### 4
-
+``` sql
 SELECT
   ID_PESSOA,
   IIF(COALESCE(EXTERIOR, 0) = 1, 'Exterior', 'Brasil') AS Localidade
