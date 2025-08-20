@@ -116,7 +116,7 @@ SELECT
 FROM PESSOAS;
 ```
 
-###12 Classifique VL_LIMITE_CREDITO em FaixaLimite (Alto, Médio, Baixo, Sem limite). Sugestão: CASE. 
+### 12 Classifique VL_LIMITE_CREDITO em FaixaLimite (Alto, Médio, Baixo, Sem limite). Sugestão: CASE. 
 ``` sql
 SELECT 
 ID_PESSOA,
@@ -129,4 +129,19 @@ CASE
 END AS FaixaLimite
 FROM PESSOAS;
 ```
+### 13) Crie StatusCredito usando VL_DEBITO_EM_ABERTO e VL_LIMITE_DISPONIVEL (ex.: Crítico, Em débito, Ok, Indefinido). Sugestão: CASE.
+``` sql
+SELECT
+  ID_PESSOA,
+  VL_DEBITO_EM_ABERTO,
+  VL_LIMITE_DISPONIVEL,
+  CASE
+    WHEN COALESCE(VL_DEBITO_EM_ABERTO,0) > 0 AND COALESCE(VL_LIMITE_DISPONIVEL,0) <= 0 THEN 'Crítico'
+    WHEN COALESCE(VL_DEBITO_EM_ABERTO,0) > 0 AND COALESCE(VL_LIMITE_DISPONIVEL,0) >  0 THEN 'Em débito'
+    WHEN COALESCE(VL_DEBITO_EM_ABERTO,0) = 0 AND COALESCE(VL_LIMITE_DISPONIVEL,0) >= 0 THEN 'Ok'
+    ELSE 'Indefinido'
+  END AS StatusCredito
+FROM PESSOAS;
+```
+
 
