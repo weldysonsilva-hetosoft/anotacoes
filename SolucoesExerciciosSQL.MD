@@ -1,4 +1,4 @@
-### 1
+### 1 Exiba ID_PESSOA, NOME e uma coluna StatusAtivo transformando INATIVO (0/1) em ATIVO/INATIVO. Sugestão: IIF.
 ```sql
 
 SELECT
@@ -9,7 +9,7 @@ FROM
 	PESSOAS	
 ```
 
-### 2
+### 2 Exiba ID_PESSOA, CPF e uma coluna TemCPF indicando 1 se CPF preenchido e 0 se vazio/nulo. Sugestão: IIF + NULLIF.
 ```sql
 
 SELECT  
@@ -19,7 +19,8 @@ SELECT
 FROM
     PESSOAS;
 ```
-### 3
+### 3 Exiba ID_PESSOA, CPF, CNPJ e uma coluna TipoPessoa indicando Física se CPF preenchido, senão Jurídica se CNPJ preenchido, senão Desconhecida. Sugestão: IIF ou CASE + COALESCE + NULLIF.
+	
 ``` sql
 SELECT  
 ID_PESSOA,
@@ -33,7 +34,7 @@ ID_PESSOA,
 FROM  PESSOAS;
 ```
 
-### 4
+### 4  Exiba ID_PESSOA e uma coluna Localidade indicando Exterior quando EXTERIOR=1, senão Brasil. Sugestão: IIF.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -41,7 +42,7 @@ SELECT
 FROM PESSOAS;
 ```
 
-### 5
+### 5 Exiba ID_PESSOA, VL_LIMITE_CREDITO e TemLimite indicando 1 se o limite for maior que zero (tratando nulos como 0), senão 0. Sugestão: IIF + COALESCE.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -51,7 +52,7 @@ FROM PESSOAS;
 ```
 
 
-### 6 
+### 6  Exiba ID_PESSOA, SEXO e SexoTexto mapeando 1=Masculino, 2=Feminino, outros=Não informado. Sugestão: IIF aninhado ou CASE.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -65,7 +66,7 @@ FROM PESSOAS;
 ```
 
 
-### 7 
+### 7 Exiba ID_PESSOA, EMAIL e TemEmail indicando S se email preenchido (ignorando espaços), senão N. Sugestão: IIF + NULLIF.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -74,7 +75,7 @@ SELECT
 FROM PESSOAS;
 
 ```
-### 8 
+### 8 Exiba ID_PESSOA e PapelComercial priorizando: Cliente se TPCLIENTE=1; senão Fornecedor se TPFORNECEDOR=1; senão Outro. Sugestão: IIF ou CASE.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -86,7 +87,7 @@ SELECT
 FROM PESSOAS;
 
 ```
-### 9
+### 9 Exiba ID_PESSOA e BloqueioGeral marcando Bloqueado se BLOQUEADO=1 ou BLOQUEADO_MOV=1 (tratando nulos), senão Liberado. Sugestão: IIF + COALESCE.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -94,7 +95,7 @@ SELECT
 FROM PESSOAS;
 ```
 
-### 10
+### 10 Exiba ID_PESSOA, SITE e TemSite indicando 1 se site preenchido (ignorando espaços), senão 0. Sugestão: IIF + NULLIF.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -102,7 +103,7 @@ SELECT
   IIF(NULLIF(LTRIM(RTRIM(SITE)), '') IS NULL, 0, 1) AS TemSite
 FROM PESSOAS;
 ```
-### 11
+### 11 Classifique o perfil do registro como Cliente, Fornecedor, Funcionário ou Outro com base em TPCLIENTE, TPFORNECEDOR e TPFUNCIONARIO. Sugestão: CASE.
 ``` sql
 SELECT
   ID_PESSOA,
@@ -115,7 +116,7 @@ SELECT
 FROM PESSOAS;
 ```
 
-###12
+###12 Classifique VL_LIMITE_CREDITO em FaixaLimite (Alto, Médio, Baixo, Sem limite). Sugestão: CASE. 
 ``` sql
 SELECT 
 ID_PESSOA,
