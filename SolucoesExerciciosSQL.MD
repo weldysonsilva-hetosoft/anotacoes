@@ -174,3 +174,110 @@ CASE COALESCE(ESTADO_CIVIL, 0)
 FROM PESSOAS;
 ```
 
+### 16) Defina CanalPreferido priorizando CELULAR, depois TELEFONE, depois EMAIL, senão Nenhum. Sugestão: CASE + NULLIF.
+``` sql
+SELECT 
+ID_PESSOA,
+CASE	
+	WHEN NULLIF(LTRIM(RTRIM(CELULAR)), '')  IS NOT NULL THEN 'Celular'
+	WHEN NULLIF(LTRIM(RTRIM(TELEFONE)), '')  IS NOT NULL THEN 'Telefone'
+	WHEN NULLIF(LTRIM(RTRIM(EMAIL)), '')  IS NOT NULL THEN 'Email'	
+	ELSE 'NENHUM'		
+END AS CanalPreferido
+FROM PESSOAS;
+```
+###  17) Monte DocumentoExibir indicando CPF: valor, CNPJ: valor ou Sem documento, conforme preenchimento. Sugestão: CASE + concatenação.
+``` sql
+SELECT 
+ID_PESSOA,
+CASE
+	WHEN NULLIF(LTRIM(RTRIM(CPF)), '')  IS NOT NULL THEN CONCAT('CPF: ',  LTRIM(RTRIM(CPF)))
+	WHEN NULLIF(LTRIM(RTRIM(CNPJ)), '')  IS NOT NULL THEN CONCAT('CNPJ: ',  LTRIM(RTRIM(CNPJ)))
+ELSE 'SEM DOCUMENTO'	
+END AS DocumentoExibir
+FROM PESSOAS;
+```
+
+### 18) Classifique VL_RENDA em Baixa, Média, Alta ou Não informada (tratando nulos). Sugestão: CASE.
+``` sql
+SELECT
+  ID_PESSOA,
+  VL_RENDA,
+  CASE
+    WHEN VL_RENDA IS NULL                     THEN 'Não informada'
+    WHEN VL_RENDA <= 2000                     THEN 'Baixa'
+    WHEN VL_RENDA > 2000 AND VL_RENDA <= 8000 THEN 'Média'
+    WHEN VL_RENDA > 8000                      THEN 'Alta'
+    ELSE 'Não informada'
+  END AS FaixaRenda
+FROM PESSOAS;
+
+```
+
+### 19) Crie StatusCadastro priorizando REGISTRO_PADRAO_SISTEMA, depois INATIVO, senão Ativo. Sugestão: CASE.
+``` sql
+SELECT
+  ID_PESSOA,
+  CASE
+    WHEN COALESCE(REGISTRO_PADRAO_SISTEMA,0) = 1 THEN 'Padrão do Sistema'
+    WHEN COALESCE(INATIVO,0) = 1                 THEN 'Inativo'
+    ELSE 'Ativo'
+  END AS StatusCadastro
+FROM PESSOAS;
+```
+
+### 20) Indique TipoTransportador como Transportador quando TPTRANSPORTADOR=1, senão Não transportador. Sugestão: CASE. 
+``` sql
+SELECT
+  ID_PESSOA,
+  CASE WHEN COALESCE(TPTRANSPORTADOR,0)=1 THEN 'Transportador'
+       ELSE 'Não transportador' END AS TipoTransportador
+FROM PESSOAS;
+```
+
+### 21) Monte TelefonePreferencial escolhendo primeiro CELULAR, depois TELEFONE, depois TELEFONE_TRABALHO, senão Sem telefone (ignorar vazios). Sugestão: COALESCE + NULLIF. 
+``` sql
+SELECT
+	ID_PESSOA,
+	COALESCE(
+NULLIF(LTRIM(RTRIM(CELULAR)), ''), 	
+NULLIF(LTRIM(RTRIM(TELEFONE)), ''), 	
+NULLIF(LTRIM(RTRIM(TELEFONE_TRABALHO)), ''), 	
+	 '(Sem telefone)'
+) AS TelefonePreferencial
+FROM PESSOAS;
+
+```
+
+###  22) Monte NomeExibicao priorizando NOME, depois DESCRICAO, senão (Sem nome) (ignorar vazios). Sugestão: COALESCE + NULLIF.
+``` sql
+SELECT
+	ID_PESSOA,
+	COALESCE(
+NULLIF(LTRIM(RTRIM(NOME)), ''),
+NULLIF(LTRIM(RTRIM(DESCRICAO)), ''),
+'(SEM NOME)'
+) AS NomeExibicao
+FROM PESSOAS;
+```
+
+### 23) Normalize INSCRICAO_ESTADUAL para NULL quando for ISENTO ou vazia. Sugestão: COALESCE + NULLIF.
+``` sql
+SELECT
+  ID_PESSOA,
+  CASE
+    WHEN NULLIF(UPPER(LTRIM(RTRIM(COALESCE(INSCRICAO_ESTADUAL, '')))), '') IN ('ISENTO', 'ISENTA') THEN NULL
+    ELSE LTRIM(RTRIM(INSCRICAO_ESTADUAL))
+  END AS INSCRICAO_ESTADUAL_NORMALIZADA
+FROM PESSOAS;
+
+```
+### 24) Preencha EmailComDefault com EMAIL ou sem-email@example.com quando não houver email válido. Sugestão: COALESCE + NULLIF.
+``` sql
+SELECT
+  ID_PESSOA,
+  COALESCE(NULLIF(LTRIM(RTRIM(EMAIL)), ''), 'sem-email@example.com') 
+  AS EmailComDefault
+FROM PESSOAS;
+
+```
