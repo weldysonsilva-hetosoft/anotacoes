@@ -5,8 +5,7 @@ SELECT
 	ID_Pessoa,
 	Nome ,
 	IIF(1 = 1, 'É ATIVO', 'É INATIVO') AS StatusAtivo
-FROM
-	PESSOAS	
+FROM PESSOAS	
 ```
 
 ### 2 Exiba ID_PESSOA, CPF e uma coluna TemCPF indicando 1 se CPF preenchido e 0 se vazio/nulo. Sugestão: IIF + NULLIF.
@@ -16,8 +15,7 @@ SELECT
     ID_Pessoa,
     CPF,
     IIF(NULLIF(CPF, '') IS NULL, 0, 1) AS TemCPF
-FROM
-    PESSOAS;
+FROM  PESSOAS;
 ```
 ### 3 Exiba ID_PESSOA, CPF, CNPJ e uma coluna TipoPessoa indicando Física se CPF preenchido, senão Jurídica se CNPJ preenchido, senão Desconhecida. Sugestão: IIF ou CASE + COALESCE + NULLIF.
 	
@@ -280,4 +278,17 @@ SELECT
   AS EmailComDefault
 FROM PESSOAS;
 
+```
+
+### 25) Monte ContatoNomePreferido priorizando TELEFONECONTATO, depois CELULARCONTATO, depois EMAIL, senão Sem contato. Sugestão: COALESCE + NULLIF.
+``` sql
+SELECT
+  ID_PESSOA,
+  COALESCE(
+    NULLIF(LTRIM(RTRIM(TELEFONECONTATO)), ''),
+    NULLIF(LTRIM(RTRIM(CELULARCONTATO)), ''),
+    NULLIF(LTRIM(RTRIM(EMAIL)), ''),
+    'Sem contato'
+  ) AS ContatoNomePreferido
+FROM PESSOAS;
 ```
