@@ -19,3 +19,81 @@ SELECT
 FROM
     PESSOAS;
 ```
+### 3
+
+SELECT  
+ID_PESSOA,
+  CPF, CNPJ,
+  CASE
+    WHEN NULLIF(LTRIM(RTRIM(CPF)), '') IS NOT NULL  THEN 'Física'
+    WHEN NULLIF(LTRIM(RTRIM(CNPJ)), '') IS NOT NULL THEN 'Jurídica'
+    ELSE 'Desconhecida'
+  END AS TipoPessoa
+
+FROM
+    PESSOAS;
+```
+
+### 4
+
+SELECT
+  ID_PESSOA,
+  IIF(COALESCE(EXTERIOR, 0) = 1, 'Exterior', 'Brasil') AS Localidade
+FROM PESSOAS;
+```
+
+### 5
+
+SELECT
+  ID_PESSOA,
+  VL_LIMITE_CREDITO,
+  IIF(COALESCE(VL_LIMITE_CREDITO, 0) > 0, 1, 0) AS TemLimite
+FROM PESSOAS;
+```
+
+
+### 6 
+
+SELECT
+  ID_PESSOA,
+  SEXO,
+  CASE COALESCE(SEXO, 0)
+    WHEN 1 THEN 'Masculino'
+    WHEN 2 THEN 'Feminino'
+    ELSE 'Não informado'
+  END AS SexoTexto
+FROM PESSOAS;
+```
+
+
+### 7 
+
+SELECT
+  ID_PESSOA,
+  EMAIL,
+  IIF(NULLIF(LTRIM(RTRIM(EMAIL)), '') IS NULL, 'N', 'S') AS TemEmail
+FROM PESSOAS;
+
+```
+### 8 
+
+SELECT
+  ID_PESSOA,
+  CASE
+    WHEN COALESCE(TPCLIENTE,0) = 1 THEN 'Cliente'
+    WHEN COALESCE(TPFORNECEDOR,0) = 1 THEN 'Fornecedor'
+    ELSE 'Outro'
+  END AS PapelComercial
+FROM PESSOAS;
+
+```
+### 9
+
+SELECT
+  ID_PESSOA,
+  IIF(COALESCE(BLOQUEADO,0)=1 OR COALESCE(BLOQUEADO_MOV,0)=1, 'Bloqueado', 'Liberado') AS BloqueioGeral
+FROM PESSOAS;
+```
+
+
+
