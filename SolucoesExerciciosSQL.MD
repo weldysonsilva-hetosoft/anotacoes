@@ -30,8 +30,8 @@ ID_PESSOA,
     ELSE 'Desconhecida'
   END AS TipoPessoa
 
-FROM
-    PESSOAS;
+FROM  PESSOAS;
+
 ```
 
 ### 4
