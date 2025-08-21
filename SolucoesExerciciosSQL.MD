@@ -299,3 +299,11 @@ SELECT ID_PESSOA,
        COALESCE(UF_NASCIMENTO, 'NA') AS UFNascimentoPadrao
 FROM PESSOAS;
 ```
+
+### 27) Substitua ID_VENDEDOR nulo por 0 em uma coluna VendedorPadrao. Sugestão: COALESCE.
+``` sql
+SELECT ID_PESSOA,
+       COALESCE(ID_VENDEDOR, 0) AS VendedorPadrao
+FROM PESSOAS;
+```
+
