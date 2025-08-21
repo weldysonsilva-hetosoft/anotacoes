@@ -338,6 +338,7 @@ SELECT ID_PESSOA,
 FROM PESSOAS
 ```
 ### 32) Gere CodigoStr prefixando CODIGO com um rótulo (ex.: CLI-) e convertendo para texto. Sugestão: CAST + concatenação.
+``` sql
 	SELECT ID_PESSOA,
        CONCAT('CLI-', CAST(CODIGO AS varchar(30))) AS CodigoStr
 FROM PESSOAS;
