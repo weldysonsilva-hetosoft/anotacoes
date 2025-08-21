@@ -500,7 +500,13 @@ FROM PESSOAS
 WHERE UPPER(NOME) LIKE '%SILVA%';
 ```
 
-### 50
+### 50 Crie TemTextoUrgente marcando 1 quando LEMBRETES contiver a palavra URGENTE (tratando nulos), e filtre somente as linhas com a marcação. Sugestão: IIF + CHARINDEX + COALESCE.
 ``` sql
+SELECT
+	ID_PESSOA,
+	LEMBRETES,
+	IIF(CHARINDEX('URGENTE', UPPER(COALESCE(LEMBRETES, ''))) > 0, 1, 0) AS TemTextoUrgente
+FROM PESSOAS
+WHERE CHARINDEX('URGENTE', UPPER(COALESCE(LEMBRETES, ''))) > 0;
 
 ```
