@@ -372,24 +372,41 @@ SELECT ID_PESSOA,
 FROM PESSOAS;
 ```
 
-### 37
+### 37 Crie CPF_N retornando NULL quando CPF estiver vazio ou só com espaços. Sugestão: NULLIF (+ TRIM/LTRIM/RTRIM).
 ``` sql
+SELECT ID_PESSOA,
+       NULLIF(LTRIM(RTRIM(COALESCE(CPF, ''))), '') AS CPF_N
+FROM PESSOAS;
+```
+
+### 38 38) Crie RG_N retornando NULL quando RG estiver vazio ou só com espaços. Sugestão: NULLIF (+ TRIM/LTRIM/RTRIM).
+``` sql
+SELECT ID_PESSOA,
+       NULLIF(LTRIM(RTRIM(COALESCE(RG, ''))), '') AS RG_N
+FROM PESSOAS;
 
 ```
 
-### 38
+### 39) Normalize EMAIL retornando NULL quando for não informado (ex.: marcador de sistema) ou vazio. Sugestão: NULLIF encadeado + COALESCE.
 ``` sql
-
+SELECT ID_PESSOA,
+       CASE
+         WHEN NULLIF(LTRIM(RTRIM(COALESCE(EMAIL,''))), '') IS NULL THEN NULL
+         WHEN LOWER(LTRIM(RTRIM(EMAIL))) IN ('nao informado','não informado','sem email','sem e-mail','sistema','-') THEN NULL
+         ELSE EMAIL
+       END AS EMAIL_NORMALIZADO
+FROM PESSOAS;
 ```
 
-### 39
+### 40 Retorne NULL para INSCRICAO_ESTADUAL quando o valor indicar isenção. Sugestão: NULLIF.
 ``` sql
-
-```
-
-### 40
-``` sql
-
+SELECT ID_PESSOA,
+       CASE
+         WHEN NULLIF(LTRIM(RTRIM(COALESCE(INSCRICAO_ESTADUAL,''))), '') IS NULL THEN NULL
+         WHEN UPPER(LTRIM(RTRIM(INSCRICAO_ESTADUAL))) IN ('ISENTO','ISENTA','ISENCAO','ISENÇÃO') THEN NULL
+         ELSE INSCRICAO_ESTADUAL
+       END AS INSCRICAO_ESTADUAL_N
+FROM PESSOAS;
 ```
 
 ### 41
