@@ -292,3 +292,10 @@ SELECT
   ) AS ContatoNomePreferido
 FROM PESSOAS;
 ```
+
+### 26)  Preencha UFNascimentoPadrao com UF_NASCIMENTO ou NA quando nulo. Sugestão: COALESCE.
+``` sql
+SELECT ID_PESSOA,
+       COALESCE(UF_NASCIMENTO, 'NA') AS UFNascimentoPadrao
+FROM PESSOAS;
+```
