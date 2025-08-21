@@ -436,24 +436,53 @@ SELECT ID_PESSOA,
 FROM PESSOAS;
 ```
 
-### 44
+### 44 Crie DOC_LABEL concatenando o rótulo e o documento escolhido (CPF ou CNPJ) conforme disponibilidade. Sugestão: CASE + concatenação.
 ``` sql
+SELECT ID_PESSOA,
+       CASE
+         WHEN NULLIF(LTRIM(RTRIM(CPF)),  '') IS NOT NULL THEN CONCAT('CPF: ',  CPF)
+         WHEN NULLIF(LTRIM(RTRIM(CNPJ)), '') IS NOT NULL THEN CONCAT('CNPJ: ', CNPJ)
+         ELSE 'Sem documento'
+       END AS DOC_LABEL
+FROM PESSOAS;
+```
+
+### 45 Crie CONTATO_COMPLETO juntando NomeExibicao e ContatoPreferencial com separador, tratando ausências. Sugestão: concatenação + COALESCE + NULLIF.
+``` sql
+SELECT ID_PESSOA,
+       CONCAT(
+         COALESCE(NULLIF(LTRIM(RTRIM(NOME)), ''), NULLIF(LTRIM(RTRIM(DESCRICAO)), ''), '(Sem nome)'),
+         ' | ',
+         COALESCE(
+           NULLIF(LTRIM(RTRIM(CELULAR)), ''),
+           NULLIF(LTRIM(RTRIM(TELEFONE)), ''),
+           NULLIF(LTRIM(RTRIM(TELEFONE_TRABALHO)), ''),
+           'Sem telefone'
+         )
+       ) AS CONTATO_COMPLETO
+FROM PESSOAS;
+```
+
+### 46 Crie CHAVE_CONTA concatenando agência, dígitos e conta com separadores, tratando nulos. Sugestão: concatenação + COALESCE.
+``` sql
+SELECT
+  ID_PESSOA,            /* NÃO EXISTE: agência, dígitos e conta Na tabela, logo foi usado RH_AGENCIA, RH_AGENCIA_DIG, RH_NUMERO_CONTA, RH_NUMERO_CONTA_DIG.  */
+  CONCAT(
+    COALESCE(RH_AGENCIA, '0'),
+    COALESCE(RH_AGENCIA_DIG, ''), '-', 
+    COALESCE(RH_NUMERO_CONTA, '0'), 
+    COALESCE(RH_NUMERO_CONTA_DIG, '') 
+  ) AS CHAVE_CONTA
+FROM PESSOAS;
 
 ```
 
-### 45
+### 47 ---47) Crie LOGIN_GH_UNICO unindo USUARIO_GITHUB (ou padrão) e ID_PESSOA com separador. Sugestão: COALESCE + CAST + concatenação.
 ``` sql
-
-```
-
-### 46
-``` sql
-
-```
-
-### 47
-``` sql
-
+SELECT ID_PESSOA,
+       CONCAT(COALESCE(NULLIF(LTRIM(RTRIM(USUARIO_GITHUB)), ''), 'user'),
+              '-', CAST(ID_PESSOA AS varchar(20))) AS LOGIN_GH_UNICO
+FROM PESSOAS
 ```
 
 ### 48
