@@ -344,26 +344,32 @@ FROM PESSOAS
 FROM PESSOAS;
 ```
 
-### 33
+### 33 Gere PessoaStr prefixando ID_PESSOA com um rótulo (ex.: P) e convertendo para texto. Sugestão: CAST + concatenação.
 ``` sql
 SELECT ID_PESSOA,
        CONCAT('P', CAST(ID_PESSOA AS varchar(20))) AS PessoaStr
 FROM PESSOAS;
 ```
 
-### 34
+### 34 Converta VL_RENDA para decimal com duas casas em uma coluna VL_RENDA_2C. Sugestão: CAST.
 ``` sql
-
+SELECT ID_PESSOA,
+       CAST(VL_RENDA AS decimal(18,2)) AS VL_RENDA_2C
+FROM PESSOAS;
 ```
 
-### 35
+### 35 Converta HR_ULT_ATUALIZACAO para texto no formato HH:MM:SS. Sugestão: CAST/CONVERT.
 ``` sql
-
+SELECT ID_PESSOA,
+       CONVERT(varchar(8), HR_ULT_ATUALIZACAO, 108) AS HR_ULT_ATUALIZACAO_TXT
+FROM PESSOAS;
 ```
 
-### 36
+### 36 Converta DT_CADASTRO (date) para datetime2 com hora zerada. Sugestão: CAST.
 ``` sql
-
+SELECT ID_PESSOA,
+       CAST(DT_CADASTRO AS datetime2) AS DT_CADASTRO_DT2
+FROM PESSOAS;
 ```
 
 ### 37
