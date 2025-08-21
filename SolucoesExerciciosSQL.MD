@@ -477,7 +477,7 @@ FROM PESSOAS;
 
 ```
 
-### 47 ---47) Crie LOGIN_GH_UNICO unindo USUARIO_GITHUB (ou padrão) e ID_PESSOA com separador. Sugestão: COALESCE + CAST + concatenação.
+### 47  Crie LOGIN_GH_UNICO unindo USUARIO_GITHUB (ou padrão) e ID_PESSOA com separador. Sugestão: COALESCE + CAST + concatenação.
 ``` sql
 SELECT ID_PESSOA,
        CONCAT(COALESCE(NULLIF(LTRIM(RTRIM(USUARIO_GITHUB)), ''), 'user'),
@@ -485,8 +485,11 @@ SELECT ID_PESSOA,
 FROM PESSOAS
 ```
 
-### 48
+### 48 Liste pessoas cujo EMAIL contenha o domínio de um provedor específico (ex.: gmail.com). Sugestão: LIKE ou CHARINDEX.
 ``` sql
+SELECT ID_PESSOA, NOME, EMAIL
+FROM PESSOAS
+WHERE EMAIL LIKE '%@gmail.com%';
 
 ```
 
