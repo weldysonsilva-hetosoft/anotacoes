@@ -493,9 +493,11 @@ WHERE EMAIL LIKE '%@gmail.com%';
 
 ```
 
-### 49
+### 49 Liste pessoas cujo NOME contenha um sobrenome específico (ex.: SILVA), desconsiderando maiúsculas/minúsculas. Sugestão: UPPER + LIKE (ou collation case-insensitive).
 ``` sql
-
+SELECT ID_PESSOA, NOME
+FROM PESSOAS
+WHERE UPPER(NOME) LIKE '%SILVA%';
 ```
 
 ### 50
