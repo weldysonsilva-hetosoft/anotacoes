@@ -331,3 +331,14 @@ SELECT ID_PESSOA,
        END AS DataHoraUltAtualizacao
 FROM PESSOAS;
 ```
+### 31) Gere OBS_256 truncando/convertendo OBS para no máximo 256 caracteres. Sugestão: CAST.
+``` sql
+SELECT ID_PESSOA,
+       CAST(LEFT(CAST(OBS AS varchar(MAX)), 256) AS varchar(256)) AS OBS_256
+FROM PESSOAS
+```
+### 32) Gere CodigoStr prefixando CODIGO com um rótulo (ex.: CLI-) e convertendo para texto. Sugestão: CAST + concatenação.
+	SELECT ID_PESSOA,
+       CONCAT('CLI-', CAST(CODIGO AS varchar(30))) AS CodigoStr
+FROM PESSOAS;
+```
