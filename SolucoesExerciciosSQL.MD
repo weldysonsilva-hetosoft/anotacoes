@@ -409,13 +409,23 @@ SELECT ID_PESSOA,
 FROM PESSOAS;
 ```
 
-### 41
+### 41 Trate TELEFONE com sequências inválidas (ex.: zeros) como NULL. Sugestão: NULLIF.
 ``` sql
-
+SELECT ID_PESSOA,
+       CASE
+         WHEN NULLIF(LTRIM(RTRIM(COALESCE(TELEFONE,''))), '') IS NULL THEN NULL
+         -- só zeros (ex.: 0000000000)
+         WHEN LTRIM(RTRIM(TELEFONE)) NOT LIKE '%[^0]%' THEN NULL
+         ELSE TELEFONE
+       END AS TELEFONE_N
+FROM PESSOAS;
 ```
 
-### 42
+### 42 Limpe USUARIO_GITHUB vazio ou com espaços para NULL. Sugestão: NULLIF (+ TRIM/LTRIM/RTRIM).
 ``` sql
+SELECT ID_PESSOA,
+       NULLIF(LTRIM(RTRIM(COALESCE(USUARIO_GITHUB,''))), '') AS USUARIO_GITHUB_N
+FROM PESSOAS;
 
 ```
 
