@@ -429,9 +429,12 @@ FROM PESSOAS;
 
 ```
 
-### 43
+### 43 Crie CHAVE_PESSOA concatenando ID_PESSOA e UF_NASCIMENTO com um separador, usando UF_NASCIMENTO padrão quando nulo. Sugestão: CAST + concatenação + COALESCE.
 ``` sql
-
+SELECT ID_PESSOA,
+       CONCAT(CAST(ID_PESSOA AS varchar(20)), '-',
+              COALESCE(NULLIF(LTRIM(RTRIM(UF_NASCIMENTO)), ''), 'NA')) AS CHAVE_PESSOA
+FROM PESSOAS;
 ```
 
 ### 44
