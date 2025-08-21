@@ -113,7 +113,6 @@ SELECT
   END AS Perfil
 FROM PESSOAS;
 ```
-
 ### 12 Classifique VL_LIMITE_CREDITO em FaixaLimite (Alto, Médio, Baixo, Sem limite). Sugestão: CASE. 
 ``` sql
 SELECT 
@@ -306,4 +305,29 @@ SELECT ID_PESSOA,
        COALESCE(ID_VENDEDOR, 0) AS VendedorPadrao
 FROM PESSOAS;
 ```
+### 28) Monte ComissaoEfetiva escolhendo o primeiro valor disponível entre PC_COMISSAO, PC_COMISSAO1 e PC_COMISSAO2, senão 0. Sugestão: COALESCE.
+``` sql
+SELECT ID_PESSOA,
+       COALESCE(PC_COMISSAO, PC_COMISSAO1, PC_COMISSAO2, 0) AS ComissaoEfetiva
+FROM PESSOAS;
+```
+### 29) Converta VL_LIMITE_CREDITO para inteiro em uma coluna VL_LIMITE_INT. Sugestão: CAST.
 
+``` sql
+SELECT ID_PESSOA,
+       CAST(COALESCE(VL_LIMITE_CREDITO, 0) AS INT) AS VL_LIMITE_INT
+FROM PESSOAS;
+```
+### 30) Construa DataHoraUltAtualizacao combinando DT_ULT_ATUALIZACAO e HR_ULT_ATUALIZACAO em um único campo de data e hora. Sugestão: CAST/CONVERT + concatenação.
+
+``` sql
+SELECT ID_PESSOA,
+       CASE
+         WHEN DT_ULT_ATUALIZACAO IS NOT NULL AND HR_ULT_ATUALIZACAO IS NOT NULL
+           THEN TRY_CONVERT(datetime2,
+                CONCAT(CONVERT(varchar(10), DT_ULT_ATUALIZACAO, 23), ' ',
+                       CONVERT(varchar(8),  HR_ULT_ATUALIZACAO,   108)))
+         ELSE NULL
+       END AS DataHoraUltAtualizacao
+FROM PESSOAS;
+```
