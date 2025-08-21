@@ -343,3 +343,95 @@ FROM PESSOAS
        CONCAT('CLI-', CAST(CODIGO AS varchar(30))) AS CodigoStr
 FROM PESSOAS;
 ```
+
+### 33
+``` sql
+SELECT ID_PESSOA,
+       CONCAT('P', CAST(ID_PESSOA AS varchar(20))) AS PessoaStr
+FROM PESSOAS;
+```
+
+### 34
+``` sql
+
+```
+
+### 35
+``` sql
+
+```
+
+### 36
+``` sql
+
+```
+
+### 37
+``` sql
+
+```
+
+### 38
+``` sql
+
+```
+
+### 39
+``` sql
+
+```
+
+### 40
+``` sql
+
+```
+
+### 41
+``` sql
+
+```
+
+### 42
+``` sql
+
+```
+
+### 43
+``` sql
+
+```
+
+### 44
+``` sql
+
+```
+
+### 45
+``` sql
+
+```
+
+### 46
+``` sql
+
+```
+
+### 47
+``` sql
+
+```
+
+### 48
+``` sql
+
+```
+
+### 49
+``` sql
+
+```
+
+### 50
+``` sql
+
+```
