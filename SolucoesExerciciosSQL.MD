@@ -4,7 +4,7 @@
 SELECT
 	ID_Pessoa,
 	Nome ,
-	IIF(1 = 1, 'É ATIVO', 'É INATIVO') AS StatusAtivo
+	IIF(INATIVO = 1, 'INATIVO', 'ATIVO') AS StatusAtivo
 FROM PESSOAS	
 ```
 
