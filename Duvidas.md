@@ -559,5 +559,70 @@ Aqui, você informa ao Builder que o campo `ID_FABRICANTE` deve ser preenchido
 - O framework do Sol.NET_Conversao permite que você use ambos, mas o **auxiliar** torna o mapeamento mais rápido e limpo para casos comuns.
 - O **JOIN** ainda é necessário para situações mais complexas ou múltiplos campos da tabela relacionada.
 
-Se quiser exemplos de como ficaria o SQL gerado em cada caso, ou como ficaria no Builder, só pedir!
 
+
+## 📅 25/08/25 –🟢 AJUSTE DE Classificacao fiscal do cliente pega do campo ''TipoCliente'' da tabela cliente.
+ 
+      
+TINHA ESSA CONVERSÃO ONDE O ANALISTA INDENTIFICOU QUE O CAMPO FORMAAPLICACAO ERA O ERRADO E PEDIU PARA TRAZER AS INFORMAÇÕES DO CAMPO TIPOCLIENTE. DENTRO DESSE CAMPO TIPOCLIENTE TINHA
+ESSAS 4 INFORMAÇÕES:
+CONSUMIDOR
+CONSUMIDOR NC
+REVENDA
+REVENDATARE
+ONDE HÁ SEMELHANÇA ENTRE ELAS, TIVE QUE USAR O LIKE PARA AJUSATAR ISSO QUE FICOU 
+
+ ```sql
+SELECT
+  CODIGOCLIENTE,
+  CASE
+    WHEN UPPER(TRIM(TipoCliente)) LIKE 'CONSUMIDOR%' THEN 1   
+    WHEN UPPER(TRIM(TipoCliente)) LIKE 'REVENDA%' THEN 2     
+    ELSE 0
+  END AS TipoClienteCodigo
+FROM TBCLIENTES
+WHERE UPPER(TRIM(TipoCliente)) LIKE 'CONSUMIDOR%' 
+   OR UPPER(TRIM(TipoCliente)) LIKE 'REVENDA%';
+
+-- sintaxe com like OFERECIDA PELO COPILOT  /// AQUI PEDI A SINTAXE NO COPILOT DO CASE + LIKE E ELE ME SURGERIU ISSO, ACRESCENTEI O TRIM E UPPER MAS AINDA NÃO SEI SE IREI CONTINUAR COM ELES.
+SELECT 
+    Nome,
+    CASE 
+        WHEN Nome LIKE 'Ana%' THEN 'Começa com Ana'
+        WHEN Nome LIKE '%Silva%' THEN 'Contém Silva'
+        ELSE 'Outro'
+    END AS CategoriaNome
+FROM Clientes;
+
+ ```
+
+```pascal
+.AddCampo('TP_ATIVIDADE_COMERCIAL', 'CASE WHEN UPPER(TRIM(TIPOCLIENTE)) LIKE ''CONSUMIDOR%'' THEN 1 WHEN UPPER(TRIM(TIPOCLIENTE)) LIKE ''REVENDA%'' THEN 2 ELSE 0 END')
+
+/// codigo completo so para duvidas futuras
+
+procedure TFrmABMolas.BotaoClientes;
+begin
+  var ParametroConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaPessoa.Create(Cliente), 'tbClientes')
+      .AddPrimaryKey('CodigoCliente')
+      .AddCampo('TPCLIENTE', '1')
+      .AddCampo('CODIGO', 'CodigoCliente')
+      .AddCampo('NOME', 'RazaoSocial')
+      .AddCampo('DESCRICAO', 'NomeFantasia')
+      .AddCampo('CPF', 'CnpjCpf')
+      .AddCampo('RG', 'IeImRG')
+      .AddCampo('INDICADOR_ISC_EST_PES', 'IIF(RegimeApuracao = ''CONTRIBUINTE'', 1, 9)')
+      .AddCampo('VL_LIMITE_CREDITO', 'LimiteCredito')
+      .AddCampo('Email', 'Email1 + '';'' + EmailNFE')
+      .AddCampo('CELULAR', 'Celular1')
+      .AddCampo('BLOQUEADO', 'IIF(Status = 0, 0, 1)')
+      .AddCampo('TELEFONECONTATO', 'CobTelefone')
+      .AddCampo('TP_ATIVIDADE_COMERCIAL', 'CASE WHEN UPPER(TRIM(TIPOCLIENTE)) LIKE ''CONSUMIDOR%'' THEN 1 WHEN UPPER(TRIM(TIPOCLIENTE)) LIKE ''REVENDA%'' THEN 2 ELSE 0 END')
+      .AddCampo('DT_CADASTRO', 'DataCadastro')
+      .AddCampo('TELEFONE', 'Telefone1')
+      .AddCampo('ID_PESSOA_RAMO_ATIVIDADE', 'CodigoRamo', TTabelaTpRamoAtividade.Create)
+      .AddCampo('OBS', 'CAST(Observacoes AS VARCHAR(MAX))')
+      .AddCampo('ID_PESSOA_REGIAO', 'CodigoRegiao', TTabelaRegioes.Create)
+      .Build;
+ ```
