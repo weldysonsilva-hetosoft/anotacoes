@@ -43,4 +43,4 @@ sejam compatíveis com Firebird e SQL Server. Por isso, existe o helper SqlOrige
 Sempre que precisar concatenar campos no SQL de conversão, use SqlOrigem.Concat, nunca operadores fixos (+ ou ||) diretamente no texto do campo.
 Assim, seu código fica compatível, padronizado e mais seguro!
 
-Se precisar de exemplos práticos, só pedir!
+
