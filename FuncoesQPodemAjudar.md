@@ -1,7 +1,7 @@
 # FUNÇÕES QUE PODEM AJUDAR NA CONVERSÃO #
 
 
-
+## SqlOrigem.Concat ##
 
   **Contexto:** 
 No módulo SolNET_Conversao, ao configurar a conversão de dados usando o Builder fluente (ConversaoBuilder), é preciso garantir que comandos SQL 
@@ -23,12 +23,13 @@ sejam compatíveis com Firebird e SQL Server. Por isso, existe o helper SqlOrige
 .AddCampo('Email', SqlOrigem.Concat(['Email1', 'EmailNFE'], ';'))
 ```
 
--Aqui usamos o helper SqlOrigem.Concat.
--Ele recebe um array de campos (['Email1', 'EmailNFE']) e o separador (';').
--O método gera automaticamente o SQL correto para o banco de dados em uso:
-    -SQL Server: Email1 + ';' + EmailNFE
-    -Firebird: Email1 || ';' || EmailNFE
--Vantagem: O mesmo código funciona tanto em Firebird quanto em SQL Server, pois o helper adapta a sintaxe conforme o SGBD.
+- Aqui usamos o helper **SqlOrigem.Concat**.
+- Ele recebe um array de campos (`['Email1', 'EmailNFE']`) e o separador (`';'`).
+- O método gera automaticamente o SQL correto para o banco de dados em uso:
+  - SQL Server: `Email1 + ';' + EmailNFE`
+  - Firebird: `Email1 || ';' || EmailNFE`
+- Vantagem: O mesmo código funciona tanto em Firebird quanto em SQL Server, pois o helper adapta a sintaxe conforme o SGBD.
+
 
 
 **Resumo Visual**
