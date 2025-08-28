@@ -784,3 +784,35 @@ WHERE
 	(NumOriginal <> '')
 
 ```
+---
+CORREÇÃO DE ERROS DESSE TIPO: 
+Foreign key reference target does not exist
+Problematic key value is ("ID_ESTOQUE_LOCALIZACAO" = -1)
+Id Reg.: 0
+Registro: 947
+[FireDAC][Phys][FB] violation of FOREIGN KEY constraint "FK_PRODUTO_LOCALIZACAO_EL" on table "PRODUTO_LOCALIZACAO"
+
+Foreign key reference target does not exist
+Problematic key value is ("ID_ESTOQUE_LOCALIZACAO" = -1)
+Id Reg.: 0
+Registro: 948
+[FireDAC][Phys][FB] violation of FOREIGN KEY constraint "FK_PRODUTO_LOCALIZACAO_EL" on table "PRODUTO_LOCALIZACAO"
+
+
+      .AddPrimaryKey('Ecommerce_localizacao')
+      .AddCampo('DESCRICAO', 'Ecommerce_localizacao')
+      .AddCampo('ID_EMPRESA', '0')
+	  
+      .Build;
+
+  ConversaoEstoqueLocalizacao(ParametroConversao);
+
+       .AddPrimaryKey('Ecommerce_localizacao')
+      .AddCampo('DESCRICAO', 'Ecommerce_localizacao')
+      .AddCampo('ID_EMPRESA', '0')
+      .AddWhere('COALESCE(Ecommerce_localizacao, TRIM(Ecommerce_localizacao)) <> ''''')
+      .Build;
+
+  ConversaoEstoqueLocalizacao(ParametroConversao);
+
+ADICIONADO O WHERE: Ou seja, só entram na conversão os registros que têm um valor real em Ecommerce_localizacao (nem nulo, nem vazio, nem só espaços). 
