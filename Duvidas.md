@@ -640,3 +640,31 @@ begin
       .AddCampo('ID_PESSOA_REGIAO', 'CodigoRegiao', TTabelaRegioes.Create)
       .Build;
  ```
+
+
+## 📅 28/08/25 –🟢 AJUSTE no Campo *SUBCONVERSAO* 
+
+CASO A CONVERSÃO ESTEJA DEMORANDO MUITO, VERIFICAR SE NOS BOTÕES SUBCONVERSÃO ESTA CRIANDO TABELAS AUXILIARES NOS CAMPOS ID 
+**ANTES** 
+
+```pascal
+  var ParametrosEndereco: TParametrosSubConversao := TSubConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaEndereco.Create(), 'tbClientes')
+      .AddCampo('ID_VINCULO', 'CodigoCliente', TTabelaPessoa.Create(Cliente))
+      .AddCampo('ID_ESTADO', 'CodigoUF')
+      .AddCampo('ID_CIDADE', 'Municipio')
+      .AddCampo('LOGRADOURO', 'Endereco')
+
+```
+
+**DEPOIS**
+```pascal
+  var ParametrosEndereco: TParametrosSubConversao := TSubConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaEndereco.Create(), 'tbClientes')
+      .AddCampo('ID_VINCULO', 'CodigoCliente')
+      .AddCampo('ID_ESTADO', 'CodigoUF')
+      .AddCampo('ID_CIDADE', 'Municipio')
+      .AddCampo('LOGRADOURO', 'Endereco')
+
+```
+      
