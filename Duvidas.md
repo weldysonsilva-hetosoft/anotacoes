@@ -668,4 +668,119 @@ CASO A CONVERSÃO ESTEJA DEMORANDO MUITO, VERIFICAR SE NOS BOTÕES SUBCONVERSÃO
       .AddCampo('LOGRADOURO', 'Endereco')
 
 ```
-      
+
+## 📅 29/08/25 –🟢 Concatenação de campos complexos 
+
+```sql
+Concatenação do Email1 com o EmailNFE usando ; como separador somente quando ambos existirem.
+Quando existir apenas um deles, deve mostrar só esse (sem ; nem espaços).
+Quando não houver nenhum, deve retornar vazio (NULL tratado).
+
+
+SELECT
+    DISTINCT CodigoCliente ID_PESSOA,
+    1 TPCLIENTE,
+    CodigoCliente CODIGO,
+    RazaoSocial NOME,
+    NomeFantasia DESCRICAO,
+    CnpjCpf CPF,
+    IeImRG RG,
+    IIF(RegimeApuracao = 'CONTRIBUINTE', 1, 9) INDICADOR_ISC_EST_PES,
+    LimiteCredito VL_LIMITE_CREDITO,
+
+    -- 👇 Ajuste no campo Email
+    CASE 
+        WHEN NULLIF(LTRIM(RTRIM(Email1)), '') IS NOT NULL 
+             AND NULLIF(LTRIM(RTRIM(EmailNFE)), '') IS NOT NULL
+            THEN Email1 + '; ' + EmailNFE
+        WHEN NULLIF(LTRIM(RTRIM(Email1)), '') IS NOT NULL
+            THEN Email1
+        WHEN NULLIF(LTRIM(RTRIM(EmailNFE)), '') IS NOT NULL
+            THEN EmailNFE
+        ELSE ''
+    END AS Email,
+
+    Telefone1 TELEFONE,
+    Contato1 TELEFONECONTATO,
+    Celular1 CELULAR,
+    CobTelefone CELULARCONTATO,
+    IIF(Status = 0, 0, 1) BLOQUEADO,
+    1 PERMITIR_PORTADOR,
+    CASE
+        WHEN TipoCliente LIKE '%REVENDA%' THEN 1
+        ELSE 0
+    END TP_ATIVIDADE_COMERCIAL,
+    DataCadastro DT_CADASTRO,
+    CodigoRamo ID_PESSOA_RAMO_ATIVIDADE,
+    CAST(Observacoes AS VARCHAR(MAX)) OBS,
+    CodigoRegiao ID_PESSOA_REGIAO
+FROM tbClientes         /// substitui os ltrim e rtrim por trim
+```
+
+```pascal
+.AddCampo('Email', 'CASE ' + 'WHEN NULLIF(TRIM(Email1), '''') IS NOT NULL AND NULLIF(TRIM(EmailNFE), '''') IS NOT NULL ' +
+      'THEN Email1 + ''; '' + EmailNFE ' + 'WHEN NULLIF(TRIM(Email1), '''') IS NOT NULL ' + 'THEN Email1 ' +
+      'WHEN NULLIF(TRIM(EmailNFE), '''') IS NOT NULL ' + 'THEN EmailNFE ' +
+      'ELSE '''' ' + 'END')      
+```
+
+## 📅 29/08/25 –🟢 CAST E UNION
+
+junta várias formas de códigos (código interno, código do fabricante, referência, código original) numa mesma saída unificada usando UNION.
+se não fizesse o cast do codigopeca passando ele para varchar não daria pra fazer o union.
+No UNION existe uma regra:
+
+👉 Todas as colunas correspondentes entre os SELECTs precisam ser do mesmo tipo de dado ou, pelo menos, implicitamente conversíveis.
+
+```pascal
+SELECT
+	DISTINCT CAST(CodigoPeca AS VARCHAR(50)) ID_PRODUTO,
+	1 TP_CODIGO,
+	CAST(CodigoPeca AS VARCHAR(50)) CODIGO,
+	-1 ID_PESSOA,
+	1 PADRAO,
+	0 TP_BARRA,
+	1 TP_BALANCA
+FROM
+	tbProdutos
+UNION
+SELECT
+	DISTINCT CodigoPeca ID_PRODUTO,
+	2 TP_CODIGO,
+	NumFabricante CODIGO,
+	CodigoFabricante ID_PESSOA,
+	1 PADRAO,
+	1 TP_BARRA,
+	1 TP_BALANCA
+FROM
+	tbProdutos
+UNION
+SELECT
+	DISTINCT SUBSTRING(string_agg(CodigoPeca, ','), 1, COALESCE(NULLIF(CHARINDEX(',', string_agg(CodigoPeca, ',')) - 1, -1), LEN(string_agg(CodigoPeca, ',')))) ID_PRODUTO,
+	1 TP_CODIGO,
+	Referencia CODIGO,
+	-1 ID_PESSOA,
+	0 PADRAO,
+	1 TP_BARRA,
+	0 TP_BALANCA
+FROM
+	tblCAPRSIMI
+WHERE
+	(CodigoRefLinha not in(71, 28, 15, 16, 31, 8, 9, 119, 74))
+GROUP BY
+	Referencia
+UNION
+SELECT
+	DISTINCT CodigoPeca ID_PRODUTO,
+	1 TP_CODIGO,
+	NumOriginal CODIGO,
+	-1 ID_PESSOA,
+	0 PADRAO,
+	0 TP_BARRA,
+	0 TP_BALANCA
+FROM
+	tbProdutos
+WHERE
+	(NumOriginal <> '')
+
+```
