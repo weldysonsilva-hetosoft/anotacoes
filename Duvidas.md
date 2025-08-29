@@ -824,5 +824,6 @@ SELECT
 	CodigoPeca,
 	CONCAT_WS(char(13), '  Caracteristicas:  ' + Caracteristicas, '  BitolaMola:  ' + cast(BitolaMola as VARCHAR(10)), '  Medidas:  ' + MEDIDAS)
 FROM
-	tbProdutos     /// os espaços no codigo é para as informações não virem coladas no solnet 
+	tbProdutos
+--- os espaços no codigo é para as informações não virem coladas no solnet 
 ```
