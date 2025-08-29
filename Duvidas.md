@@ -816,3 +816,13 @@ Registro: 948
   ConversaoEstoqueLocalizacao(ParametroConversao);
 
 ADICIONADO O WHERE: Ou seja, só entram na conversão os registros que têm um valor real em Ecommerce_localizacao (nem nulo, nem vazio, nem só espaços). 
+
+## 📅 29/08/25 –🟢 QUEBRA LINHA E CONCATENAÇÃO DE CAMPOS + CAST (FOI PEDIDO PELO ANALISTA SE PODERIA UNIR MAIS 2 CAMPOS (BITOLAMOLA E MEDIDAS JUNTO DO CARACTERISTICAS PARA VIR JUNTO DO OBS CAMPO DO SOLNET)
+
+```sql
+SELECT
+	CodigoPeca,
+	CONCAT_WS(char(13), '  Caracteristicas:  ' + Caracteristicas, '  BitolaMola:  ' + cast(BitolaMola as VARCHAR(10)), '  Medidas:  ' + MEDIDAS)
+FROM
+	tbProdutos     /// os espaços no codigo é para as informações não virem coladas no solnet 
+```
