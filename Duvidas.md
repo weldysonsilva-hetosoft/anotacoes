@@ -669,7 +669,7 @@ CASO A CONVERSÃO ESTEJA DEMORANDO MUITO, VERIFICAR SE NOS BOTÕES SUBCONVERSÃO
 
 ```
 
-## 📅 29/08/25 –🟢 Concatenação de campos complexos 
+## 📅 28/08/25 –🟢 Concatenação de campos complexos 
 
 ```sql
 Concatenação do Email1 com o EmailNFE usando ; como separador somente quando ambos existirem.
@@ -724,7 +724,7 @@ FROM tbClientes         /// substitui os ltrim e rtrim por trim
       'ELSE '''' ' + 'END')      
 ```
 
-## 📅 29/08/25 –🟢 CAST E UNION
+## 📅 28/08/25 –🟢 CAST E UNION
 
 junta várias formas de códigos (código interno, código do fabricante, referência, código original) numa mesma saída unificada usando UNION.
 se não fizesse o cast do codigopeca passando ele para varchar não daria pra fazer o union.
