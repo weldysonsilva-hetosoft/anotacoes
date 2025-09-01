@@ -924,8 +924,6 @@ Se quiser exemplos para outros campos ou recomendações de validação, só ped
 - • Geralmente, em bancos de dados, o campo `CadastroExcluido` indica se o registro foi **excluído**:
     - ◦ `'S'` = Sim, foi excluído
     - ◦ `'N'` = Não, não foi excluído
-- 
-- 
 - • **Registro excluído** deve ser **inativo** (`INATIVO = 1`)
 - • **Registro não excluído** deve ser **ativo** (`INATIVO = 0`)
 - • O primeiro trecho (`CadastroExcluido = 'N' → INATIVO = 0`) parece correto à primeira vista.
