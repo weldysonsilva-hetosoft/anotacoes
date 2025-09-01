@@ -867,7 +867,7 @@ Segue padrão ISO SQL, compatível com SQL Server (se precisar para Firebird, po
 
 ## 📅 01/09/25 –🟢 INVERTENDO A LOGICA DO IIF 
 
-Ótima pergunta!
+
 Vamos analisar tecnicamente a diferença entre os dois trechos, usando o contexto do Sol.NET_Conversao e padrões SQL/Delphi do projeto.
 **Trecho 1 (original):**Pascal
 
