@@ -827,7 +827,7 @@ FROM
 	tbProdutos
 --- os espaços no codigo é para as informações não virem coladas no solnet 
 ```
-## 📅 01/09/25 –🟢 string_agg(CodigoPeca, ',')
+## 📅 01/09/25 –🟢 string_agg(CodigoPeca, ',') - > Une (concatena) todos os valores do campo CodigoPeca em uma única string, separados por vírgula.
 
 1. string_agg(CodigoPeca, ',')
 Função: Une (concatena) todos os valores do campo CodigoPeca em uma única string, separados por vírgula.
