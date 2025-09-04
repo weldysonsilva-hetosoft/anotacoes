@@ -674,7 +674,7 @@ var ParametrosEndereco: TParametrosSubConversao := TSubConversaoBuilder.Create
 - **Documente ajustes para consulta futura**
 
 ---
-## **📌 Sobre a Função `[TFuncoes.SoNumeros]` no ConversaoBuilder**
+## **📌REMOVENDO PONTOS E CARACTERES E DEIXANDO SO NUMEROS!  `[TFuncoes.SoNumeros]` no ConversaoBuilder**
 
 ### **O que é?**
 
