@@ -674,7 +674,71 @@ var ParametrosEndereco: TParametrosSubConversao := TSubConversaoBuilder.Create
 - **Documente ajustes para consulta futura**
 
 ---
+## **📌 Sobre a Função `[TFuncoes.SoNumeros]` no ConversaoBuilder**
 
-**Última atualização:** 03/09/2025  
-**Responsável:** weldysonsilva-hetosoft  
-**Padrão oficial para SUBCONVERSAO no Sol.NET_Conversao**
+### **O que é?**
+
+A função `SoNumeros` é um dos valores do enum `TFuncoes` disponível para uso nos mapeamentos do **ConversaoBuilder**.
+
+Ela serve para **limpar** o valor de um campo, removendo todos os caracteres não numéricos (como pontos, traços, espaços, letras etc.), deixando apenas os dígitos no resultado.
+
+---
+
+### **Como usar no ConversaoBuilder?**
+
+Ao configurar um campo no Builder, basta adicionar `[TFuncoes.SoNumeros]` no último parâmetro do método `.AddCampo`.
+
+Exemplo prático:
+
+Pascal
+
+`.AddCampo('CEST', 'CEST', nil, '', [TFuncoes.SoNumeros])`
+
+### **Explicação dos parâmetros:**
+
+- `'CEST'` → nome do campo de destino no Sol.NET
+- `'CEST'` → nome do campo de origem (na tabela do cliente)
+- `nil` → não utiliza tabela auxiliar para lookup
+- `''` → sem busca dinâmica
+- `[TFuncoes.SoNumeros]` → **aplica a função para filtrar somente números**
+
+---
+
+### **Quando usar?**
+
+Utilize `[TFuncoes.SoNumeros]` sempre que precisar garantir que o valor migrado para o Sol.NET contenha **apenas números**.
+
+Exemplos de campos típicos:
+
+- CEST (código de situação tributária)
+- NCM (classificação fiscal)
+- CPF/CNPJ
+- Código de barras
+- Telefone
+
+---
+
+### **Benefícios**
+
+- Evita problemas de validação ou duplicidade causados por caracteres extras.
+- Garante compatibilidade com regras de negócio do Sol.NET, que exigem apenas números em certos campos.
+- Facilita futuras integrações e cruzamento de dados.
+
+---
+
+### **Exemplo de aplicação:**
+
+Pascal
+
+`.AddCampo('CPF', 'CPF_CLIENTE', nil, '', [TFuncoes.SoNumeros])
+.AddCampo('CNPJ', 'CNPJ_CLIENTE', nil, '', [TFuncoes.SoNumeros])
+.AddCampo('CEST', 'CEST', nil, '', [TFuncoes.SoNumeros])
+.AddCampo('NCM', 'ClassificacaoFiscal', nil, '', [TFuncoes.SoNumeros])`
+
+---
+
+### **Resumo**
+
+- `[TFuncoes.SoNumeros]` remove pontos, traços, espaços e tudo que não for número do campo selecionado.
+- Use no último parâmetro de `.AddCampo` do ConversaoBuilder.
+- Ideal para garantir conformidade e integridade dos dados migrados.
