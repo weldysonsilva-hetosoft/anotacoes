@@ -937,3 +937,100 @@ Se quiser exemplos para outros campos ou recomendações de validação, só ped
 - • **Expressão ajustada:**Só `'S'` = inativo, todos os outros = ativo.
 - • Sempre prefira comparar pelo valor que indica **exclusão explícita** (`'S'`).
 - • Expressão do supervisor é **mais robusta** e evita erros causados por campos em branco ou nulos.
+
+## 📅 03/09/25 –🟢 EXEMPLO DE UMA ESTRUTURA COM VARIAS TABELAS DIFERENTES E VARIAS SUBCONVERSÕES 
+
+```pascal
+procedure TFrmABMolas.BotaoFuncionario;
+begin
+  var ParametrosPessoas: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaPessoa.Create(Func), 'tbFuncionarios')
+      .AddPrimaryKey(SQLOrigem.CONCAT(['''F''', 'CodigoFuncionario']))
+      .AddCampo('TPFUNCIONARIO', '1')
+      .AddCampo('CODIGO', 'CodigoFuncionario')
+      .AddCampo('NOME', 'NomeFuncionario')
+      .AddCampo('CPF', 'CPF')
+      .AddCampo('CELULAR', 'Celular')
+      .AddCampo('TELEFONE', 'FoneResidencial')
+      .AddCampo('EMAIL', 'null')
+      .AddCampo('RG', 'RG')
+      .AddCampo('DT_NASCIMENTO', 'DataNascimento')
+      .AddCampo('OBS', '''FUNCIONARIO''')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaPessoa.Create(Func), 'tbMecanicos')
+      .AddPrimaryKey(SQLOrigem.CONCAT(['''M''', 'CodigoMecanico']))
+      .AddCampo('TPFUNCIONARIO', '1')
+      .AddCampo('CODIGO', 'CodigoMecanico')
+      .AddCampo('NOME', 'NomeMecanico')
+      .AddCampo('CPF', 'null')
+      .AddCampo('CELULAR', 'null')
+      .AddCampo('TELEFONE', 'null')
+      .AddCampo('EMAIL', 'null')
+      .AddCampo('RG', 'null')
+      .AddCampo('DT_NASCIMENTO', 'null')
+      .AddCampo('OBS', '''MECANICO''')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaPessoa.Create(Func), 'tbRepresentantes')
+      .AddPrimaryKey(SQLOrigem.CONCAT(['''R''', 'CodigoRepresentante']))
+      .AddCampo('TPFUNCIONARIO', '1')
+      .AddCampo('CODIGO', 'CodigoRepresentante')
+      .AddCampo('NOME', 'NomeRepresentante')
+      .AddCampo('CPF', 'CnpjCpf')
+      .AddCampo('CELULAR', 'Celular')
+      .AddCampo('TELEFONE', 'Telefone')
+      .AddCampo('EMAIL', 'Email')
+      .AddCampo('RG', 'null')
+      .AddCampo('DT_NASCIMENTO', 'null')
+      .AddCampo('OBS', '''REPRESENTANTE''')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaPessoa.Create(Func), 'tbVendedores')
+      .AddPrimaryKey(SQLOrigem.CONCAT(['''V''', 'CodigoVendedor']))
+      .AddCampo('TPFUNCIONARIO', '1')
+      .AddCampo('CODIGO', 'CodigoVendedor')
+      .AddCampo('NOME', 'NomeVendedor')
+      .AddCampo('CPF', 'Cpf')
+      .AddCampo('CELULAR', 'Celular')
+      .AddCampo('TELEFONE', 'Telefone')
+      .AddCampo('EMAIL', 'Email')
+      .AddCampo('RG', 'null')
+      .AddCampo('DT_NASCIMENTO', 'null')
+      .AddCampo('OBS', '''VENDEDOR''')
+      .Build;
+
+  var ParametrosEndereco: TParametrosSubConversao := TSubConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaEndereco.Create(), 'tbFuncionarios')
+      .AddCampo('ID_VINCULO', SQLOrigem.CONCAT(['''F''', 'CodigoFuncionario']))
+      .AddCampo('LOGRADOURO', 'Endereco')
+      .AddCampo('CIDADE', 'Cidade')
+      .AddCampo('BAIRRO', 'Bairro')
+      .AddCampo('ID_CIDADE', 'Cidade')
+      .AddCampo('ID_ESTADO', 'Estado')
+      .AddCampo('CEP', 'CEP')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaEndereco.Create(), 'tbRepresentantes')
+      .AddCampo('ID_VINCULO', SQLOrigem.CONCAT(['''R''', 'CodigoRepresentante']))
+      .AddCampo('LOGRADOURO', 'Endereco')
+      .AddCampo('CIDADE', 'Municipio')
+      .AddCampo('BAIRRO', 'Bairro')
+      .AddCampo('ID_CIDADE', 'Municipio')
+      .AddCampo('ID_ESTADO', 'UF')
+      .AddCampo('CEP', 'CEP')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaEndereco.Create(), 'tbVendedores')
+      .AddCampo('ID_VINCULO', SQLOrigem.CONCAT(['''V''', 'CodigoVendedor']))
+      .AddCampo('LOGRADOURO', 'Endereco')
+      .AddCampo('CIDADE', 'Municipio')
+      .AddCampo('BAIRRO', 'Bairro')
+      .AddCampo('ID_CIDADE', 'Municipio')
+      .AddCampo('ID_ESTADO', 'UF')
+      .AddCampo('CEP', 'CEP')
+      .Build;
+
+  ConversaoPessoas(ParametrosPessoas, ParametrosEndereco);
+end;
+```
