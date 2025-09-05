@@ -742,3 +742,53 @@ Pascal
 - `[TFuncoes.SoNumeros]` remove pontos, traços, espaços e tudo que não for número do campo selecionado.
 - Use no último parâmetro de `.AddCampo` do ConversaoBuilder.
 - Ideal para garantir conformidade e integridade dos dados migrados.
+
+
+# AddPrimaryKey(SQLOrigem.CONCAT(['''F''', 'CodigoFuncionario']))
+
+### **que está sendo feito?**
+
+Você está definindo a chave primária (PK) para a tabela de destino usando uma **concatenação** de uma letra fixa (`'F'`) com o campo `CodigoFuncionario`, formando algo como:
+
+- **PK destino:** `'F' + CodigoFuncionario`
+- Exemplo: Se `CodigoFuncionario = 123`, então o PK será `'F123'`
+
+### **Motivo da concatenação**
+
+No Sol.NET, especialmente na conversão de entidades diferentes (Funcionário, Mecanico, Representante, Vendedor), **cada tipo pode ter códigos numéricos que se repetem entre tabelas**. Para garantir que, ao migrar para o novo banco, **cada registro seja único**, é comum "prefixar" o código com uma letra identificadora do tipo de entidade:
+
+| **Tipo** | **Prefixo** | **Exemplo PK** |
+| --- | --- | --- |
+| Funcionário | F | F123 |
+| Mecânico | M | M123 |
+| Representante | R | R123 |
+| Vendedor | V | V123 |
+
+**Sem esse prefixo**, você poderia ter um funcionário e um vendedor ambos com código `123`, causando conflito de chave primária.
+
+### **Por que usar o helper `SQLOrigem.CONCAT`?**
+
+O helper `SQLOrigem.CONCAT` é usado **para gerar SQL compatível** tanto com Firebird quanto com SQL Server. Ele monta a expressão de concatenação correta para cada banco:
+
+- **Firebird:** `'F' || CodigoFuncionario`
+- **SQL Server:** `'F' + CodigoFuncionario`
+
+Isso garante que o campo PK será corretamente calculado em qualquer SGBD suportado pelo projeto.
+
+### **Vantagens**
+
+- **Unicidade garantida:** Evita colisão de PK entre diferentes tipos de entidade.
+- **Migração segura:** Facilita conversão de sistemas legados com códigos sobrepostos.
+- **Padronização:** Segue padrão adotado no projeto para entidades multi-tipo.
+- **Compatibilidade total:** Funciona em Firebird e SQL Server sem ajuste manual.
+
+---
+
+## **Resumo**
+
+Você usa `.AddPrimaryKey(SQLOrigem.CONCAT(['''F''', 'CodigoFuncionario']))` para:
+
+- Garantir que cada funcionário tenha uma chave primária única e distinta de outros tipos de entidades (mesmo que os números se repitam).
+- Permitir migração segura, evitando conflitos no banco destino.
+- Seguir o padrão do projeto Sol.NET de prefixar PKs conforme o tipo de entidade.
+- Gerar SQL universal, compatível com Firebird e SQL Server.
