@@ -865,80 +865,7 @@ Usado para garantir unicidade de produtos ao migrar dados, evitando duplicidade 
 Ajuda na normalização de dados legados, onde múltiplos códigos podem estar agregados.
 Segue padrão ISO SQL, compatível com SQL Server (se precisar para Firebird, pode adaptar).
 
-## 📅 01/09/25 –🟢 INVERTENDO A LOGICA DO IIF 
-
-
-Vamos analisar tecnicamente a diferença entre os dois trechos, usando o contexto do Sol.NET_Conversao e padrões SQL/Delphi do projeto.
-**Trecho 1 (original):**Pascal
-
-`.AddCampo('INATIVO', 'IIF(CadastroExcluido = ''N'', 0, 1)')`
-
-• **Lógica:**Se `CadastroExcluido = 'N'`, então `INATIVO = 0`Senão, `INATIVO = 1`
-**Trecho 2 (após ajuste do supervisor):**Pascal
-
-`.AddCampo('INATIVO', 'IIF(CadastroExcluido = ''S'', 1, 0)')`
-
-• **Lógica:**Se `CadastroExcluido = 'S'`, então `INATIVO = 1`Senão, `INATIVO = 0`
-**Por que o supervisor trocou?
-1. Significado dos valores**
-• Geralmente, em bancos de dados, o campo `CadastroExcluido` indica se o registro foi **excluído**:
-    ◦ `'S'` = Sim, foi excluído
-    ◦ `'N'` = Não, não foi excluído
-**2. Regra de Negócio**
-• **Registro excluído** deve ser **inativo** (`INATIVO = 1`)
-• **Registro não excluído** deve ser **ativo** (`INATIVO = 0`)
-**3. Problema do original**
-• O primeiro trecho (`CadastroExcluido = 'N' → INATIVO = 0`) parece correto à primeira vista.
-• Porém, se o campo está em branco (`''`) ou nulo, a expressão original (`CadastroExcluido = 'N'`) resultará em **falso**.
-• Portanto, **qualquer valor diferente de `'N'`** (incluindo branco, nulo, etc.) será convertido como **INATIVO = 1** (inativo).
-• Isso pode acabar marcando registros "em branco" como inativos, gerando registros faltando ou errados.
-**4. Lógica do supervisor**
-• Ao inverter para `CadastroExcluido = 'S'`, só registros marcados explicitamente como excluídos (`'S'`) serão convertidos como inativos.
-• Qualquer outro valor (`'N'`, branco, nulo...) será considerado como ativo (`INATIVO = 0`).
-• **É mais seguro**, pois evita que registros com valor em branco sejam tratados como excluídos/inativos por engano.
-**Resumo prático**
-• **Primeira expressão:**Qualquer valor diferente de `'N'` (inclusive branco ou nulo) = inativo.
-• **Expressão ajustada:**Só `'S'` = inativo, todos os outros = ativo.
-**Boa prática**
-No contexto do Sol.NET_Conversao e Clean Code:
-• Sempre prefira comparar pelo valor que indica **exclusão explícita** (`'S'`).
-• Expressão do supervisor é **mais robusta** e evita erros causados por campos em branco ou nulos.
-**Sugestão extra**
-Se quiser garantir ainda mais (caso campo venha nulo ou branco por descuido do legado), pode usar:SQL
-
-`IIF(CadastroExcluido = 'S', 1, 0)`
-
-Ou, para SQL universal, usando CASE:SQL
-
-`CASE WHEN CadastroExcluido = 'S' THEN 1 ELSE 0 END`
-
-**Conclusão:**
-O supervisor **corrigiu** para evitar que registros em branco ou nulos fossem marcados como inativos por engano.
-Isso segue o padrão Clean Code e evita inconsistência na conversão!
-Se quiser exemplos para outros campos ou recomendações de validação, só pedir!
-
-****
-
-- • **Lógica:**Se `CadastroExcluido = 'N'`, então `INATIVO = 0`Senão, `INATIVO = 1`
-- • **Lógica:**Se `CadastroExcluido = 'S'`, então `INATIVO = 1`Senão, `INATIVO = 0`
-- • Geralmente, em bancos de dados, o campo `CadastroExcluido` indica se o registro foi **excluído**:
-    - ◦ `'S'` = Sim, foi excluído
-    - ◦ `'N'` = Não, não foi excluído
-- • **Registro excluído** deve ser **inativo** (`INATIVO = 1`)
-- • **Registro não excluído** deve ser **ativo** (`INATIVO = 0`)
-- • O primeiro trecho (`CadastroExcluido = 'N' → INATIVO = 0`) parece correto à primeira vista.
-- • Porém, se o campo está em branco (`''`) ou nulo, a expressão original (`CadastroExcluido = 'N'`) resultará em **falso**.
-- • Portanto, **qualquer valor diferente de `'N'`** (incluindo branco, nulo, etc.) será convertido como **INATIVO = 1** (inativo).
-- • Isso pode acabar marcando registros "em branco" como inativos, gerando registros faltando ou errados.
-- • Ao inverter para `CadastroExcluido = 'S'`, só registros marcados explicitamente como excluídos (`'S'`) serão convertidos como inativos.
-- • Qualquer outro valor (`'N'`, branco, nulo...) será considerado como ativo (`INATIVO = 0`).
-- • **É mais seguro**, pois evita que registros com valor em branco sejam tratados como excluídos/inativos por engano.
-- • **Primeira expressão:**Qualquer valor diferente de `'N'` (inclusive branco ou nulo) = inativo.
-- • **Expressão ajustada:**Só `'S'` = inativo, todos os outros = ativo.
-- • Sempre prefira comparar pelo valor que indica **exclusão explícita** (`'S'`).
-- • Expressão do supervisor é **mais robusta** e evita erros causados por campos em branco ou nulos.
-
-## 📅 03/09/25 –🟢 EXEMPLO DE UMA ESTRUTURA COM VARIAS TABELAS DIFERENTES E VARIAS SUBCONVERSÕES 
+## 📅 01/09/25 –🟢 EXEMPLO DE UMA ESTRUTURA COM VARIAS TABELAS DIFERENTES E VARIAS SUBCONVERSÕES 
 
 ```pascal
 procedure TFrmABMolas.BotaoFuncionario;
@@ -1034,3 +961,77 @@ begin
   ConversaoPessoas(ParametrosPessoas, ParametrosEndereco);
 end;
 ```
+
+## 📅 01/09/25 –🟢 INVERTENDO A LOGICA DO IIF 
+
+
+Vamos analisar tecnicamente a diferença entre os dois trechos, usando o contexto do Sol.NET_Conversao e padrões SQL/Delphi do projeto.
+**Trecho 1 (original):**Pascal
+
+`.AddCampo('INATIVO', 'IIF(CadastroExcluido = ''N'', 0, 1)')`
+
+• **Lógica:**Se `CadastroExcluido = 'N'`, então `INATIVO = 0`Senão, `INATIVO = 1`
+**Trecho 2 (após ajuste do supervisor):**Pascal
+
+`.AddCampo('INATIVO', 'IIF(CadastroExcluido = ''S'', 1, 0)')`
+
+• **Lógica:**Se `CadastroExcluido = 'S'`, então `INATIVO = 1`Senão, `INATIVO = 0`
+**Por que o supervisor trocou?
+1. Significado dos valores**
+• Geralmente, em bancos de dados, o campo `CadastroExcluido` indica se o registro foi **excluído**:
+    ◦ `'S'` = Sim, foi excluído
+    ◦ `'N'` = Não, não foi excluído
+**2. Regra de Negócio**
+• **Registro excluído** deve ser **inativo** (`INATIVO = 1`)
+• **Registro não excluído** deve ser **ativo** (`INATIVO = 0`)
+**3. Problema do original**
+• O primeiro trecho (`CadastroExcluido = 'N' → INATIVO = 0`) parece correto à primeira vista.
+• Porém, se o campo está em branco (`''`) ou nulo, a expressão original (`CadastroExcluido = 'N'`) resultará em **falso**.
+• Portanto, **qualquer valor diferente de `'N'`** (incluindo branco, nulo, etc.) será convertido como **INATIVO = 1** (inativo).
+• Isso pode acabar marcando registros "em branco" como inativos, gerando registros faltando ou errados.
+**4. Lógica do supervisor**
+• Ao inverter para `CadastroExcluido = 'S'`, só registros marcados explicitamente como excluídos (`'S'`) serão convertidos como inativos.
+• Qualquer outro valor (`'N'`, branco, nulo...) será considerado como ativo (`INATIVO = 0`).
+• **É mais seguro**, pois evita que registros com valor em branco sejam tratados como excluídos/inativos por engano.
+**Resumo prático**
+• **Primeira expressão:**Qualquer valor diferente de `'N'` (inclusive branco ou nulo) = inativo.
+• **Expressão ajustada:**Só `'S'` = inativo, todos os outros = ativo.
+**Boa prática**
+No contexto do Sol.NET_Conversao e Clean Code:
+• Sempre prefira comparar pelo valor que indica **exclusão explícita** (`'S'`).
+• Expressão do supervisor é **mais robusta** e evita erros causados por campos em branco ou nulos.
+**Sugestão extra**
+Se quiser garantir ainda mais (caso campo venha nulo ou branco por descuido do legado), pode usar:SQL
+
+`IIF(CadastroExcluido = 'S', 1, 0)`
+
+Ou, para SQL universal, usando CASE:SQL
+
+`CASE WHEN CadastroExcluido = 'S' THEN 1 ELSE 0 END`
+
+**Conclusão:**
+O supervisor **corrigiu** para evitar que registros em branco ou nulos fossem marcados como inativos por engano.
+Isso segue o padrão Clean Code e evita inconsistência na conversão!
+Se quiser exemplos para outros campos ou recomendações de validação, só pedir!
+
+****
+
+- • **Lógica:**Se `CadastroExcluido = 'N'`, então `INATIVO = 0`Senão, `INATIVO = 1`
+- • **Lógica:**Se `CadastroExcluido = 'S'`, então `INATIVO = 1`Senão, `INATIVO = 0`
+- • Geralmente, em bancos de dados, o campo `CadastroExcluido` indica se o registro foi **excluído**:
+    - ◦ `'S'` = Sim, foi excluído
+    - ◦ `'N'` = Não, não foi excluído
+- • **Registro excluído** deve ser **inativo** (`INATIVO = 1`)
+- • **Registro não excluído** deve ser **ativo** (`INATIVO = 0`)
+- • O primeiro trecho (`CadastroExcluido = 'N' → INATIVO = 0`) parece correto à primeira vista.
+- • Porém, se o campo está em branco (`''`) ou nulo, a expressão original (`CadastroExcluido = 'N'`) resultará em **falso**.
+- • Portanto, **qualquer valor diferente de `'N'`** (incluindo branco, nulo, etc.) será convertido como **INATIVO = 1** (inativo).
+- • Isso pode acabar marcando registros "em branco" como inativos, gerando registros faltando ou errados.
+- • Ao inverter para `CadastroExcluido = 'S'`, só registros marcados explicitamente como excluídos (`'S'`) serão convertidos como inativos.
+- • Qualquer outro valor (`'N'`, branco, nulo...) será considerado como ativo (`INATIVO = 0`).
+- • **É mais seguro**, pois evita que registros com valor em branco sejam tratados como excluídos/inativos por engano.
+- • **Primeira expressão:**Qualquer valor diferente de `'N'` (inclusive branco ou nulo) = inativo.
+- • **Expressão ajustada:**Só `'S'` = inativo, todos os outros = ativo.
+- • Sempre prefira comparar pelo valor que indica **exclusão explícita** (`'S'`).
+- • Expressão do supervisor é **mais robusta** e evita erros causados por campos em branco ou nulos.
+
