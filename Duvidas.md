@@ -1082,4 +1082,67 @@ Se quiser exemplos para outros campos ou recomendações de validação, só ped
   end;
 
 ```
+## 📅 08/09/25 –🟢 CRIAR UMA TAG PARA NAO FICAR TOCANDO AUDIO AO TERMINAR UM BOTAO DA CONVESÃO
 
+
+**Antes**
+``` Pascal
+// ... dentro do finally de ExecutarBotao:
+
+if varCallbackOk then
+begin
+  BotaoSelecionado.Font.Color := clGreen;
+  Geral.TocarSom(varDiretorioSomDespertar);
+
+  if cbxCopiarBancos.Checked then
+    RealizarCopiaBancoEstadoAtual(BotaoSelecionado.Caption);
+
+  AdicionarAoLog('Convertido com sucesso.', Self.Caption, BotaoSelecionado.Caption, varCallbackOk);
+end
+else
+begin
+  BotaoSelecionado.Font.Color := clRed;
+  Geral.TocarSom(varDiretorioSomErro);
+end;
+
+```
+
+**Depois**
+
+``` Pascal
+// ... dentro do finally de ExecutarBotao:
+
+if varCallbackOk then
+begin
+  BotaoSelecionado.Font.Color := clGreen;
+
+  // Toca o som somente se Tag do form for 0
+  if Self.Tag = 0 then
+    Geral.TocarSom(varDiretorioSomDespertar);
+
+  if cbxCopiarBancos.Checked then
+    RealizarCopiaBancoEstadoAtual(BotaoSelecionado.Caption);
+
+  AdicionarAoLog('Convertido com sucesso.', Self.Caption, BotaoSelecionado.Caption, varCallbackOk);
+end
+else
+begin
+  BotaoSelecionado.Font.Color := clRed;
+
+  // Toca o som somente se Tag do form for 0
+  if Self.Tag = 0 then
+    Geral.TocarSom(varDiretorioSomErro);
+end;
+
+```
+
+**Explicação**
+
+- Regra simples: if Self.Tag = 0 então toca som; caso contrário, fica silencioso.
+- Comportamento:
+    - Tag = 0 → som habilitado (padrão).
+    - Tag ≠ 0 → som desabilitado (silencioso).
+- Como usar:
+    - Para silenciar em conversões internas: defina Self.Tag := 1 (por exemplo, no FormCreate ou no DFM).
+    - Se preferir por botão específico, troque Self.Tag por BotaoSelecionado.Tag e defina Tag = 1 no botão desejado.
+- Observação: não alteramos o Geral.TocarSom('') do início do método; ele apenas interrompe sons pendentes, não é controlado pela tag.
