@@ -435,7 +435,7 @@ Utilize `COALESCE` e `TRIM` para garantir que não sejam nulos, vazios ou apenas
 
 ```pascal
 var ParametroConversao: TParametrosConversao := TConversaoBuilder.Create
-  .SetTabelaConversao(TTabelaEstoqueLocalizacao.Create, 'Ecommerce_localizacao')
+  .SetTabelaConversao(TTabelaEstoqueLocalizacao.Create, 'tbProdutos')
   .AddPrimaryKey('Ecommerce_localizacao')
   .AddCampo('DESCRICAO', 'Ecommerce_localizacao')
   .AddCampo('ID_EMPRESA', '0')
