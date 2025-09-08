@@ -1035,3 +1035,51 @@ Se quiser exemplos para outros campos ou recomendações de validação, só ped
 - • Sempre prefira comparar pelo valor que indica **exclusão explícita** (`'S'`).
 - • Expressão do supervisor é **mais robusta** e evita erros causados por campos em branco ou nulos.
 
+## 📅 02/09/25 –🟢 CONVERSAO DE PRODUTOSCODIGOS PARA AJUDAR NAS PROXIMAS CONVERÇÕES 
+
+```Delphi
+      procedure TFrmABMolas.BotaoProdutoCodigos;
+  begin
+    var CampoReferencia: string := 'string_agg(CodigoPeca, '','')';
+    var CodigoReferenciaSimilar: string := Format('SUBSTRING(%0:s, 1, COALESCE(NULLIF(CHARINDEX('','', %0:s) - 1, -1), LEN(%0:s)))',
+        [CampoReferencia]);
+
+    .SetTabelaConversao(TTabelaProdutoCodigos.Create, 'tbProdutos')
+      .AddCampo('ID_PRODUTO', 'CAST(CodigoPeca AS VARCHAR(50))', TTabelaProduto.Create(Produto))
+      .AddCampo('TP_CODIGO', '2')
+      .AddCampo('CODIGO', 'NumFabricante')
+      .AddCampo('ID_PESSOA', 'CodigoFabricante')
+      .AddCampo('PADRAO', '0')
+      .AddCampo('TP_BARRA', '0')
+      .AddCampo('TP_BALANCA', '0')
+      .AddWhere('COALESCE(NumFabricante, '''') <> ''''')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaProdutoCodigos.Create, 'tblCAPRSIMI ')
+      .AddCampo('ID_PRODUTO', CodigoReferenciaSimilar, TTabelaProduto.Create(Produto))
+      .AddCampo('TP_CODIGO', '1')
+      .AddCampo('CODIGO', 'Referencia')
+      .AddCampo('ID_PESSOA', '-1')
+      .AddCampo('PADRAO', '0')
+      .AddCampo('TP_BARRA', '0')
+      .AddCampo('TP_BALANCA', '0')
+      .AddWhere('CodigoRefLinha not in(71, 28, 15, 16, 31, 8, 9, 119, 74)')
+      .AddGroupBy('Referencia')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaProdutoCodigos.Create, 'tbProdutos ')
+      .AddCampo('ID_PRODUTO', 'CodigoPeca', TTabelaProduto.Create(Produto))
+      .AddCampo('TP_CODIGO', '1')
+      .AddCampo('CODIGO', 'NumOriginal')
+      .AddCampo('ID_PESSOA', '-1')
+      .AddCampo('PADRAO', '0')
+      .AddCampo('TP_BARRA', '0')
+      .AddCampo('TP_BALANCA', '0')
+      .AddWhere('NumOriginal <> ''''')
+      .Build;
+
+    ConversaoProdutoCodigos(ParametroConversao);
+  end;
+
+```
+
