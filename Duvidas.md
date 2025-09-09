@@ -1084,9 +1084,29 @@ Se quiser exemplos para outros campos ou recomendações de validação, só ped
 ```
 ## 📅 09/09/25 –🟢 CRIAR UMA TAG PARA NAO FICAR TOCANDO AUDIO AO TERMINAR UM BOTAO DA CONVESÃO
 
+# 🔊 Controle de Áudio ao Finalizar Conversões
 
+## Explicação
 
-``` Pascal
+- Regra simples: var PodeTocarSom: Boolean := not cbxSilenciarSomFinalizacao.Checked;
+- Como o texto do checkbox é “Silenciar som ao finalizar”:
+  - Marcado (Checked = True) → NÃO toca som.
+  - Desmarcado (Checked = False) → Toca som.
+
+## Comportamento
+
+- Checked = True → silenciar (sem sons de início, sucesso ou erro).
+- Checked = False → som habilitado (padrão).
+
+## Como usar
+
+- O checkbox “Silenciar som ao finalizar” (cbxSilenciarSomFinalizacao) determina o comportamento de áudio.
+- Não é necessário usar Tag nem manter código no OnClick do checkbox. O método ExecutarBotao lê diretamente o estado do checkbox.
+- O OnClick do checkbox pode ficar vazio ou ser removido no Object Inspector.
+
+## Trecho de Referência (uFrmConversao.pas)
+
+```pascal
 procedure TFrmConversao.ExecutarBotao(CallbackProcedure: TBotaoCallback; Sender: TObject);
 begin
   SQLDestino.TipoBanco := DadosDestino.varTipoBanco;
@@ -1102,7 +1122,9 @@ begin
 
   Estado := TEstado.EmExecucao;
   var varCallbackOk: Boolean := True;
-  var PodeTocarSom: Boolean := Self.Tag = 0; // 0 = tocar, ≠0 = silenciar
+
+  // Checkbox marcado = silenciar → NÃO tocar
+  var PodeTocarSom: Boolean := not cbxSilenciarSomFinalizacao.Checked;
 
   try
     try
@@ -1111,7 +1133,7 @@ begin
       BotaoSelecionado.Font.Color := clBlue;
       AdicionarAoLog('Botão acionado.', Self.Caption, BotaoSelecionado.Caption, varCallbackOk);
 
-      // Som inicial somente se permitido
+      // Som inicial condicionado pelo checkbox
       if PodeTocarSom then
         Geral.TocarSom('');
 
@@ -1173,92 +1195,21 @@ begin
     Estado := TEstado.Parado;
   end;
 end;
-
 ```
 
+- Todos os sons do ciclo (inicial, sucesso, erro) respeitam o estado do checkbox.
 
+## Observações
 
-``` Pascal
-// Em qualquer form filho que tenha o checkbox
-procedure TFrmABMolas.FormCreate(Sender: TObject);
-begin
-  inherited;
-  cbxSilenciarSomFinalizacao.Checked := False; // padrão: toca
-  Self.Tag := 0;
-end;
+- Abordagem oficial: controle via checkbox cbxSilenciarSomFinalizacao.
+- Não utilizamos Tag para este controle.
+- O OnClick do checkbox não dispara conversão; apenas reflete preferência visual do usuário, mas não é necessário código nele.
+- Mantém Clean Code e reduz acoplamento: a decisão de áudio fica centralizada em ExecutarBotao.
 
-procedure TFrmABMolas.cbxSilenciarSomFinalizacaoClick(Sender: TObject);
-begin
-  inherited;
-  // Marcado = silenciar (1); Desmarcado = tocar (0)
-  Self.Tag := Ord(cbxSilenciarSomFinalizacao.Checked);
-  // Importante: NÃO chamar ExecutarBotao aqui.
-end;
+## Referência de demanda
 
-// No clique do botão, continue chamando ExecutarBotao como já fazia:
-procedure TFrmABMolas.btnAlgumaConversaoClick(Sender: TObject);
-begin
-  inherited;
-  // Opcional: reforçar o Tag no momento do clique
-  Self.Tag := Ord(cbxSilenciarSomFinalizacao.Checked);
-  ExecutarBotao(BotaoAlgumaConversao, Sender);
-end;
+- 240807 / #7101 — SOL.NET_CONVERSAO: Tornar opcional o áudio ao finalizar um botão da conversão (silenciar quando necessário para conversões internas).
 
-```
+## Histórico
 
-# 🔊 Controle de Áudio ao Finalizar Conversões
-
-## Explicação
-
-- Regra simples: if Self.Tag = 0 então toca som; caso contrário, fica silencioso.
-- Comportamento:
-  - Tag = 0 → som habilitado (padrão).
-  - Tag ≠ 0 → som desabilitado (silencioso).
-- Como usar:
-  - Para silenciar em conversões internas: defina Self.Tag := 1 (por exemplo, no FormCreate ou no DFM).
-  - Se preferir por botão específico, troque Self.Tag por BotaoSelecionado.Tag e defina Tag = 1 no botão desejado.
-- Observação: não alteramos o Geral.TocarSom('') do início do método; ele apenas interrompe sons pendentes, não é controlado pela Tag.
-
-## Trecho de Referência (uFrmConversao.pas)
-
-```pascal
-if varCallbackOk then
-begin
-  BotaoSelecionado.Font.Color := clGreen;
-
-  if Self.Tag = 0 then
-    Geral.TocarSom(varDiretorioSomDespertar);
-
-  if cbxCopiarBancos.Checked then
-    RealizarCopiaBancoEstadoAtual(BotaoSelecionado.Caption);
-
-  AdicionarAoLog('Convertido com sucesso.', Self.Caption, BotaoSelecionado.Caption, varCallbackOk);
-end
-else
-begin
-  BotaoSelecionado.Font.Color := clRed;
-
-  if Self.Tag = 0 then
-    Geral.TocarSom(varDiretorioSomErro);
-end;
-```
-
-- Som inicial (no começo de ExecutarBotao): Geral.TocarSom('') permanece sem condicionamento pela Tag (serve para interromper sons pendentes).
-
-## Uso com Checkbox (opcional)
-
-- No form filho, se houver um checkbox “Silenciar som ao finalizar” (ex.: cbxSilenciarSomFinalizacao):
-  - Marcado = silenciar → Self.Tag := 1
-  - Desmarcado = tocar → Self.Tag := 0
-
-Exemplo simples no OnClick do checkbox:
-```pascal
-procedure TFrmAlgumaConversao.cbxSilenciarSomFinalizacaoClick(Sender: TObject);
-begin
-  Self.Tag := Ord(cbxSilenciarSomFinalizacao.Checked);
-end;
-```
-
-Observações:
-- O checkbox apenas controla a preferência; a execução da conversão continua sendo disparada pelos botões normalmente.
-- Padrão recomendado: manter Tag = 0 (som habilitado) e só silenciar quando necessário (ex.: ambiente interno).
+- 2025-09-09: Documentação atualizada para remover uso de Tag e adotar leitura direta do checkbox.
