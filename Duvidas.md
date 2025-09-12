@@ -1213,3 +1213,44 @@ end;
 ## Histórico
 
 - 2025-09-09: Documentação atualizada para remover uso de Tag e adotar leitura direta do checkbox.
+  
+
+## 📅 12/09/25 –🟢 CONFIGURAÇÃO ESPECIFICA DE UNIDADES ONDE FOI NECESSARIO UTILIZAR OUTRA PK
+
+NA CONVERSÃO DO LitePDV, no botão unidades, 
+
+*ANTES*
+```pascal
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaUnidade.Create, 'CADASTRODESCRICAO')
+      .AddPrimaryKey('CODIGO')
+      .AddCampo('CODIGO', 'UN')
+      .AddCampo('DESCRICAO', 'UN')
+
+      .Build;
+  ConversaoUnidade(ParametrosConversao);
+end;
+
+```
+*DPS*
+
+```pascal
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaUnidade.Create, 'CADASTRODESCRICAO')
+      .AddPrimaryKey('UN')
+      .AddCampo('CODIGO', 'UN')
+      .AddCampo('DESCRICAO', 'UN')
+
+      .Build;
+  ConversaoUnidade(ParametrosConversao);
+end;
+
+```
+## Observações
+ - COMO NÃO HAVIA UMA TABELA UNIDADES ESPECIFICA PARA PEGAR OS DADOS E OS DADOS QUE SE PRECISAVA ESTA TODOS EM UMA SO TABELA, A CONVERSÃO DE PRODUTOS ERA APENAS UMA TABELA. MAS ISSO NÃO QUER DIZER QUE NÃO PODEMOS
+PEGAR OS CONTEUDOS DE ID DE OUTRAS TABELAS, MAS O BANCO DO CLIENTE ERA BEM POBRE DE INFOMAÇAO OU JA TINHA TUDO EM UMA UNICA TABELA, FOI UTILIZADO A INF QUE QUERIA COMO PK.
+
+
+
