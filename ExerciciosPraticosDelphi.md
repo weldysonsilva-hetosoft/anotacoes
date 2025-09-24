@@ -856,7 +856,7 @@ var
   i, j: Integer;
 
 begin
-  // Valores fixos
+  
   matrizA[1][1] := 1; matrizA[1][2] := 2;
   matrizA[2][1] := 3; matrizA[2][2] := 4;
 
