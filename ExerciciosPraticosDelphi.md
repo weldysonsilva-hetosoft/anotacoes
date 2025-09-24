@@ -342,6 +342,34 @@ Verifique se ambos correspondem aos valores esperados (ex: "admin" e "1234").
 Conceitos: if, operadores lógicos (AND), validação básica.
 Dica: Use String e compare com =.
 
+```pascal
+program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+    nome, senha: string;
+
+begin
+  Write('Digite o nome do usuario: ');
+  ReadLn(nome);
+  Write('Digite a senha do usuario: ');
+  ReadLn(senha);
+
+  if (senha = '1234') and (nome = 'admin') then
+    Writeln('Senha correta! Usuario logado.')
+  else
+    Writeln('Senha ou usuario incorreto!');
+
+  ReadLn;
+
+end.
+
+```
+
 🧠 **Exercício 4: Avaliação de Desempenho**
 Enunciado:
 Peça três notas e calcule a média.
