@@ -543,7 +543,199 @@ begin
 
   ReadLn;
 end.
+```
+
+🔁 1. Contador de 1 a 10 com FOR
+Enunciado:
+Imprima os números de 1 a 10 usando um laço FOR.
+```pascal
+program ContadorFor;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+    i: Integer;
+
+begin
+  Writeln('=== CONTADOR DE 1 A 10 COM FOR ===');
+
+
+  for i := 1 to 10 do
+  begin
+    Writeln('Número: ', i);
+  end;
+
+  Writeln;
+  Writeln('Fim da contagem!');
+  Readln;
+
+end.
+```
+
+🔁 2. Soma de Números com WHILE
+Enunciado:
+Peça números ao usuário até que ele digite 0.
+Some todos os valores digitados e exiba o total.
+Conceito: WHILE, acumulador.
+```pascal
+program SomaNumerosWhile;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  entrada: string;
+  numero, soma, quantidade: Integer;
+
+begin
+  soma := 0;
+  quantidade := 0;
+
+  Writeln('=== Soma de Números com WHILE ===');
+  Write('Digite um número ou "0" para encerrar: ');
+  ReadLn(entrada);
+
+  while entrada <> '0' do
+  begin
+    if TryStrToInt(entrada, numero) then
+    begin
+      soma := soma + numero;
+      quantidade := quantidade + 1;
+    end
+    else
+      Writeln('Entrada inválida. Digite um número inteiro.');
+
+    Write('Digite um número ou "0" para encerrar: ');
+    ReadLn(entrada);
+  end;
+
+  Writeln('Soma dos números: ', soma);
+  Writeln('Quantidade de números digitados: ', quantidade);
+  ReadLn;
+end.
+
+```
+
+🔁 3. Tabuada com REPEAT-UNTIL
+Enunciado:
+Peça um número e exiba sua tabuada de 1 a 10 usando REPEAT-UNTIL.
+
+```pascal
+i := 1;
+repeat
+  Writeln(n, ' x ', i, ' = ', n * i);
+  i := i + 1;
+until i > 10;
+```
+
+🔁 4. Verificador de Par ou Ímpar
+Enunciado:
+Peça 10 números e diga se cada um é par ou ímpar.
+Conceito: FOR, operador mod.
+
+```pascal
+for i := 1 to 10 do
+begin
+  ReadLn(numero);
+  if numero mod 2 = 0 then
+    Writeln('Par')
+  else
+    Writeln('Ímpar');
+end;
+```
+🔁 5. Média de Alunos com WHILE
+Enunciado:
+Peça a quantidade de alunos.
+Para cada aluno, peça a nota e calcule a média geral.
+Conceito: WHILE, contador, acumulador.
+```pascal
+soma := 0;
+contador := 0;
+while contador < totalAlunos do
+begin
+  ReadLn(nota);
+  soma := soma + nota;
+  contador := contador + 1;
+end;
+media := soma / totalAlunos;
+Writeln('Média: ', media:0:2);
+```
+🔁 6. Senha com REPEAT-UNTIL
+Enunciado:
+Peça uma senha até que o usuário digite a correta (1234).
+Exiba mensagem de sucesso ao acertar.
+Conceito: REPEAT-UNTIL, validação.
+```pascal
+repeat
+  Write('Digite a senha: ');
+  ReadLn(senha);
+until senha = '1234';
+Writeln('Acesso liberado!');
 ``` 
+
+🔁 7. Números entre 1 e 100 (com BREAK)
+Enunciado:
+Imprima os números de 1 a 100, mas pare se encontrar um múltiplo de 17.
+Conceito: FOR, BREAK.
+```pascal
+for i := 1 to 100 do
+begin
+  if i mod 17 = 0 then
+    Break;
+  Writeln(i);
+end;
+
+``` 
+🔁 8. Números entre 1 e 50 (com CONTINUE)
+Enunciado:
+Imprima os números de 1 a 50, pulando os múltiplos de 5.
+Conceito: FOR, CONTINUE.
+```pascal
+for i := 1 to 50 do
+begin
+  if i mod 5 = 0 then
+    Continue;
+  Writeln(i);
+end;
+
+```
+
+🔁 9. Triângulo de Asteriscos
+Enunciado:
+Peça um número n e imprima um triângulo de asteriscos com n linhas.
+Exemplo para n = 3:
+*
+**
+***
+```pascal
+for i := 1 to n do
+begin
+  for j := 1 to i do
+    Write('*');
+  Writeln;
+end;
+```
+
+
+Conceito: FOR aninhado.
+
+🔁 10. Multiplicação de Matrizes (simples)
+Enunciado:
+Crie duas matrizes 2x2 com valores fixos.
+Multiplique e exiba o resultado.
+Conceito: FOR aninhado, lógica prática.
+
+```pascal
+for i := 1 to 2 do
+  for j := 1 to 2 do
+    resultado[i][j] := matrizA[i][1] * matrizB[1][j] + matrizA[i][2] * matrizB[2][j];
+```
+
 
 
 
