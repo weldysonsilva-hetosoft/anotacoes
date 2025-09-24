@@ -626,11 +626,28 @@ Enunciado:
 Peça um número e exiba sua tabuada de 1 a 10 usando REPEAT-UNTIL.
 
 ```pascal
-i := 1;
-repeat
-  Writeln(n, ' x ', i, ' = ', n * i);
-  i := i + 1;
-until i > 10;
+program TabuadaRepeat;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  n, i: Integer;
+
+begin
+  Write('Digite um número para ver a tabuada: ');
+  ReadLn(n);
+
+  i := 1;
+  repeat
+    Writeln(n, ' x ', i, ' = ', n * i);
+    i := i + 1;
+  until i > 10;
+
+  ReadLn;
+end.
 ```
 
 🔁 4. Verificador de Par ou Ímpar
@@ -639,14 +656,30 @@ Peça 10 números e diga se cada um é par ou ímpar.
 Conceito: FOR, operador mod.
 
 ```pascal
-for i := 1 to 10 do
+program ParOuImpar;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  i, numero: Integer;
+
 begin
-  ReadLn(numero);
-  if numero mod 2 = 0 then
-    Writeln('Par')
-  else
-    Writeln('Ímpar');
-end;
+  for i := 1 to 10 do
+  begin
+    Write('Digite um número: ');
+    ReadLn(numero);
+
+    if numero mod 2 = 0 then
+      Writeln('Par')
+    else
+      Writeln('Ímpar');
+  end;
+
+  ReadLn;
+end.
 ```
 🔁 5. Média de Alunos com WHILE
 Enunciado:
@@ -654,16 +687,37 @@ Peça a quantidade de alunos.
 Para cada aluno, peça a nota e calcule a média geral.
 Conceito: WHILE, contador, acumulador.
 ```pascal
-soma := 0;
-contador := 0;
-while contador < totalAlunos do
+program MediaAlunosWhile;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  totalAlunos, contador: Integer;
+  nota, soma, media: Double;
+
 begin
-  ReadLn(nota);
-  soma := soma + nota;
-  contador := contador + 1;
-end;
-media := soma / totalAlunos;
-Writeln('Média: ', media:0:2);
+  Write('Digite a quantidade de alunos: ');
+  ReadLn(totalAlunos);
+
+  soma := 0;
+  contador := 0;
+
+  while contador < totalAlunos do
+  begin
+    Write('Digite a nota do aluno ', contador + 1, ': ');
+    ReadLn(nota);
+    soma := soma + nota;
+    contador := contador + 1;
+  end;
+
+  media := soma / totalAlunos;
+  Writeln('Média da turma: ', media:0:2);
+
+  ReadLn;
+end.
 ```
 🔁 6. Senha com REPEAT-UNTIL
 Enunciado:
@@ -671,11 +725,25 @@ Peça uma senha até que o usuário digite a correta (1234).
 Exiba mensagem de sucesso ao acertar.
 Conceito: REPEAT-UNTIL, validação.
 ```pascal
-repeat
-  Write('Digite a senha: ');
-  ReadLn(senha);
-until senha = '1234';
-Writeln('Acesso liberado!');
+program SenhaRepeat;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  senha: String;
+
+begin
+  repeat
+    Write('Digite a senha: ');
+    ReadLn(senha);
+  until senha = '1234';
+
+  Writeln('Acesso liberado!');
+  ReadLn;
+end.
 ``` 
 
 🔁 7. Números entre 1 e 100 (com BREAK)
@@ -683,12 +751,26 @@ Enunciado:
 Imprima os números de 1 a 100, mas pare se encontrar um múltiplo de 17.
 Conceito: FOR, BREAK.
 ```pascal
-for i := 1 to 100 do
+program BreakComFor;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  i: Integer;
+
 begin
-  if i mod 17 = 0 then
-    Break;
-  Writeln(i);
-end;
+  for i := 1 to 100 do
+  begin
+    if i mod 17 = 0 then
+      Break;
+    Writeln(i);
+  end;
+
+  ReadLn;
+end.
 
 ``` 
 🔁 8. Números entre 1 e 50 (com CONTINUE)
@@ -696,12 +778,26 @@ Enunciado:
 Imprima os números de 1 a 50, pulando os múltiplos de 5.
 Conceito: FOR, CONTINUE.
 ```pascal
-for i := 1 to 50 do
+program ContinueComFor;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  i: Integer;
+
 begin
-  if i mod 5 = 0 then
-    Continue;
-  Writeln(i);
-end;
+  for i := 1 to 50 do
+  begin
+    if i mod 5 = 0 then
+      Continue;
+    Writeln(i);
+  end;
+
+  ReadLn;
+end.
 
 ```
 
@@ -713,12 +809,29 @@ Exemplo para n = 3:
 **
 ***
 ```pascal
-for i := 1 to n do
+program TrianguloAsteriscos;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  i, j, n: Integer;
+
 begin
-  for j := 1 to i do
-    Write('*');
-  Writeln;
-end;
+  Write('Digite o número de linhas: ');
+  ReadLn(n);
+
+  for i := 1 to n do
+  begin
+    for j := 1 to i do
+      Write('*');
+    Writeln;
+  end;
+
+  ReadLn;
+end.
 ```
 
 
@@ -731,9 +844,39 @@ Multiplique e exiba o resultado.
 Conceito: FOR aninhado, lógica prática.
 
 ```pascal
-for i := 1 to 2 do
-  for j := 1 to 2 do
-    resultado[i][j] := matrizA[i][1] * matrizB[1][j] + matrizA[i][2] * matrizB[2][j];
+program MultiplicacaoMatrizes;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  matrizA, matrizB, resultado: array[1..2, 1..2] of Integer;
+  i, j: Integer;
+
+begin
+  // Valores fixos
+  matrizA[1][1] := 1; matrizA[1][2] := 2;
+  matrizA[2][1] := 3; matrizA[2][2] := 4;
+
+  matrizB[1][1] := 5; matrizB[1][2] := 6;
+  matrizB[2][1] := 7; matrizB[2][2] := 8;
+
+  for i := 1 to 2 do
+    for j := 1 to 2 do
+      resultado[i][j] := matrizA[i][1] * matrizB[1][j] + matrizA[i][2] * matrizB[2][j];
+
+  Writeln('Resultado da multiplicação:');
+  for i := 1 to 2 do
+  begin
+    for j := 1 to 2 do
+      Write(resultado[i][j]:4);
+    Writeln;
+  end;
+
+  ReadLn;
+end.
 ```
 
 
