@@ -1,6 +1,6 @@
 # 📘 Exercicios Delphi para pratica diarias sem precisar consultar ia;
 
-🧩 Exercício: Cadastro Simples de Produto
+🧩 **Exercício: Cadastro Simples de Produto**
 Enunciado:
 Crie um programa que peça ao usuário:
 - Nome do produto (String)
@@ -41,7 +41,7 @@ begin
 end.
 ```
 
-🧩 Exercício : Verificador de Maioridade
+🧩 **Exercício : Verificador de Maioridade**
 Enunciado:
 Solicite o nome e a idade de uma pessoa.
 Verifique se ela é maior de idade (18 anos ou mais) e exiba uma mensagem personalizada com o nome.
@@ -80,7 +80,7 @@ end.
 ```
 
 
-🧩 Exercício 6: Soma de Três Números
+🧩 **Exercício 6: Soma de Três Números**
 Enunciado:
 Peça ao usuário três números inteiros.
 Calcule a soma e a média deles.
@@ -117,7 +117,7 @@ begin
 end.
 ```
   
-🧪 Exercício 7: Conversor de Moeda
+🧪 **Exercício 7: Conversor de Moeda**
 Enunciado:
 Crie um programa que peça ao usuário um valor em reais (R$) e o converta para dólares (US$), usando uma taxa de câmbio fixa.
 Dicas:
@@ -155,7 +155,7 @@ end.
 
   
 
-🧪 Exercício 8: Calculadora de Área de Retângulo
+🧪 **Exercício 8: Calculadora de Área de Retângulo**
 Enunciado:
 Solicite ao usuário a largura e a altura de um retângulo.
 Calcule e exiba a área.
@@ -191,7 +191,7 @@ end.
 
    
 
-🧪 Exercício 9: Verificador de Nota
+🧪 ** Exercício 9: Verificador de Nota**
 Enunciado:
 Peça ao usuário uma nota de 0 a 10.
 Verifique se o aluno foi aprovado (nota ≥ 7), em recuperação (nota entre 5 e 6.9), ou reprovado (nota < 5).
@@ -232,3 +232,131 @@ begin
 end.
   ```
 
+🧠 **Exercício 1: Classificador de Faixa Etária**
+Enunciado:
+Peça a idade do usuário e classifique em:
+- Criança (0–12)
+- Adolescente (13–17)
+- Adulto (18–59)
+- Idoso (60+)
+Conceitos: if/else, operadores relacionais, validação básica.
+Dica: Verifique se a idade é válida (≥ 0) antes de classificar.
+```pascal
+program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+    idade: integer;
+
+begin
+  Write('Digite a sua idade: ');
+  ReadLn(idade);
+
+  if (idade >= 0) then
+  begin
+    if (idade > 60) then
+      Writeln('Idoso')
+    else if (idade > 18) then
+      Writeln('Adulto')
+    else if (idade > 13) then
+      Writeln('Adolescente')
+    else
+      Writeln('Criaça');
+
+    ReadLn;
+  end;
+
+end.
+
+```
+
+🧠 **Exercício 2: Calculadora de Operações**
+Enunciado:
+Solicite dois números e uma operação (+, -, *, /).
+Use case of para realizar a operação e mostrar o resultado.
+Conceitos: case of, operadores relacionais, validação de divisão por zero.
+Dica: Use Char ou String para representar a operação.
+
+```pascal
+program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+    opcao: Integer;
+  num1, num2, resultado: Double;
+
+begin
+  Writeln('=== CALCULADORA DE OPERAÇÕES ===');
+  Writeln('1 - SOMA');
+  Writeln('2 - SUBTRAÇÃO');
+  Writeln('3 - DIVISÃO');
+  Writeln('4 - MULTIPLICAÇÃO');
+  Write('Escolha uma opção (1-4): ');
+  ReadLn(opcao);
+  Write('Digite o primeiro número: ');
+  ReadLn(num1);
+  Write('Digite o segundo número: ');
+  ReadLn(num2);
+
+  case opcao of
+    1:
+      resultado := num1 + num2;
+    2:
+      resultado := num1 - num2;
+    3:
+      begin
+        if num2 = 0 then
+          Writeln('Erro: divisão por zero!')
+        else
+          resultado := num1 / num2;
+      end;
+    4:
+      resultado := num1 * num2;
+  else
+    Writeln('Opção inválida!');
+  end;
+
+
+  if (opcao in [1, 2, 4]) or ((opcao = 3) and (num2 <> 0)) then
+    Writeln('Resultado: ', resultado:0:2);
+
+  ReadLn;
+
+end.
+```
+
+🧠 **Exercício 3: Verificador de Acesso**
+Enunciado:
+Peça ao usuário:
+- Nome de usuário
+- Senha
+Verifique se ambos correspondem aos valores esperados (ex: "admin" e "1234").
+Conceitos: if, operadores lógicos (AND), validação básica.
+Dica: Use String e compare com =.
+
+🧠 **Exercício 4: Avaliação de Desempenho**
+Enunciado:
+Peça três notas e calcule a média.
+Use decisão aninhada para classificar:
+- Excelente (≥ 9)
+- Bom (≥ 7 e < 9)
+- Regular (≥ 5 e < 7)
+- Insuficiente (< 5)
+Conceitos: if/else if, operadores relacionais, decisão aninhada.
+Dica: Use Double para média e Format para exibir com 2 casas decimais.
+
+🧠 **Exercício 5: Verificador de Número Válido**
+Enunciado:
+Peça um número inteiro.
+Verifique se ele está entre 10 e 100 ou se é negativo.
+Exiba mensagens diferentes para cada caso.
+Conceitos: if, operadores lógicos (OR, NOT), validação.
+Dica: Use if...else com OR e NOT para testar as condições.
