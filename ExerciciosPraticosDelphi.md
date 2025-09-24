@@ -250,7 +250,7 @@ uses
   SysUtils;
 
 var
-    idade: integer;
+  idade: Integer;
 
 begin
   Write('Digite a sua idade: ');
@@ -262,14 +262,15 @@ begin
       Writeln('Idoso')
     else if (idade > 18) then
       Writeln('Adulto')
-    else if (idade > 13) then
+    else if (idade > 12) then
       Writeln('Adolescente')
     else
-      Writeln('Criaça');
+      Writeln('Criança');
+  end
+  else
+    Writeln('Idade inválida!');
 
-    ReadLn;
-  end;
-
+  ReadLn;
 end.
 
 ```
@@ -290,7 +291,7 @@ uses
   SysUtils;
 
 var
-    opcao: Integer;
+  opcao: Integer;
   num1, num2, resultado: Double;
 
 begin
@@ -307,10 +308,8 @@ begin
   ReadLn(num2);
 
   case opcao of
-    1:
-      resultado := num1 + num2;
-    2:
-      resultado := num1 - num2;
+    1: resultado := num1 + num2;
+    2: resultado := num1 - num2;
     3:
       begin
         if num2 = 0 then
@@ -318,18 +317,15 @@ begin
         else
           resultado := num1 / num2;
       end;
-    4:
-      resultado := num1 * num2;
+    4: resultado := num1 * num2;
   else
     Writeln('Opção inválida!');
   end;
-
 
   if (opcao in [1, 2, 4]) or ((opcao = 3) and (num2 <> 0)) then
     Writeln('Resultado: ', resultado:0:2);
 
   ReadLn;
-
 end.
 ```
 
@@ -350,24 +346,26 @@ program Exercicio;
 uses
   SysUtils;
 
+const
+  USUARIO_PADRAO = 'admin';
+  SENHA_PADRAO = '1234';
+
 var
-    nome, senha: string;
+  nome, senha: String;
 
 begin
-  Write('Digite o nome do usuario: ');
+  Write('Digite o nome do usuário: ');
   ReadLn(nome);
-  Write('Digite a senha do usuario: ');
+  Write('Digite a senha do usuário: ');
   ReadLn(senha);
 
-  if (senha = '1234') and (nome = 'admin') then
-    Writeln('Senha correta! Usuario logado.')
+  if (nome = USUARIO_PADRAO) and (senha = SENHA_PADRAO) then
+    Writeln('Senha correta! Usuário logado.')
   else
-    Writeln('Senha ou usuario incorreto!');
+    Writeln('Senha ou usuário incorreto!');
 
   ReadLn;
-
 end.
-
 ```
 
 🧠 **Exercício 4: Avaliação de Desempenho**
@@ -381,6 +379,47 @@ Use decisão aninhada para classificar:
 Conceitos: if/else if, operadores relacionais, decisão aninhada.
 Dica: Use Double para média e Format para exibir com 2 casas decimais.
 
+```sql
+program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  nota1, nota2, nota3, media: Double;
+
+begin
+  Write('Digite a primeira nota: ');
+  ReadLn(nota1);
+  Write('Digite a segunda nota: ');
+  ReadLn(nota2);
+  Write('Digite a terceira nota: ');
+  ReadLn(nota3);
+
+  if (nota1 < 0) or (nota2 < 0) or (nota3 < 0) then
+    Writeln('Notas inválidas!')
+  else
+  begin
+    media := (nota1 + nota2 + nota3) / 3;
+
+    if (media >= 9) then
+      Writeln('Excelente')
+    else if (media >= 7) then
+      Writeln('Bom')
+    else if (media >= 5) then
+      Writeln('Regular')
+    else
+      Writeln('Insuficiente');
+
+    Writeln('A média do aluno é: ', media:0:2, '!');
+  end;
+
+  ReadLn;
+end.
+```
+
 🧠 **Exercício 5: Verificador de Número Válido**
 Enunciado:
 Peça um número inteiro.
@@ -388,3 +427,27 @@ Verifique se ele está entre 10 e 100 ou se é negativo.
 Exiba mensagens diferentes para cada caso.
 Conceitos: if, operadores lógicos (OR, NOT), validação.
 Dica: Use if...else com OR e NOT para testar as condições.
+
+```pascal
+program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  numero: Integer;
+
+begin
+  Write('Digite um número: ');
+  ReadLn(numero);
+
+  if (numero < 0) or (numero > 100) then
+    Writeln('Número fora do intervalo permitido.')
+  else
+    Writeln('Número dentro do intervalo permitido.');
+
+  ReadLn;
+end.
+```
