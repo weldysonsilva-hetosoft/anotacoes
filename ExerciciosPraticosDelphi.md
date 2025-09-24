@@ -451,3 +451,99 @@ begin
   ReadLn;
 end.
 ```
+
+🧠  Verificador de Triângulo
+Enunciado:
+Peça ao usuário três valores inteiros que representam os lados de um triângulo.
+Verifique se os lados formam um triângulo válido (a soma de dois lados deve ser maior que o terceiro).
+Se for válido, classifique como:
+- Equilátero (todos iguais)
+- Isósceles (dois iguais)
+- Escaleno (todos diferentes)
+Dicas:
+- Use if...else if...else com operadores relacionais.
+- Primeiro verifique se é um triângulo válido antes de classificar.
+
+```pascal
+  program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  lado1, lado2, lado3: Integer;
+
+begin
+  Writeln('=== VERIFICADOR DE TRIÂNGULO ===');
+  Write('Digite o primeiro lado: ');
+  ReadLn(lado1);
+  Write('Digite o segundo lado: ');
+  ReadLn(lado2);
+  Write('Digite o terceiro lado: ');
+  ReadLn(lado3);
+
+  if (lado1 + lado2 > lado3) and
+     (lado1 + lado3 > lado2) and
+     (lado2 + lado3 > lado1) then
+  begin
+    if (lado1 = lado2) and (lado2 = lado3) then
+      Writeln('O triângulo é Equilátero!')
+    else if ((lado1 = lado2) or (lado1 = lado3) or (lado2 = lado3)) then
+      Writeln('O triângulo é Isósceles!')
+    else
+      Writeln('O triângulo é Escaleno!');
+  end
+  else
+    Writeln('Os lados informados não formam um triângulo válido.');
+
+  ReadLn;
+end.
+```
+ 
+
+
+
+🧠 Classificador de Letra
+Enunciado:
+Peça ao usuário uma letra (char).
+Verifique se é:
+- Vogal
+- Consoante
+- Dígito numérico
+- Outro símbolo
+Dicas:
+- Use case of ou if com operadores lógicos (OR) para comparar.
+- Pode usar UpCase para facilitar a verificação de vogais.  
+```pascal
+    program Exercicio;
+
+{$APPTYPE CONSOLE}
+
+uses
+  SysUtils;
+
+var
+  caractere: Char;
+
+begin
+  Write('Digite um caractere: ');
+  ReadLn(caractere);
+  caractere := UpCase(caractere);
+
+  if (caractere in ['A', 'E', 'I', 'O', 'U']) then
+    Writeln('É uma vogal.')
+  else if (caractere in ['B'..'Z']) then
+    Writeln('É uma consoante.')
+  else if (caractere in ['0'..'9']) then
+    Writeln('É um dígito numérico.')
+  else
+    Writeln('É outro símbolo.');
+
+  ReadLn;
+end.
+``` 
+
+
+
