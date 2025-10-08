@@ -202,7 +202,94 @@ end;
 end.
 ```
    
-5. Implemente um validador de CPF que receba o CPF em um `TEdit`, remova caracteres especiais usando `TFuncoes.SoNumeros` e valide o dígito verificador.
+## 4. Implemente um validador de CPF que receba o CPF em um `TEdit`, remova caracteres especiais usando `TFuncoes.SoNumeros` e valide o dígito verificador.
+```pascal
+unit uFrmPrincipal;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao, uFuncoes;
+
+type
+  TForm1 = class(TForm)
+    edt1: TEdit;
+    btn1: TButton;
+    procedure btn1Click(Sender: TObject);
+  private
+    procedure ValidadorCpf;
+  public
+  end;
+
+var
+    Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.ValidadorCpf;
+var
+    cpf: string;
+  i, soma, resto, digito1, digito2: Integer;
+  valido: Boolean;
+begin
+  // Remove caracteres especiais
+  cpf := TFuncoes.SoNumeros(edt1.Text);
+
+  // Verifica se tem 11 dígitos
+  if Length(cpf) <> 11 then
+  begin
+    ShowMessage('CPF inválido: deve conter 11 dígitos.');
+    Exit;
+  end;
+
+  // Verifica se todos os dígitos são iguais
+  if cpf = StringOfChar(cpf[1], 11) then
+  begin
+    ShowMessage('CPF inválido: todos os dígitos iguais.');
+    Exit;
+  end;
+
+  // Cálculo do primeiro dígito verificador
+  soma := 0;
+  for i := 1 to 9 do
+    soma := soma + StrToInt(cpf[i]) * (11 - i);
+
+  resto := soma mod 11;
+  if resto < 2 then
+    digito1 := 0
+  else
+    digito1 := 11 - resto;
+
+  // Cálculo do segundo dígito verificador
+  soma := 0;
+  for i := 1 to 10 do
+    soma := soma + StrToInt(cpf[i]) * (12 - i);
+
+  resto := soma mod 11;
+  if resto < 2 then
+    digito2 := 0
+  else
+    digito2 := 11 - resto;
+
+  // Verifica se os dígitos calculados coincidem com os informados
+  valido := (digito1 = StrToInt(cpf[10])) and (digito2 = StrToInt(cpf[11]));
+
+  if valido then
+    ShowMessage('CPF válido!')
+  else
+    ShowMessage('CPF inválido!');
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(ValidadorCpf);
+end;
+
+end.
+```
 6. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
 7. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
 8. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
