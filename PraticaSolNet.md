@@ -2,7 +2,7 @@
 
 ## 🎯 Nível Básico (Exercícios 1–15)
 
-**1. Crie um formulário com dois `TEdit` e um `TButton`. Ao clicar no botão, concatene os valores dos dois `TEdit` e exiba o resultado em um `ShowMessage`.**
+###1. Crie um formulário com dois `TEdit` e um `TButton`. Ao clicar no botão, concatene os valores dos dois `TEdit` e exiba o resultado em um `ShowMessage`.
 ```pascal
 unit Unit1;
 
@@ -43,7 +43,7 @@ end;
 
 end.
 ```
-**2. Desenvolva uma calculadora simples com quatro operações básicas (`+`, `-`, `*`, `/`) utilizando `TEdit` para entrada de valores e `TButton` para cada operação.**
+###2. Desenvolva uma calculadora simples com quatro operações básicas (`+`, `-`, `*`, `/`) utilizando `TEdit` para entrada de valores e `TButton` para cada operação.**
 ```pascal
 unit uFrmPrincipal;
 
@@ -148,7 +148,7 @@ end;
 end.
 ```
   
-3. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
+###3. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
   ```pascal
 unit uFrmPrincipal;
 
