@@ -2,7 +2,7 @@
 
 ## 🎯 Nível Básico (Exercícios 1–15)
 
-1. Crie um formulário com dois `TEdit` e um `TButton`. Ao clicar no botão, concatene os valores dos dois `TEdit` e exiba o resultado em um `ShowMessage`.
+**1. Crie um formulário com dois `TEdit` e um `TButton`. Ao clicar no botão, concatene os valores dos dois `TEdit` e exiba o resultado em um `ShowMessage`.**
 ```pascal
 unit Unit1;
 
@@ -43,20 +43,124 @@ end;
 
 end.
 ```
-2. Desenvolva uma calculadora simples com quatro operações básicas (`+`, `-`, `*`, `/`) utilizando `TEdit` para entrada de valores e `TButton` para cada operação.
-3. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
-4. Implemente um validador de CPF que receba o CPF em um `TEdit`, remova caracteres especiais usando `TFuncoes.SoNumeros` e valide o dígito verificador.
-5. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
-6. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
-7. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
-8. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
-9. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
-10. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
-11. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
-12. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
-13. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
-14. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
-15. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
+**2. Desenvolva uma calculadora simples com quatro operações básicas (`+`, `-`, `*`, `/`) utilizando `TEdit` para entrada de valores e `TButton` para cada operação.**
+```pascal
+unit uFrmPrincipal;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao;
+
+type
+  TForm1 = class(TForm)
+    btn1: TButton;
+    btn2: TButton;
+    btn3: TButton;
+    btn4: TButton;
+    edt1: TEdit;
+    edt2: TEdit;
+    procedure btn1Click(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
+    procedure btn3Click(Sender: TObject);
+    procedure btn4Click(Sender: TObject);
+  private
+    procedure Soma;
+    procedure Subtracao;
+    procedure Multiplicacao;
+    procedure Divisao;
+    function ObterValores(out A, B: Double): Boolean;
+  public
+  end;
+
+var
+    Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+function TForm1.ObterValores(out A, B: Double): Boolean;
+begin
+  Result := TryStrToFloat(edt1.Text, A) and TryStrToFloat(edt2.Text, B);
+  if not Result then
+    ShowMessage('Digite dois números válidos.');
+end;
+
+procedure TForm1.Soma;
+var
+    A, B: Double;
+begin
+  if ObterValores(A, B) then
+    ShowMessage('Resultado: ' + FloatToStr(A + B));
+end;
+
+procedure TForm1.Subtracao;
+var
+    A, B: Double;
+begin
+  if ObterValores(A, B) then
+    ShowMessage('Resultado: ' + FloatToStr(A - B));
+end;
+
+procedure TForm1.Multiplicacao;
+var
+    A, B: Double;
+begin
+  if ObterValores(A, B) then
+    ShowMessage('Resultado: ' + FloatToStr(A * B));
+end;
+
+procedure TForm1.Divisao;
+var
+    A, B: Double;
+begin
+  if ObterValores(A, B) then
+  begin
+    if B = 0 then
+      ShowMessage('Erro: divisão por zero.')
+    else
+      ShowMessage('Resultado: ' + FloatToStr(A / B));
+  end;
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Soma);
+end;
+
+procedure TForm1.btn2Click(Sender: TObject);
+begin
+  ExecutarBotao(Subtracao);
+end;
+
+procedure TForm1.btn3Click(Sender: TObject);
+begin
+  ExecutarBotao(Multiplicacao);
+end;
+
+procedure TForm1.btn4Click(Sender: TObject);
+begin
+  ExecutarBotao(Divisao);
+end;
+
+end.
+```
+  
+4. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
+5. Implemente um validador de CPF que receba o CPF em um `TEdit`, remova caracteres especiais usando `TFuncoes.SoNumeros` e valide o dígito verificador.
+6. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
+7. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
+8. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
+9. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
+10. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
+11. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
+12. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
+13. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
+14. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
+15. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
+16. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
 
 ---
 
