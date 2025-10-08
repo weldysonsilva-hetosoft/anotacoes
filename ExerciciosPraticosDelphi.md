@@ -880,5 +880,390 @@ end.
 ```
 
 
+```pascal
+
+### ESTRUTURA EXERCICIO APOSTILHA ###
+unit uFrmPrincipal;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, DateUtils, UnitExecutaBotao;
+
+type
+  TForm1 = class(TForm)
+    pnl1: TPanel;
+    btn1: TButton;
+    btn2: TButton;
+    btn3: TButton;
+    btn4: TButton;
+    btn5: TButton;
+    btn6: TButton;
+    btn7: TButton;
+    btn8: TButton;
+    btn9: TButton;
+    btn10: TButton;
+    btn11: TButton;
+    procedure btn1Click(Sender: TObject);
+    procedure btn2Click(Sender: TObject);
+    procedure btn3Click(Sender: TObject);
+    procedure btn4Click(Sender: TObject);
+    procedure btn5Click(Sender: TObject);
+    procedure btn6Click(Sender: TObject);
+    procedure btn7Click(Sender: TObject);
+    procedure btn8Click(Sender: TObject);
+    procedure btn9Click(Sender: TObject);
+    procedure btn10Click(Sender: TObject);
+    procedure btn11Click(Sender: TObject);
+  private
+    { Private declarations }
+    procedure Exercicio1;
+    procedure Exercicio2;
+    procedure Exercicio3;
+    procedure Exercicio4;
+    procedure Exercicio5;
+    procedure Exercicio6;
+    procedure Exercicio7;
+    procedure Exercicio8;
+    procedure Exercicio9;
+    procedure Exercicio10;
+    procedure Exercicio11;
+
+  public
+    { Public declarations }
+  end;
+
+var
+    Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TForm1.Exercicio1;
+{ 1. Utilizando a ideia do aluno sendo aprovado ou não, faça uma rotina para que sejam somadas
+  3 notas, tire a média delas e verifique se o aluno foi aprovado, reprovado ou se pode fazer
+  exame para recuperar nota. Utilize uma constante para armazenar a média de aprovação do
+  curso e a media para exame. Mostre para o usuário o resultado  e depois altere o valor das
+  variáveis para chegar em diferentes resultados. }
+const
+    nota1 = 7;
+  nota2 = 2;
+  nota3 = 10;
+  MEDIA_APROV = 7;
+  MEDIA_EXAME = 5;
+var
+    media: Double;
+  resultado: String;
+begin
+  media := (nota1 + nota2 + nota3) / 3;
+  if media >= MEDIA_APROV then
+    resultado := ('APROVADO')
+  else if media >= MEDIA_EXAME then
+    resultado := ('EXAME')
+  else if media < MEDIA_EXAME then
+    resultado := ('REPROVADO')
+  else
+    resultado := ('NOTAS FORA DE CONTESTO');
+  ShowMessage('Media: ' + FormatFloat('0.0', media) + sLineBreak +
+    'Situação: ' + resultado);
+end;
+
+procedure TForm1.Exercicio2;
+{ 2. Calcule quanto um funcionário recebe em um ano (ignorando 13º salário e férias), para
+  realizar esse calculo crie uma constante para armazenar o salário mensal bruto do
+  funcionário e a porcentagem de tributação paga mensalmente. Mostre para o usuário o
+  resultado e depois altere o valor das constantes para chegar em diferentes resultados. }
+const
+    SALARIO_MENSAL = 6300.00;
+  TAXA = 20.0;
+var
+    SalarioLiquidoMensal, SalarioAnual: Double;
+begin
+  SalarioLiquidoMensal := SALARIO_MENSAL * (1 - TAXA / 100);
+  SalarioAnual := SalarioLiquidoMensal * 12;
+  ShowMessage('O SalarioAnual : ' + FloatToStr(SalarioAnual));
+end;
+
+procedure TForm1.Exercicio3;
+{ 1. Faço uma contagem regressiva utilizando o laço for. }
+var
+    I: Integer;
+  contagem: array [0 .. 10] of String;
+
+begin
+  contagem[0] := '10';
+  contagem[1] := '9';
+  contagem[2] := '8';
+  contagem[3] := '7';
+  contagem[4] := '6';
+  contagem[5] := '5';
+  contagem[6] := '4';
+  contagem[7] := '3';
+  contagem[8] := '2';
+  contagem[9] := '1';
+  contagem[10] := '0';
+
+  for I := 0 to 10 do
+  begin
+    ShowMessage((contagem[I]));
+  end;
+
+end;
+
+procedure TForm1.Exercicio4;
+{ 2. Faça uma contagem utilizando o laço while começando em 0 (zero) até achar 3 números
+  pares. }
+var
+    ContagemAtual, ParesEncontrados: Integer;
+begin
+  ContagemAtual := 0;
+  ParesEncontrados := 0;
+
+  while ParesEncontrados < 3 do
+  begin
+    if ContagemAtual mod 2 = 0 then
+    begin
+      ShowMessage('Par encontrado: ' + IntToStr(ContagemAtual));
+      Inc(ParesEncontrados);
+    end;
+    Inc(ContagemAtual);
+  end;
+end;
+
+procedure TForm1.Exercicio5;
+{ 3. Faça uma contagem nos 3 tipos de laços começando em 0 (zero) e terminando em 10 (dez)
+  mostrando na tela mensagens somente com os números impares }
+var I: Integer;
+begin
+  I := 0;
+  while I <= 10 do
+  begin
+    if I mod 2 <> 0 then
+      ShowMessage('Ímpar encontrado (while): ' + IntToStr(I));
+    Inc(I);
+  end;
+end;
+
+procedure TForm1.Exercicio6;
+{ 4. Faça uma contagem nos 3 tipos de laços começando em 0 (zero) e terminando em 10 (dez),
+  porem, force a saída do laço após apresentar o numero 5. }
+var I: Integer;
+begin
+  I := 0;
+  repeat
+    if I mod 2 <> 0 then
+      ShowMessage('Ímpar encontrado (repeat): ' + IntToStr(I));
+    Inc(I);
+  until I > 10;
+end;
+
+procedure TForm1.Exercicio7;
+{ 1. Crie uma constante com uma palavra qualquer e utilizando laços e funções do pascal
+  apresente uma mensagem com essa palavra escrita ao contrario. }
+
+const PALAVRA = 'DELPHI';
+var
+    I: Integer;
+  PalavraInvertida: String;
+begin
+  PalavraInvertida := '';
+
+  for I := Length(PALAVRA) downto 1 do
+    PalavraInvertida := PalavraInvertida + PALAVRA[I];
+
+  ShowMessage('Palavra original: ' + PALAVRA + #13 +
+    'Palavra invertida: ' + PalavraInvertida);
+end;
+
+procedure TForm1.Exercicio8;
+{ 2. Crie uma constante com o texto '133,25' e substitua a virgula por um ponto (. ) em uma
+  variável. 1. faça usando pos e copy   2. faça usando o StringReplace }
+const
+    VALOR_ORIGINAL = '133,25';
+var
+    ValorModificado: String;
+  PosicaoVirgula: Integer;
+begin
+
+  PosicaoVirgula := Pos(',', VALOR_ORIGINAL);
+
+  if PosicaoVirgula > 0 then
+  begin
+
+    ValorModificado := Copy(VALOR_ORIGINAL, 1, PosicaoVirgula - 1) + '.' +
+      Copy(VALOR_ORIGINAL, PosicaoVirgula + 1, Length(VALOR_ORIGINAL));
+  end
+  else
+    ValorModificado := VALOR_ORIGINAL;
+
+  ShowMessage('Original: ' + VALOR_ORIGINAL + #13 +
+    'Modificado: ' + ValorModificado);
+end;
+
+procedure TForm1.Exercicio9;
+begin
+  { 3. Crie uma constante com um nome qualquer e mostre uma mensagem dizendo a quantidade
+    de caracteres que aquele nome possui. }
+  const
+      NOME = 'Diego Garcia';
+  var
+      Quantidade: Integer;
+  begin
+    Quantidade := Length(NOME);
+
+    ShowMessage('O nome "' + NOME + '" possui ' + IntToStr(Quantidade) + ' caracteres');
+  end;
+end;
+
+procedure TForm1.Exercicio10;
+{ Armazenar uma numero aleatório (de 0 a 4) em uma variável, incrementar esse numero a
+  data atual, apresentar uma mensagem com a data incrementada, gerar outro numero
+  aleatório, incrementar na data que já foi incrementada e mostrar uma mensagem com a
+  quantidade de dias entre a data atual e data incrementada.. }
+var
+    NumeroAleatorio1, NumeroAleatorio2: Integer;
+  DataAtual, DataIncrementada1, DataIncrementada2: TDate;
+  DiferencaDias: Integer;
+begin
+  Randomize;
+
+  DataAtual := Date;
+
+  NumeroAleatorio1 := Random(5);
+  DataIncrementada1 := IncDay(DataAtual, NumeroAleatorio1);
+
+  ShowMessage('Data atual: ' + DateToStr(DataAtual) + #13 +
+    'Dias incrementados: ' + IntToStr(NumeroAleatorio1) + #13 +
+    'Data incrementada: ' + DateToStr(DataIncrementada1));
+
+  NumeroAleatorio2 := Random(5);
+  DataIncrementada2 := IncDay(DataIncrementada1, NumeroAleatorio2);
+
+  DiferencaDias := DaysBetween(DataAtual, DataIncrementada2);
+
+  ShowMessage('Segunda data incrementada: ' + DateToStr(DataIncrementada2) + #13 +
+    'Dias entre data atual e final: ' + IntToStr(DiferencaDias));
+end;
+
+procedure TForm1.Exercicio11;
+{ Refazer o exercício do salário anual do funcionário, apresentando o resultado final
+  formatado em reais. }
+const
+    SALARIO_MENSAL = 3500.00;
+  TAXA_TRIBUTACAO = 0.15;
+var
+    SalarioLiquido, SalarioAnual: Double;
+  ResultadoFormatado: String;
+begin
+
+  SalarioLiquido := SALARIO_MENSAL - (SALARIO_MENSAL * TAXA_TRIBUTACAO);
+
+  SalarioAnual := SalarioLiquido * 12;
+
+  ResultadoFormatado := FloatToStrF(SalarioAnual, ffCurrency, 15, 2);
+
+  ShowMessage('Salário Bruto Mensal: R$ ' + FloatToStrF(SALARIO_MENSAL, ffCurrency, 15, 2) + #13 +
+    'Taxa de Tributação: ' + FloatToStrF(TAXA_TRIBUTACAO * 100, ffFixed, 5, 2) + '%' + #13 +
+    'Salário Líquido Mensal: R$ ' + FloatToStrF(SalarioLiquido, ffCurrency, 15, 2) + #13 +
+    'Salário Anual Líquido: ' + ResultadoFormatado);
+end;
+
+procedure TForm1.btn10Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio10);
+end;
+
+procedure TForm1.btn11Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio11);
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio1);
+end;
+
+procedure TForm1.btn2Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio2);
+end;
+
+procedure TForm1.btn3Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio3);
+end;
+
+procedure TForm1.btn4Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio4);
+end;
+
+procedure TForm1.btn5Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio5);
+end;
+
+procedure TForm1.btn6Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio6);
+end;
+
+procedure TForm1.btn7Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio7);
+end;
+
+procedure TForm1.btn8Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio8);
+end;
+
+procedure TForm1.btn9Click(Sender: TObject);
+begin
+  ExecutarBotao(Exercicio9);
+end;
+
+end.
+
+---
+
+// UNIT PARA EXECUTAR O BOTÃO 
+
+unit UnitExecutaBotao;
+
+interface
+
+uses
+  System.SysUtils, Vcl.Dialogs;
+
+type
+  TProcedimento = procedure of object;
+
+procedure ExecutarBotao(AProc: TProcedimento);
+
+implementation
+
+procedure ExecutarBotao(AProc: TProcedimento);
+begin
+  if Assigned(AProc) then
+  begin
+    try
+      AProc();
+    except
+      on E: Exception do
+        ShowMessage('Erro ao executar: ' + E.Message);
+    end;
+  end;
+end;
+
+end.
+
+
+```
+
+
 
 
