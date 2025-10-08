@@ -148,7 +148,60 @@ end;
 end.
 ```
   
-4. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
+3. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
+  ```pascal
+unit uFrmPrincipal;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics,
+  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao;
+
+type
+  TForm1 = class(TForm)
+    lbl1: TLabel;
+    btn1: TButton;
+    procedure btn1Click(Sender: TObject);
+
+  private
+    { Private }
+    procedure Conversor;
+
+  public
+    { Public }
+  end;
+
+var
+    Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+
+procedure TForm1.Conversor;
+const TEMPERATURA_INFORMADA = 25;
+var
+    celsius, fahrenheit, kelvin: Double;
+begin
+  celsius := TEMPERATURA_INFORMADA;
+  fahrenheit := celsius * 9 / 5 + 32;
+  kelvin := celsius + 273.15;
+
+  lbl1.Caption := Format('Celsius: %.2f °C | Fahrenheit: %.2f °F | Kelvin: %.2f K',
+    [celsius, fahrenheit, kelvin]);
+
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Conversor);
+end;
+
+end.
+```
+   
 5. Implemente um validador de CPF que receba o CPF em um `TEdit`, remova caracteres especiais usando `TFuncoes.SoNumeros` e valide o dígito verificador.
 6. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
 7. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
