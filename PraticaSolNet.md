@@ -290,7 +290,72 @@ end;
 
 end.
 ```
-6. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
+## 5. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
+```pascal
+unit uFrmPrincipal;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, DateUtils,
+  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao, uFuncoes;
+
+type
+  TForm1 = class(TForm)
+    lbl1: TLabel;
+    edt1: TEdit;
+    btn1: TButton;
+    procedure btn1Click(Sender: TObject);
+  private
+    { Private declarations }
+    procedure data;
+  public
+    { Public declarations }
+  end;
+
+var
+    Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+procedure TForm1.data;
+var
+    DataAtual, DataNascimento, ProximoAniversario: TDate;
+  DiasRestantes: Integer;
+begin
+  try
+    DataNascimento := StrToDate(edt1.Text);
+    DataAtual := Date;
+
+    ProximoAniversario := EncodeDate(YearOf(DataAtual), 
+      MonthOf(DataNascimento), 
+      DayOf(DataNascimento));
+
+    if ProximoAniversario < DataAtual then
+      ProximoAniversario := IncYear(ProximoAniversario, 1);
+
+    DiasRestantes := DaysBetween(DataAtual, ProximoAniversario);
+
+    ShowMessage('Faltam ' + IntToStr(DiasRestantes) + ' dias para o próximo aniversário!');
+
+  except
+    on E: EConvertError do
+      ShowMessage('Data inválida! Use o formato dd/mm/yyyy');
+    on E: Exception do
+      ShowMessage('Erro: ' + E.Message);
+  end;
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(data);
+end;
+
+end.
+```
+
 7. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
 8. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
 9. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
