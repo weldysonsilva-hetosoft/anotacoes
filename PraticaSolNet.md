@@ -322,15 +322,15 @@ begin
   ExecutarBotao(Ex6ConversorNumeroParaString);
 end;
 ```  
-8. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
-9. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
-10. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
-11. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
-12. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
-13. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
-14. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
-15. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
-16. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
+7. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
+8. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
+9. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
+10. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
+11. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
+12. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
+13. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
+14. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
+15. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
 
 ---
 
