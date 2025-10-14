@@ -544,6 +544,79 @@ end;
 ```
 
 10. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
+```pascal
+procedure TForm1.Ex10CalculadoraIMC;
+var
+    peso, altura, imc: Double;
+  classificacao, corTexto: string;
+begin
+
+  if not TryStrToFloat(edt1.text, peso) or (peso <= 0) then
+  begin
+    ShowMessage('Digite um peso válido em kg (maior que 0)');
+    Exit;
+  end;
+
+  if not TryStrToFloat(edt2.text, altura) or (altura <= 0) then
+  begin
+    ShowMessage('Digite uma altura válida em metros (maior que 0)');
+    Exit;
+  end;
+
+  imc := peso / (altura * altura);
+
+  if imc < 18.5 then
+  begin
+    classificacao := 'ABAIXO DO PESO';
+    corTexto := 'Azul';
+    lbl2.Font.Color := clBlue;
+  end
+  else if imc < 25 then
+  begin
+    classificacao := 'PESO NORMAL';
+    corTexto := 'Verde';
+    lbl2.Font.Color := clGreen;
+  end
+  else if imc < 30 then
+  begin
+    classificacao := 'SOBREPESO';
+    corTexto := 'Laranja';
+    lbl2.Font.Color := clWebOrange;
+  end
+  else if imc < 35 then
+  begin
+    classificacao := 'OBESIDADE GRAU I';
+    corTexto := 'Vermelho';
+    lbl2.Font.Color := clRed;
+  end
+  else if imc < 40 then
+  begin
+    classificacao := 'OBESIDADE GRAU II';
+    corTexto := 'Vermelho Escuro';
+    lbl2.Font.Color := clMaroon;
+  end
+  else
+  begin
+    classificacao := 'OBESIDADE GRAU III';
+    corTexto := 'Vermelho Intenso';
+    lbl2.Font.Color := clPurple;
+  end;
+
+  lbl1.Caption := 'IMC: ' + FormatFloat('0.00', imc);
+  lbl2.Caption := classificacao;
+
+  memo1.clear;
+  memo1.Lines.Add('=== CALCULADORA IMC ===');
+  memo1.Lines.Add('Peso: ' + FloatToStr(peso) + ' kg');
+  memo1.Lines.Add('Altura: ' + FloatToStr(altura) + ' m');
+  memo1.Lines.Add('IMC Calculado: ' + FormatFloat('0.00', imc));
+  memo1.Lines.Add('Classificação: ' + classificacao);
+  memo1.Lines.Add('Cor indicativa: ' + corTexto);
+  memo1.Lines.Add('======================');
+
+end;
+```
+
 11. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
 12. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
 13. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
