@@ -323,6 +323,64 @@ begin
 end;
 ```  
 7. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
+```pascal
+function TForm1.GeradorSenhaForte(Senha: string): Boolean;
+var
+    temNumero, temMaiuscula, temMinuscula: Boolean;
+  i: Integer;
+begin
+  temNumero := False;
+  temMaiuscula := False;
+  temMinuscula := False;
+
+  for i := 1 to Length(Senha) do
+  begin
+    if Senha[i] in ['0' .. '9'] then
+      temNumero := True
+    else if Senha[i] in ['A' .. 'Z'] then
+      temMaiuscula := True
+    else if Senha[i] in ['a' .. 'z'] then
+      temMinuscula := True;
+  end;
+
+  Result := (Length(Senha) >= 6) and (Length(Senha) <= 20) and temNumero and temMaiuscula and temMinuscula;
+end;
+
+procedure TForm1.Ex7GeradorSenha;
+var
+    Senha: string;
+begin
+  memo1.clear;
+  Senha := edt1.text;
+
+  if GeradorSenhaForte(Senha) then
+    memo1.Lines.Add('✅ Senha forte!')
+  else
+  begin
+    memo1.Lines.Add('❌ Senha fraca. Faltam os seguintes critérios:');
+    if Length(Senha) < 6 then
+      memo1.Lines.Add(' - MINIMO DE 6 CARACTERES');
+    if Length(Senha) > 20 then
+      memo1.Lines.Add(' - MAXIMO DE 20 CARACTERES');
+
+    if not(Senha.Contains('0') or Senha.Contains('1') or Senha.Contains('2') or
+      Senha.Contains('3') or Senha.Contains('4') or Senha.Contains('5') or
+      Senha.Contains('6') or Senha.Contains('7') or Senha.Contains('8') or
+      Senha.Contains('9')) then
+      memo1.Lines.Add('- Pelo menos 1 número');
+
+    if Senha = LowerCase(Senha) then
+      memo1.Lines.Add('- Pelo menos 1 letra maiúscula');
+
+    if Senha = UpperCase(Senha) then
+      memo1.Lines.Add('- Pelo menos 1 letra minúscula');
+
+  end;
+
+end;
+
+```
+
 8. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
 9. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
 10. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
