@@ -197,193 +197,130 @@ end;
 
 6. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
 ```pascal
-unit uFrmPrincipal;
-
-interface
-
-uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, DateUtils,
-  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao, uFuncoes;
-
-type
-  TForm1 = class(TForm)
-    lbl1: TLabel;
-    edt1: TEdit;
-    btn1: TButton;
-    procedure btn1Click(Sender: TObject);
-  private
-    procedure ValorExtenso;
-    function NumeroExtenso(Numero: Integer): string;
-  public
-  end;
-
+function TForm1.NumeroParaExtenso(Numero: Integer): string;
+const
+  Unidades: array[0..9] of string = ('', 'um', 'dois', 'três', 'quatro', 
+    'cinco', 'seis', 'sete', 'oito', 'nove');
+  Dezenas: array[0..9] of string = ('', 'dez', 'vinte', 'trinta', 'quarenta',
+    'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa');
+  Especiais: array[10..19] of string = ('dez', 'onze', 'doze', 'treze', 
+    'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove');
+  Centenas: array[0..9] of string = ('', 'cento', 'duzentos', 'trezentos',
+    'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos');
 var
-    Form1: TForm1;
-
-implementation
-
-{$R *.dfm}
-
-function TForm1.NumeroExtenso(Numero: Integer): string;
-var
-    Unidades: array [0 .. 9] of string;
-  Dezenas: array [0 .. 9] of string;
-  Especiais: array [10 .. 19] of string;
-  Centenas: array [0 .. 9] of string;
-  Milhar, Centena, Dezena, Unidade: Integer;
-  Resultado: string;
+  milhar, centena, dezena, unidade: Integer;
+  resultado: string;
 begin
-  Unidades[0] := '';
-  Unidades[1] := 'um';
-  Unidades[2] := 'dois';
-  Unidades[3] := 'três';
-  Unidades[4] := 'quatro';
-  Unidades[5] := 'cinco';
-  Unidades[6] := 'seis';
-  Unidades[7] := 'sete';
-  Unidades[8] := 'oito';
-  Unidades[9] := 'nove';
-
-  Dezenas[0] := '';
-  Dezenas[1] := 'dez';
-  Dezenas[2] := 'vinte';
-  Dezenas[3] := 'trinta';
-  Dezenas[4] := 'quarenta';
-  Dezenas[5] := 'cinquenta';
-  Dezenas[6] := 'sessenta';
-  Dezenas[7] := 'setenta';
-  Dezenas[8] := 'oitenta';
-  Dezenas[9] := 'noventa';
-
-  Especiais[10] := 'dez';
-  Especiais[11] := 'onze';
-  Especiais[12] := 'doze';
-  Especiais[13] := 'treze';
-  Especiais[14] := 'quatorze';
-  Especiais[15] := 'quinze';
-  Especiais[16] := 'dezesseis';
-  Especiais[17] := 'dezessete';
-  Especiais[18] := 'dezoito';
-  Especiais[19] := 'dezenove';
-
-  Centenas[0] := '';
-  Centenas[1] := 'cento';
-  Centenas[2] := 'duzentos';
-  Centenas[3] := 'trezentos';
-  Centenas[4] := 'quatrocentos';
-  Centenas[5] := 'quinhentos';
-  Centenas[6] := 'seiscentos';
-  Centenas[7] := 'setecentos';
-  Centenas[8] := 'oitocentos';
-  Centenas[9] := 'novecentos';
-
   if Numero = 0 then
   begin
     Result := 'zero';
     Exit;
   end;
-
+  
   if Numero = 100 then
   begin
     Result := 'cem';
     Exit;
   end;
-
-  Resultado := '';
-
-  Milhar := Numero div 1000;
-  Centena := (Numero mod 1000) div 100;
-  Dezena := (Numero mod 100) div 10;
-  Unidade := Numero mod 10;
-
-  if Milhar > 0 then
+  
+  resultado := '';
+  
+  milhar := Numero div 1000;
+  centena := (Numero mod 1000) div 100;
+  dezena := (Numero mod 100) div 10;
+  unidade := Numero mod 10;
+  
+  if milhar > 0 then
   begin
-    if Milhar = 1 then
-      Resultado := 'mil'
+    if milhar = 1 then
+      resultado := 'mil'
     else
-      Resultado := NumeroExtenso(Milhar) + ' mil';
+      resultado := NumeroParaExtenso(milhar) + ' mil';
   end;
-
-  if Centena > 0 then
+  
+  if centena > 0 then
   begin
-    if Resultado <> '' then
-      Resultado := Resultado + ' ';
-    Resultado := Resultado + Centenas[Centena];
+    if resultado <> '' then
+      resultado := resultado + ' ';
+    resultado := resultado + Centenas[centena];
   end;
-
-  if (Dezena = 1) and (Unidade > 0) then
+  
+  if (dezena = 1) and (unidade > 0) then
   begin
-    if Resultado <> '' then
-      Resultado := Resultado + ' e ';
-    Resultado := Resultado + Especiais[10 + Unidade];
+    if resultado <> '' then
+      resultado := resultado + ' e ';
+    resultado := resultado + Especiais[10 + unidade];
   end
   else
   begin
-    if Dezena > 0 then
+    if dezena > 0 then
     begin
-      if Resultado <> '' then
-        Resultado := Resultado + ' e ';
-      Resultado := Resultado + Dezenas[Dezena];
+      if resultado <> '' then
+        resultado := resultado + ' e ';
+      resultado := resultado + Dezenas[dezena];
     end;
-
-    if Unidade > 0 then
+    
+    if unidade > 0 then
     begin
-      if Resultado <> '' then
-        Resultado := Resultado + ' e ';
-      Resultado := Resultado + Unidades[Unidade];
+      if resultado <> '' then
+        resultado := resultado + ' e ';
+      resultado := resultado + Unidades[unidade];
     end;
   end;
-
-  Result := Resultado;
+  
+  Result := resultado;
 end;
 
-procedure TForm1.ValorExtenso;
+procedure TForm1.Ex6ConversorNumeroParaString;
 var
-    Valor: Real;
-  Reais, Centavos: Integer;
-  Extenso: string;
+  valor: Double;
+  reais, centavos: Integer;
+  extenso: string;
 begin
-  try
-    Valor := StrToFloat(edt1.Text);
-
-    Reais := Trunc(Valor);
-    Centavos := Round((Valor - Reais) * 100);
-
-    Extenso := '';
-
-    if Reais > 0 then
-    begin
-      Extenso := NumeroExtenso(Reais);
-      if Reais = 1 then
-        Extenso := Extenso + ' real'
-      else
-        Extenso := Extenso + ' reais';
-    end
-    else
-      Extenso := 'zero reais';
-
-    if Centavos > 0 then
-    begin
-      Extenso := Extenso + ' e ' + NumeroExtenso(Centavos);
-      if Centavos = 1 then
-        Extenso := Extenso + ' centavo'
-      else
-        Extenso := Extenso + ' centavos';
-    end;
-
-    ShowMessage(Extenso);
-
-  except
-    ShowMessage('Valor inválido!');
+  if not TryStrToFloat(edt1.Text, valor) then
+  begin
+    ShowMessage('Digite um valor válido!');
+    Exit;
   end;
+  
+  if valor < 0 then
+  begin
+    ShowMessage('Valor não pode ser negativo!');
+    Exit;
+  end;
+  
+  reais := Trunc(valor);
+  centavos := Round((valor - reais) * 100);
+  
+  extenso := '';
+  
+  if reais > 0 then
+  begin
+    extenso := NumeroParaExtenso(reais);
+    if reais = 1 then
+      extenso := extenso + ' real'
+    else
+      extenso := extenso + ' reais';
+  end
+  else
+    extenso := 'zero reais';
+  
+  if centavos > 0 then
+  begin
+    extenso := extenso + ' e ' + NumeroParaExtenso(centavos);
+    if centavos = 1 then
+      extenso := extenso + ' centavo'
+    else
+      extenso := extenso + ' centavos';
+  end;
+  
+  ShowMessage(extenso);
 end;
 
 procedure TForm1.btn1Click(Sender: TObject);
 begin
-  ExecutarBotao(ValorExtenso);
+  ExecutarBotao(Ex6ConversorNumeroParaString);
 end;
-
-end.
 ```  
 8. Implemente um gerador de senhas aleatórias com opções de tamanho (6–20 caracteres) e inclusão de números, letras maiúsculas, minúsculas e caracteres especiais.
 9. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
