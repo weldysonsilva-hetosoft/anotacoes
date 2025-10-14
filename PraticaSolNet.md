@@ -473,6 +473,76 @@ procedure Ex8ContadorRegressivo;
 
 
 9. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
+```pascal
+function TForm1.AnalisarTexto(texto: String; var palavras, vogais, consoantes: Integer): Integer;
+var
+    i: Integer;
+  C: Char;
+  emPalavra: Boolean;
+begin
+  palavras := 0;
+  vogais := 0;
+  consoantes := 0;
+  emPalavra := False;
+
+  for i := 1 to Length(texto) do
+  begin
+    C := texto[i];
+
+
+    if C in ['A' .. 'Z', 'a' .. 'z', 'À' .. 'ü'] then
+    begin
+      if not emPalavra then
+      begin
+        Inc(palavras);
+        emPalavra := True;
+      end;
+    end
+    else
+      emPalavra := False;
+
+
+    if UpCase(C) in ['A', 'E', 'I', 'O', 'U', 'Á', 'É', 'Í', 'Ó', 'Ú'] then
+      Inc(vogais)
+    else if UpCase(C) in ['A' .. 'Z'] then
+      Inc(consoantes);
+  end;
+
+  Result := Length(texto);
+end;
+
+procedure TForm1.Ex9ContadorCaracter;
+var
+  texto: String;
+  total, palavras, vogais, consoantes, linhas: Integer;
+begin
+
+  tmr1.Enabled := False;
+
+
+  texto := memo1.Text;
+  linhas := memo1.Lines.Count;
+
+
+  total := AnalisarTexto(texto, palavras, vogais, consoantes);
+
+
+  memo1.Clear;
+  memo1.Lines.Add('=== ANÁLISE DO TEXTO ===');
+  memo1.Lines.Add('Total de caracteres: ' + IntToStr(total));
+  memo1.Lines.Add('Total de palavras: ' + IntToStr(palavras));
+  memo1.Lines.Add('Total de linhas: ' + IntToStr(linhas));
+  memo1.Lines.Add('Total de vogais: ' + IntToStr(vogais));
+  memo1.Lines.Add('Total de consoantes: ' + IntToStr(consoantes));
+  memo1.Lines.Add('=======================');
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Ex9ContadorCaracter);
+end;
+```
+
 10. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
 11. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
 12. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
