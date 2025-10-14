@@ -52,107 +52,34 @@ end.
 ```
 ### 2. Desenvolva uma calculadora simples com quatro operações básicas (`+`, `-`, `*`, `/`) utilizando `TEdit` para entrada de valores e `TButton` para cada operação.
 ```pascal
-unit uFrmPrincipal;
-
-interface
-
-uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics,
-  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao;
-
-type
-  TForm1 = class(TForm)
-    btn1: TButton;
-    btn2: TButton;
-    btn3: TButton;
-    btn4: TButton;
-    edt1: TEdit;
-    edt2: TEdit;
-    procedure btn1Click(Sender: TObject);
-    procedure btn2Click(Sender: TObject);
-    procedure btn3Click(Sender: TObject);
-    procedure btn4Click(Sender: TObject);
-  private
-    procedure Soma;
-    procedure Subtracao;
-    procedure Multiplicacao;
-    procedure Divisao;
-    function ObterValores(out A, B: Double): Boolean;
-  public
-  end;
-
+procedure TForm1.Ex2CalculadoraBasica;
 var
-    Form1: TForm1;
-
-implementation
-
-{$R *.dfm}
-
-function TForm1.ObterValores(out A, B: Double): Boolean;
+    num1, num2: Double;
+  resultado: Double;
 begin
-  Result := TryStrToFloat(edt1.Text, A) and TryStrToFloat(edt2.Text, B);
-  if not Result then
-    ShowMessage('Digite dois números válidos.');
-end;
 
-procedure TForm1.Soma;
-var
-    A, B: Double;
-begin
-  if ObterValores(A, B) then
-    ShowMessage('Resultado: ' + FloatToStr(A + B));
-end;
+  num1 := StrToFloatDef(edt1.text, 0);
+  num2 := StrToFloatDef(edt2.text, 0);
 
-procedure TForm1.Subtracao;
-var
-    A, B: Double;
-begin
-  if ObterValores(A, B) then
-    ShowMessage('Resultado: ' + FloatToStr(A - B));
-end;
+  memo1.clear;
 
-procedure TForm1.Multiplicacao;
-var
-    A, B: Double;
-begin
-  if ObterValores(A, B) then
-    ShowMessage('Resultado: ' + FloatToStr(A * B));
-end;
+  resultado := num1 + num2;
+  memo1.Lines.Add('Soma: ' + FloatToStr(resultado));
 
-procedure TForm1.Divisao;
-var
-    A, B: Double;
-begin
-  if ObterValores(A, B) then
+  resultado := num1 - num2;
+  memo1.Lines.Add('Subtração: ' + FloatToStr(resultado));
+
+  resultado := num1 * num2;
+  memo1.Lines.Add('Multiplicação: ' + FloatToStr(resultado));
+
+  if num2 <> 0 then
   begin
-    if B = 0 then
-      ShowMessage('Erro: divisão por zero.')
-    else
-      ShowMessage('Resultado: ' + FloatToStr(A / B));
-  end;
+    resultado := num1 / num2;
+    memo1.Lines.Add('Divisão: ' + FloatToStr(resultado));
+  end
+  else
+    memo1.Lines.Add('Divisão: Erro - divisão por zero');
 end;
-
-procedure TForm1.btn1Click(Sender: TObject);
-begin
-  ExecutarBotao(Soma);
-end;
-
-procedure TForm1.btn2Click(Sender: TObject);
-begin
-  ExecutarBotao(Subtracao);
-end;
-
-procedure TForm1.btn3Click(Sender: TObject);
-begin
-  ExecutarBotao(Multiplicacao);
-end;
-
-procedure TForm1.btn4Click(Sender: TObject);
-begin
-  ExecutarBotao(Divisao);
-end;
-
-end.
 ```
   
 ### 3. Crie um conversor de temperatura que transforme Celsius em Fahrenheit e Kelvin, exibindo os três valores simultaneamente em `TLabel`.
