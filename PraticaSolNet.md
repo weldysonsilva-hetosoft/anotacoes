@@ -153,68 +153,46 @@ end;
 ```
 ## 5. Desenvolva um formulário que receba uma data em `TEdit` e calcule quantos dias faltam para o próximo aniversário da pessoa.
 ```pascal
-unit uFrmPrincipal;
+procedure TForm1.Ex5ProximoAniversario;
+var
+    DataNasc, Hoje, ProxAniv: TdateTime;
+  IdadeAnos, DiasVida, DiasParaAniv, MesesParaAniv: Integer;
+  DiaSemanaNasc, DiaSemanaAniv: string;
+begin
+  memo1.clear;
 
-interface
-
-uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, DateUtils,
-  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao, uFuncoes;
-
-type
-  TForm1 = class(TForm)
-    lbl1: TLabel;
-    edt1: TEdit;
-    btn1: TButton;
-    procedure btn1Click(Sender: TObject);
-  private
-    { Private declarations }
-    procedure data;
-  public
-    { Public declarations }
+  if not TryStrToDate(edt1.text, DataNasc) then
+  begin
+    memo1.Lines.Add('Data de nascimento inválida!');
+    Exit;
   end;
 
-var
-    Form1: TForm1;
+  Hoje := Date;
 
-implementation
+  IdadeAnos := YearsBetween(Hoje, DataNasc);
 
-{$R *.dfm}
+  ProxAniv := RecodeYear(DataNasc, YearOf(Hoje));
+  if ProxAniv < Hoje then
+    ProxAniv := RecodeYear(DataNasc, YearOf(Hoje) + 1);
 
-procedure TForm1.data;
-var
-    DataAtual, DataNascimento, ProximoAniversario: TDate;
-  DiasRestantes: Integer;
-begin
-  try
-    DataNascimento := StrToDate(edt1.Text);
-    DataAtual := Date;
+  DiasParaAniv := DaysBetween(Hoje, ProxAniv);
+  MesesParaAniv := MonthsBetween(ProxAniv, Hoje) * -1;
 
-    ProximoAniversario := EncodeDate(YearOf(DataAtual), 
-      MonthOf(DataNascimento), 
-      DayOf(DataNascimento));
+  DiaSemanaNasc := FormatDateTime('dddd', DataNasc);
 
-    if ProximoAniversario < DataAtual then
-      ProximoAniversario := IncYear(ProximoAniversario, 1);
+  DiaSemanaAniv := FormatDateTime('dddd', ProxAniv);
 
-    DiasRestantes := DaysBetween(DataAtual, ProximoAniversario);
+  DiasVida := DaysBetween(Hoje, DataNasc);
 
-    ShowMessage('Faltam ' + IntToStr(DiasRestantes) + ' dias para o próximo aniversário!');
-
-  except
-    on E: EConvertError do
-      ShowMessage('Data inválida! Use o formato dd/mm/yyyy');
-    on E: Exception do
-      ShowMessage('Erro: ' + E.Message);
-  end;
+  memo1.Lines.Add('Data de nascimento: ' + FormatDateTime('dd/mm/yyyy', DataNasc));
+  memo1.Lines.Add('Idade: ' + IntToStr(IdadeAnos) + ' anos');
+  memo1.Lines.Add('Próximo aniversário: ' + FormatDateTime('dd/mm/yyyy', ProxAniv) +
+    ' (' + DiaSemanaAniv + ')');
+  memo1.Lines.Add('Faltam ' + IntToStr(DiasParaAniv) + ' dias para seu aniversário');
+  memo1.Lines.Add('Faltam ' + IntToStr(MesesParaAniv) + ' meses para seu aniversário');
+  memo1.Lines.Add('Você nasceu em uma ' + DiaSemanaNasc);
+  memo1.Lines.Add('Você já viveu ' + IntToStr(DiasVida) + ' dias!');
 end;
-
-procedure TForm1.btn1Click(Sender: TObject);
-begin
-  ExecutarBotao(data);
-end;
-
-end.
 ```
 
 6. Crie uma aplicação que converta um valor monetário digitado em extenso (ex: `1234.56 → "Um mil duzentos e trinta e quatro reais e cinquenta e seis centavos"`).
