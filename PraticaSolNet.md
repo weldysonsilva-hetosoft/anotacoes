@@ -382,6 +382,94 @@ end;
 ```
 
 8. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
+```pascal
+procedure TForm1.Ex8ContadorRegressivo;
+var
+    minutos: Integer;
+begin
+  // Obter o valor do usuário (minutos)
+  if not TryStrToInt(edt1.text, minutos) or (minutos <= 0) then
+  begin
+    ShowMessage('Digite um valor válido em minutos (maior que 0)');
+    Exit;
+  end;
+
+  // Converter minutos para segundos
+  tempoRestante := minutos * 60;
+
+  // Configurar e iniciar o timer
+  tmr1.Interval := 1000; // 1 segundo
+  tmr1.Enabled := True;
+
+  // Atualizar display inicial
+  AtualizarDisplayTempo;
+
+  // Feedback para o usuário
+  memo1.clear;
+  memo1.Lines.Add('Contador regressivo iniciado!');
+  memo1.Lines.Add('Tempo total: ' + IntToStr(minutos) + ' minutos');
+  memo1.Lines.Add('Pressione o botão novamente para reiniciar');
+end;
+
+procedure TForm1.AtualizarDisplayTempo;
+var
+    minutos, segundos: Integer;
+  tempoFormatado: string;
+begin
+  minutos := tempoRestante div 60;
+  segundos := tempoRestante mod 60;
+
+  tempoFormatado := Format('%.2d:%.2d', [minutos, segundos]);
+
+  lbl1.Caption := 'Tempo restante: ' + tempoFormatado;
+
+  // Mudar cor conforme o tempo diminui
+  if tempoRestante <= 30 then // últimos 30 segundos
+    lbl1.Font.Color := clRed
+  else if tempoRestante <= 60 then // último minuto
+    lbl1.Font.Color := clMaroon
+  else
+    lbl1.Font.Color := clBlack;
+end;
+
+procedure TForm1.tmr1Timer(Sender: TObject);
+begin
+  // Decrementar o tempo restante
+  Dec(tempoRestante);
+
+  // Atualizar o display
+  AtualizarDisplayTempo;
+
+  // Verificar se o tempo acabou
+  if tempoRestante <= 0 then
+  begin
+    tmr1.Enabled := False;
+    lbl1.Caption := 'TEMPO ESGOTADO!';
+    lbl1.Font.Color := clRed;
+    ShowMessage('Tempo esgotado!');
+    memo1.Lines.Add('--- CONTADOR FINALIZADO ---');
+  end;
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Ex8ContadorRegressivo);
+end;
+
+end.
+
+
+// precisou declarar o  public
+    { Public declarations }
+  var
+    tempoRestante: Integer; No public e mais uma procedure no private
+procedure Ex8ContadorRegressivo;
+    procedure AtualizarDisplayTempo;
+
+
+```
+
+
 9. Crie um formulário que receba um texto em `TMemo` e conte: total de caracteres, palavras, linhas e vogais.
 10. Implemente uma calculadora de IMC (Índice de Massa Corporal) que classifique o resultado em: abaixo do peso, peso normal, sobrepeso ou obesidade.
 11. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
