@@ -4,41 +4,48 @@
 
 ### 1. Crie um formulário com dois `TEdit` e um `TButton`. Ao clicar no botão, concatene os valores dos dois `TEdit` e exiba o resultado em um `ShowMessage`.
 ```pascal
-unit Unit1;
+unit uFrmPraticaSolnet;
 
 interface
 
 uses
-  Vcl.Forms, Vcl.StdCtrls, System.Classes;
+  Windows, Messages, SysUtils, System.Math, Variants, Classes, Graphics, DateUtils,
+  Controls, Forms, Dialogs, StdCtrls, ExtCtrls, UnitExecutaBotao, uFuncoes;
 
 type
   TForm1 = class(TForm)
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Button1: TButton;
-    procedure Button1Click(Sender: TObject);
+    edt1: TEdit;
+    edt2: TEdit;
+    btn1: TButton;
+    procedure btn1Click(Sender: TObject);
   private
-    procedure ConcatenarTextos;
+    { Private declarations }
+    procedure Ex1ConcatenarTextos;
+
+  public
+    { Public declarations }
   end;
 
 var
-  Form1: TForm1;
+    Form1: TForm1;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.Ex1ConcatenarTextos;
+var
+    TextoFinal: string;
+
 begin
-  ConcatenarTextos;
+  TextoFinal := edt1.text + edt2.text;
+  ShowMessage('Resultado: ' + TextoFinal);
+
 end;
 
-procedure TForm1.ConcatenarTextos;
-var
-  TextoFinal: string;
+procedure TForm1.btn1Click(Sender: TObject);
 begin
-  TextoFinal := Edit1.Text + Edit2.Text;
-  ShowMessage('Resultado: ' + TextoFinal);
+  ExecutarBotao(Ex1ConcatenarTextos);
 end;
 
 end.
