@@ -383,6 +383,8 @@ end;
 
 8. Desenvolva um contador regressivo visual usando `TTimer` que inicie em um valor definido pelo usuário e exiba o tempo restante em um `TLabel`.
 ```pascal
+
+// ESSE PRECISEI DE AJUDA DA IA PARA DESENVOLVER. 
 procedure TForm1.Ex8ContadorRegressivo;
 var
     minutos: Integer;
@@ -459,12 +461,12 @@ end;
 end.
 
 
-// precisou declarar o  public
+(*precisou declarar o  public
     { Public declarations }
   var
     tempoRestante: Integer; No public e mais uma procedure no private
 procedure Ex8ContadorRegressivo;
-    procedure AtualizarDisplayTempo;
+    procedure AtualizarDisplayTempo;*)
 
 
 ```
