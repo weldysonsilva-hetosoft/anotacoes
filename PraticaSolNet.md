@@ -753,6 +753,58 @@ begin
 end;
 ```
 14. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
+```pascal
+procedure TForm1.Ex14ParcelasFinanciamento;
+
+var
+    valorTotal, taxaJuros, parcelaMensal: Double;
+  numParcelas: Integer;
+  entradaValor, entradaJuros, entradaParcelas: string;
+begin
+
+  entradaValor := edt1.text;
+  entradaJuros := edt2.text;
+  entradaParcelas := edt3.text;
+
+  if not TryStrToFloat(entradaValor, valorTotal) then
+  begin
+    ShowMessage('Valor total inválido.');
+    Exit;
+  end;
+
+  if not TryStrToFloat(entradaJuros, taxaJuros) then
+  begin
+    ShowMessage('Taxa de juros inválida.');
+    Exit;
+  end;
+
+  if not TryStrToInt(entradaParcelas, numParcelas) then
+  begin
+    ShowMessage('Número de parcelas inválido.');
+    Exit;
+  end;
+
+  taxaJuros := taxaJuros / 100;
+
+  if taxaJuros = 0 then
+    parcelaMensal := valorTotal / numParcelas
+  else
+    parcelaMensal := (valorTotal * taxaJuros) / (1 - Power(1 + taxaJuros, -numParcelas));
+
+  memo1.clear;
+  memo1.Lines.Add('Valor total: R$ ' + FormatFloat('0.00', valorTotal));
+  memo1.Lines.Add('Taxa de juros: ' + FormatFloat('0.00%', taxaJuros * 100));
+  memo1.Lines.Add('Número de parcelas: ' + IntToStr(numParcelas));
+  memo1.Lines.Add('Valor da parcela: R$ ' + FormatFloat('0.00', parcelaMensal));
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Ex14ParcelasFinanciamento);
+end;
+
+```
+
 15. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
 
 ---
