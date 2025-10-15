@@ -806,6 +806,32 @@ end;
 ```
 
 15. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
+```pascal
+procedure TForm1.Ex15SistemasData;
+var
+    data1, data2: TdateTime;
+  Dias, Semanas, Meses, Anos: Integer;
+begin
+  memo1.clear;
+
+  if not TryStrToDate(edt1.text, data1) then
+    ShowMessage('Data 1 inválida! Forneca uma data no formato DD/MM/AAAA');
+
+  if not TryStrToDate(edt2.text, data2) then
+    ShowMessage('Data 2 inválida! Forneca uma data no formato DD/MM/AAAA');
+
+  Dias := DaysBetween(data1, data2);
+  Semanas := Round(Dias / 7);
+  Meses := MonthsBetween(data1, data2);
+  Anos := YearsBetween(data1, data2);
+
+  memo1.Lines.Add('Diferença em dias: ' + IntToStr(Dias));
+  memo1.Lines.Add('Diferença em semanas (arredondado): ' + IntToStr(Semanas));
+  memo1.Lines.Add('Diferença em meses (aproximado): ' + IntToStr(Meses));
+  memo1.Lines.Add('Diferença em anos (aproximado): ' + IntToStr(Anos));
+
+end;
+``` 
 
 ---
 
