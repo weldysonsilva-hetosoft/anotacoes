@@ -702,6 +702,56 @@ end;
 ```
 
 13. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
+```pascal
+function IntToBin(Value: Integer; Digits: Integer): string;
+begin
+  Result := '';
+  while Value > 0 do
+  begin
+    Result := Chr(Ord('0') + (Value mod 2)) + Result;
+    Value := Value div 2;
+  end;
+  while Length(Result) < Digits do
+    Result := '0' + Result;
+end;
+
+function IntToOct(Value: Integer): string;
+begin
+  Result := '';
+  while Value > 0 do
+  begin
+    Result := Chr(Ord('0') + (Value mod 8)) + Result;
+    Value := Value div 8;
+  end;
+  if Result = '' then
+    Result := '0';
+end;
+
+procedure TForm1.Ex13ConversorBaseNumericas;
+var
+    decimal: Integer;
+  entrada: string;
+begin
+  entrada := edt1.text;
+
+  if not TryStrToInt(entrada, decimal) then
+  begin
+    ShowMessage('Valor inválido para conversão. Digite um número inteiro.');
+    Exit;
+  end;
+
+  memo1.clear;
+  memo1.Lines.Add('Decimal: ' + IntToStr(decimal));
+  memo1.Lines.Add('Binário: ' + IntToBin(decimal, 8));
+  memo1.Lines.Add('Octal: ' + IntToOct(decimal));
+  memo1.Lines.Add('Hexadecimal: ' + IntToHex(decimal, 8));
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Ex13ConversorBaseNumericas);
+end;
+```
 14. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
 15. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
 
