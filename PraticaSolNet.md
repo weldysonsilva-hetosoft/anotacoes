@@ -618,6 +618,42 @@ end;
 ```
 
 11. Desenvolva um sistema que receba uma lista de 10 números em um `TMemo` (um por linha) e exiba o maior, menor e a média em `TLabel` separados.
+```pascal
+procedure TForm1.Ex11ListNumber;
+var
+    i, valor, maior, menor, soma: Integer;
+  numeros: array [1 .. 10] of Integer;
+begin
+
+  if memo1.Lines.Count <> 10 then
+  begin
+    ShowMessage('Insira exatamente 10 números, um por linha.');
+    Exit;
+  end;
+  soma := 0;
+  maior := StrToIntDef(memo1.Lines[0], 0);
+  menor := maior;
+
+  for i := 0 to 9 do
+  begin
+    valor := StrToIntDef(memo1.Lines[i], 0);
+    if valor > maior then
+      maior := valor;
+    if valor < menor then
+      menor := valor;
+    soma := soma + valor;
+  end;
+  lbl1.Caption := 'Maior ' + IntToStr(maior);
+  lbl2.Caption := 'Menor ' + IntToStr(menor);
+  lbl3.Caption := 'Média ' + FloatToStr(soma / 10);
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Ex11ListNumber);
+end;
+
+```
 12. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
 13. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
 14. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
