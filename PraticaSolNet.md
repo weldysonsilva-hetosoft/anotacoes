@@ -655,6 +655,52 @@ end;
 
 ```
 12. Crie um validador de email que verifique se o formato está correto (presença de `@`, domínio válido, etc.).
+```pascal
+procedure TForm1.Ex12ValidaEmail;
+var
+    email: string;
+begin
+  memo1.clear;
+  email := edt1.text;
+
+  if ValidadorEmail(email) then
+    memo1.Lines.Add('Emailválido!')
+  else
+  begin
+    memo1.Lines.Add('❌ Email inválido. Faltam os seguintes critérios:');
+
+    if Pos('@', email) = 0 then
+      memo1.Lines.Add('- Deve conter "@"');
+
+    if Pos('.', Copy(email, Pos('@', email) + 1, Length(email))) = 0 then
+      memo1.Lines.Add('- Domínio deve conter "." após o "@"');
+
+    if Length(email) < 8 then
+      memo1.Lines.Add('- Mínimo de 8 caracteres');
+
+    if Length(email) > 25 then
+      memo1.Lines.Add('- Máximo de 25 caracteres');
+
+    if not(email.Contains('a') or email.Contains('b') or email.Contains('c') or
+      email.Contains('d') or email.Contains('e') or email.Contains('f') or
+      email.Contains('g') or email.Contains('h') or email.Contains('i') or
+      email.Contains('j') or email.Contains('k') or email.Contains('l') or
+      email.Contains('m') or email.Contains('n') or email.Contains('o') or
+      email.Contains('p') or email.Contains('q') or email.Contains('r') or
+      email.Contains('s') or email.Contains('t') or email.Contains('u') or
+      email.Contains('v') or email.Contains('w') or email.Contains('x') or
+      email.Contains('y') or email.Contains('z')) then
+      memo1.Lines.Add('- Deve conter pelo menos uma letra');
+  end;
+end;
+
+procedure TForm1.btn1Click(Sender: TObject);
+begin
+  ExecutarBotao(Ex12ValidaEmail);
+end;
+
+```
+
 13. Implemente um conversor de bases numéricas (decimal, binário, octal, hexadecimal) com validação de entrada.
 14. Desenvolva um formulário que calcule o valor de parcelas de um financiamento com base no valor total, taxa de juros e número de parcelas.
 15. Crie um sistema que receba duas datas e calcule: diferença em dias, meses, anos e dia da semana de cada data.
