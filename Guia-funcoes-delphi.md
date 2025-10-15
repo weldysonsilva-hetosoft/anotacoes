@@ -165,5 +165,97 @@ Neste exemplo, a função recebe um `TClientDataSet` como parâmetro e retorna u
 
 ---
 
-> **Referência:**  
-> Consulte o [Guia de Desenvolvimento Sol.NET](../Documentacao/Conversao/Documentacao%20Basica.md) para exemplos práticos de uso de funções e padrões de codificação.
+## Callback em Delphi (Padrão Sol.NET)
+
+No contexto do Sol.NET, um **callback** é um procedimento ou função (incluindo métodos anônimos) que pode ser registrado para ser executado em momentos específicos do ciclo de processamento, como validação, pré-processamento, pós-processamento ou ajuste de dados. O uso de callbacks traz flexibilidade e desacoplamento, permitindo customizar comportamentos sem alterar a lógica central.
+
+---
+
+### O que é Callback?
+
+Callback é um conceito em que uma rotina (procedure/função) é passada como parâmetro ou registrada para ser chamada automaticamente em determinado ponto da execução. Em Delphi, pode ser implementado por métodos anônimos, ponteiros de método, eventos ou objetos dedicados.
+
+---
+
+### Uso de Callback na Conversão de Dados (Sol.NET_Conversao)
+
+No módulo **SolNET_Conversao**, callbacks são encapsulados na classe `TCallbackConversao` e associados a um momento do ciclo de conversão por meio do tipo `TMomentoConversao`. Eles são usados para validações, cálculos extras, ajustes, logs, etc.
+
+**Exemplo prático:**
+
+```delphi
+function ValidarDadosBasicos: TCallbackConversao;
+begin
+  Result := TCallbackConversao.Create(
+    procedure(Conversao: TConversao)
+    begin
+      // Regras de validação customizadas
+      if not ValidarCPF(Conversao.Origem.FieldByName('CPF').AsString) then
+        raise Exception.Create('CPF inválido!');
+    end,
+    TMomentoConversao.Validacao
+  );
+end;
+
+// Registro do callback:
+ParametrosConversao.ListaCallbacks.Add(ValidarDadosBasicos);
+```
+
+**Momentos disponíveis para execução (TMomentoConversao):**
+- `PreProc`: Antes de iniciar o processamento
+- `Validacao`: Durante validação de dados
+- `PreExec`: Antes de executar cada registro
+- `PosExec`: Após executar cada registro
+- `PosProc`: Após finalizar o processamento
+
+---
+
+### Uso de Callback em Integrações (Framework/Integracoes)
+
+No **Framework de Integrações** (pasta Framework/Integracoes), o conceito de callback aparece em métodos que podem ser passados como referência ou que são chamados em resposta a eventos de integração, como logs, auditorias, notificações de status, etc.
+
+**Exemplo típico:**
+
+```delphi
+procedure ProcessarIntegracao;
+begin
+  IniciarTransacao;
+  try
+    // Processamento principal...
+    LogAdd('Processo finalizado'); // Callback para registro de log
+    CommitTransacao;
+  except
+    RollbackTransacao;
+    raise;
+  end;
+end;
+```
+Ou, para notificações:
+
+```delphi
+Integracao.Handshake(siProcessoExecutando, 'MinhaEmpresa', 'ProcessoX', 'Resumo da integração');
+```
+
+---
+
+### Boas Práticas para Callback no Sol.NET
+
+- Use callbacks para centralizar validações e customizações sem alterar o fluxo principal.
+- Prefira métodos anônimos (`procedure of object`) quando possível, para maior flexibilidade.
+- Sempre registre callbacks no momento correto do ciclo de conversão ou integração.
+- Documente a intenção e o momento de execução do callback.
+- Utilize callbacks para logs, validação de dados, auditoria, notificações e pós-processamento.
+
+---
+
+### Resumo
+
+- **Callback** é um mecanismo essencial tanto em conversão de dados quanto em integrações no Sol.NET.
+- Traga flexibilidade, reutilização e desacoplamento para o código.
+- Utilize os tipos e classes padrões do projeto: `TCallbackConversao`, `TMomentoConversao`, além de métodos de log/auditoria nas integrações.
+
+---
+
+> Consulte também:  
+> [Documentação Básica SolNET_Conversao](Documentacao/Conversao/Documentacao%20Basica.md)  
+> [Framework de Integrações](Documentacao/Integracoes/Framework%20Integracoes.md)
