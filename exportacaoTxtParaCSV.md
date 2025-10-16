@@ -894,7 +894,7 @@ var
   i: Integer;
   Line: string;
 begin
-  // Deletar arquivo se já existir
+
   if FileExists(FileName) then
     DeleteFile(FileName);
 
@@ -902,7 +902,7 @@ begin
   Rewrite(CSVFile);
 
   try
-    // Escrever cabeçalho automaticamente
+
     Line := '';
     for i := 0 to Query.FieldCount - 1 do
     begin
@@ -912,7 +912,7 @@ begin
     end;
     Writeln(CSVFile, Line);
 
-    // Escrever dados
+
     Query.First;
     while not Query.Eof do
     begin
@@ -941,14 +941,14 @@ begin
   SaveDialog := TSaveDialog.Create(nil);
   Qry := TFDQuery.Create(nil);
   try
-    // Configurar diálogo "Salvar Como"
+
     SaveDialog.Title := 'Salvar Exportação de Produtos';
     SaveDialog.Filter := 'Arquivos TXT (*.txt)|*.txt|Arquivos CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*';
     SaveDialog.DefaultExt := 'txt';
     SaveDialog.FileName := 'Produtos_' + FormatDateTime('yyyymmdd_hhnnss', Now) + '.txt';
     SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
 
-    // Validar se usuário confirmou
+
     if not SaveDialog.Execute then
     begin
       ShowMessage('Exportação cancelada pelo usuário.');
@@ -957,7 +957,7 @@ begin
 
     Arquivo := SaveDialog.FileName;
 
-    // Executar consulta SQL
+
     Qry.Connection := Self.DadosDestino.Conexao;
     Qry.SQL.Text :=
       'SELECT P.ID_PRODUTO, P.CODIGO, ' +
@@ -971,17 +971,17 @@ begin
 
     Qry.Open;
 
-    // Validar se tem dados
+
     if Qry.IsEmpty then
     begin
       ShowMessage('Nenhum produto encontrado para exportar.');
       Exit;
     end;
 
-    // Exportar usando o método genérico (estilo TOTVS)
+
     ExportarParaCSV(Qry, Arquivo, '|');
 
-    // Mensagem de sucesso
+
     ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
                        'Total de produtos: %d' + sLineBreak +
                        'Arquivo: %s', [Qry.RecordCount, Arquivo]));
