@@ -36,7 +36,7 @@ A Programação Orientada a Objetos (POO) é um paradigma de programação que o
 
 ### Definindo uma Classe
 
-delphi
+```pascal
 
 `type
   TPessoa = class
@@ -81,6 +81,7 @@ begin
     Pessoa.Free;
   end;
 end;`
+```
 
 **Importante**: Sempre libere a memória com `Free` ou use `FreeAndNil`.
 
