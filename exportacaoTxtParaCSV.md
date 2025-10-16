@@ -713,3 +713,329 @@ O método usa encoding padrão do sistema (ANSI). Se precisar UTF-8, pode:
 ---
 
 🎉 **FIM DA EXPLICAÇÃO** 🎉
+
+
+
+```pascal
+unit uFrmLitePDV;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uFrmConversao, Data.DB, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Buttons, GeneralEdits, Vcl.Grids, Vcl.DBGrids,
+  DBGridPlus, ComboBoxPlus, Vcl.ExtCtrls, RadioGroupPlus, Vcl.Mask,
+  FireDAC.Comp.Client, FireDAC.Stan.Param;
+
+type
+  TFrmLitePDV = class(TFrmConversao)
+    tabPessoas: TTabSheet;
+    btnFornecedor: TBitBtn;
+    btnFabricante: TBitBtn;
+    tabProdutos: TTabSheet;
+    btnProdutos: TBitBtn;
+    btnUnidade: TBitBtn;
+    btnProdSituacaoEstoque: TBitBtn;
+    btnProdCodigos: TBitBtn;
+    btnExportacaoCSV: TBitBtn;
+    procedure btnProdutosClick(Sender: TObject);
+    procedure btnUnidadeClick(Sender: TObject);
+    procedure btnProdCodigosClick(Sender: TObject);
+    procedure btnProdSituacaoEstoqueClick(Sender: TObject);
+    procedure btnFornecedorClick(Sender: TObject);
+    procedure btnFabricanteClick(Sender: TObject);
+    procedure btnExportacaoCSVClick(Sender: TObject);
+  private
+    { Private declarations }
+    procedure BotaoFornecedor;
+    procedure BotaoFabricante;
+    procedure BotaoUnidade;
+    procedure BotaoProdutos;
+    procedure BotaoProdutoCodigos;
+    procedure BotaoProdutoSituacaoEstoque;
+    procedure BotaoCSV;
+    procedure ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
+  public
+    { Public declarations }
+  end;
+
+var
+    FrmLitePDV: TFrmLitePDV;
+
+implementation
+
+uses
+  ConversaoBuilder, uConversao.TConversaoGenerica, uConversao.TiposAuxiliares, uCdsHelper, Datasnap.DBClient, System.Generics.Collections,
+  uSolnetUtils;
+
+{$R *.dfm}
+
+{ TFrmlitePDV }
+
+procedure TFrmLitePDV.BotaoUnidade;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaUnidade.Create, 'CADASTRODESCRICAO')
+      .AddPrimaryKey('UN')
+      .AddCampo('CODIGO', 'UN')
+      .AddCampo('DESCRICAO', 'UN')
+      .Build;
+  ConversaoUnidade(ParametrosConversao);
+end;
+
+procedure TFrmLitePDV.BotaoProdutos;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaProduto.Create(Produto), 'CADASTRODESCRICAO')
+      .AddPrimaryKey('CODIGO')
+      .AddCampo('ID_UNIDADE', 'UN', TTabelaUnidade.Create)
+      .AddCampo('ID_FABRICANTE', 'LINKFABRICANTE', TTabelaPessoa.Create(Fab))
+      .AddCampo('ID_FORNECEDOR', 'FORNECEDOR', TTabelaPessoa.Create(Fornecedor))
+      .AddCampo('PRECO_VENDA_1', 'PRECO')
+      .AddCampo('DT_CADASTRO', 'DATA')
+      .AddCampo('VL_PESO_BRUTO', 'PESOBRUTO')
+      .AddCampo('VL_PESO_LIQUIDO', 'PESELIQUIDO')
+      .AddCampo('COMPRIMENTO', 'COMPRIMENTO')
+      .AddCampo('OBS_COMPLEMENTAR', 'CAMINHOFOTO')
+      .AddCampo('ID_GRADE', 'IDGRADE')
+      .AddCampo('PROMOCAO_1', 'PRECOPROMOCIONAL')
+      .AddCampo('DESCRICAO_AUX2', 'DESCRICAOGRADE')
+      .AddCampo('ID_GRADE', 'IDGRADE')
+      .AddCampo('PROMOCAO_1', 'PRECOPROMOCIONAL')
+      .AddCampo('DESCRICAO_AUX2', 'DESCRICAOGRADE')
+      .AddCampo('DESCRICAO', 'DESCRICAO')
+      .AddCampo('TP_HABILITAR_CUPOM_PROMO', 'IIF(ATIVARPROMOCAO = ''S'', 0, 1)')
+      .AddCampo('DT_VERIFICACAO_DESC', 'VENCIMENTOPROMOCAO')
+      .AddCampo('PROMOCAO_2', 'QUANTPROMOCAO')
+      .AddCampo('TP_PROD_IMPORTADO', 'IDIMPORTACAOPROD')
+      .AddCampo('ALTURA', 'ALTURA')
+      .AddCampo('LARGURA', 'LARGURA')
+      .AddCampo('LUCRO_LIQUIDO_1', 'LUCRO')
+      .AddCampo('PC_MARGEM_LUCRO_1', 'MARGEMLUCRO')
+      .AddCampo('ULTIMO_PRECO_COMPRA', 'PRECOCOMPRA')
+      .AddCampo('DESCRICAO_AUX1', 'REFERENCIA')
+      .AddCampo('INATIVO', 'IIF(PARTICIPACAO = ''DISPON�VEL'', 1, 0)')
+      .Build;
+
+  ConversaoProduto(ParametrosConversao);
+end;
+
+procedure TFrmLitePDV.BotaoProdutoCodigos;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaProdutoCodigos.Create, 'CADASTRODESCRICAO')
+      .AddCampo('ID_PRODUTO', 'CODIGO', TTabelaProduto.Create(Produto))
+      .AddCampo('TP_CODIGO', '1')
+      .AddCampo('ID_PESSOA', '0', TTabelaPessoa.Create(Fab))
+      .AddCampo('CODIGO', 'CODIGOBARRAS')
+      .AddCampo('PADRAO', '1')
+      .AddCampo('TP_BARRA', 'null')
+      .AddCampo('TP_BALANCA', 'null')
+      .AddWhere('CODIGOBARRAS IS NOT NULL AND CODIGOBARRAS <> ''''')
+      .BuildAndCreateNewParametroSQL
+
+      .SetTabelaConversao(TTabelaProdutoCodigos.Create, 'CADASTRODESCRICAO')
+      .AddCampo('ID_PRODUTO', 'CODIGO', TTabelaProduto.Create(Produto))
+      .AddCampo('TP_CODIGO', '1')
+      .AddCampo('ID_PESSOA', '0')
+      .AddCampo('CODIGO', 'CODBARRASALTERNATIVO')
+      .AddCampo('PADRAO', '0')
+      .AddCampo('TP_BARRA', '0')
+      .AddCampo('TP_BALANCA', 'null')
+      .AddWhere('CODBARRASALTERNATIVO IS NOT NULL AND CODBARRASALTERNATIVO <> ''''')
+      .Build;
+
+  ConversaoProdutoCodigos(ParametrosConversao);
+
+end;
+
+procedure TFrmLitePDV.BotaoProdutoSituacaoEstoque;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaProdutosSituacaoEstoque.Create, 'CADASTRODESCRICAO')
+      .AddCampo('ID_EMPRESA', '0')
+      .AddCampo('ID_LOCAL_ESTOQUE', '1')
+      .AddCampo('ID_SITUACAO_ESTOQUE', '1')
+      .AddCampo('ID_PRODUTO', 'CODIGO', TTabelaProduto.Create(Produto))
+      .AddCampo('SALDO', 'ESTOQUE')
+      .Build;
+
+  ConversaoProdutoSituacaoEstoque(ParametrosConversao);
+
+end;
+
+procedure TFrmLitePDV.BotaoFornecedor;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaPessoa.Create(Fornecedor), 'CADASTRODESCRICAO')
+      .AddPrimaryKey('CODIGO')
+      .AddCampo('NOME', 'FORNECEDOR')
+      .AddCampo('TPFORNECEDOR', 'LINKFORNECEDOR')
+      .Build;
+
+  ConversaoPessoas(ParametrosConversao);
+
+end;
+
+procedure TFrmLitePDV.BotaoFabricante;
+begin
+  var ParametrosConversao: TParametrosConversao := TConversaoBuilder.Create
+      .SetTabelaConversao(TTabelaPessoa.Create(Fab), 'CADASTRODESCRICAO')
+      .AddPrimaryKey('CODIGO')
+      .AddCampo('TPFABRICANTE', 'LINKFABRICANTE')
+      .Build;
+
+  ConversaoPessoas(ParametrosConversao);
+end;
+
+procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
+var
+  CSVFile: TextFile;
+  i: Integer;
+  Line: string;
+begin
+  // Deletar arquivo se já existir
+  if FileExists(FileName) then
+    DeleteFile(FileName);
+
+  AssignFile(CSVFile, FileName);
+  Rewrite(CSVFile);
+
+  try
+    // Escrever cabeçalho automaticamente
+    Line := '';
+    for i := 0 to Query.FieldCount - 1 do
+    begin
+      Line := Line + Query.Fields[i].FieldName;
+      if i < Query.FieldCount - 1 then
+        Line := Line + SeparatorChar;
+    end;
+    Writeln(CSVFile, Line);
+
+    // Escrever dados
+    Query.First;
+    while not Query.Eof do
+    begin
+      Line := '';
+      for i := 0 to Query.FieldCount - 1 do
+      begin
+        Line := Line + Query.Fields[i].AsString;
+        if i < Query.FieldCount - 1 then
+          Line := Line + SeparatorChar;
+      end;
+      Writeln(CSVFile, Line);
+      Query.Next;
+    end;
+
+  finally
+    CloseFile(CSVFile);
+  end;
+end;
+
+procedure TFrmLitePDV.BotaoCSV;
+var
+  Qry: TFDQuery;
+  Arquivo: string;
+  SaveDialog: TSaveDialog;
+begin
+  SaveDialog := TSaveDialog.Create(nil);
+  Qry := TFDQuery.Create(nil);
+  try
+    // Configurar diálogo "Salvar Como"
+    SaveDialog.Title := 'Salvar Exportação de Produtos';
+    SaveDialog.Filter := 'Arquivos TXT (*.txt)|*.txt|Arquivos CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*';
+    SaveDialog.DefaultExt := 'txt';
+    SaveDialog.FileName := 'Produtos_' + FormatDateTime('yyyymmdd_hhnnss', Now) + '.txt';
+    SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
+
+    // Validar se usuário confirmou
+    if not SaveDialog.Execute then
+    begin
+      ShowMessage('Exportação cancelada pelo usuário.');
+      Exit;
+    end;
+
+    Arquivo := SaveDialog.FileName;
+
+    // Executar consulta SQL
+    Qry.Connection := Self.DadosDestino.Conexao;
+    Qry.SQL.Text :=
+      'SELECT P.ID_PRODUTO, P.CODIGO, ' +
+      '       COALESCE(P.CODIGO_BARRA, '''') AS CODIGO_BARRA, ' +
+      '       P.DESCRICAO, ' +
+      '       COALESCE(F.DESCRICAO, '''') AS DESCRICAO_FAMILIA, ' +
+      '       COALESCE(P.PRECO_VENDA_1, 0) AS PRECO ' +
+      'FROM PRODUTOS P ' +
+      'LEFT JOIN FAMILIAS_PRODUTOS F ON F.ID_FAMILIA_PRODUTO = P.ID_FAMILIA_PRODUTO ' +
+      'ORDER BY P.ID_PRODUTO';
+
+    Qry.Open;
+
+    // Validar se tem dados
+    if Qry.IsEmpty then
+    begin
+      ShowMessage('Nenhum produto encontrado para exportar.');
+      Exit;
+    end;
+
+    // Exportar usando o método genérico (estilo TOTVS)
+    ExportarParaCSV(Qry, Arquivo, '|');
+
+    // Mensagem de sucesso
+    ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
+                       'Total de produtos: %d' + sLineBreak +
+                       'Arquivo: %s', [Qry.RecordCount, Arquivo]));
+
+  finally
+    Qry.Free;
+    SaveDialog.Free;
+  end;
+end;
+
+procedure TFrmLitePDV.btnExportacaoCSVClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoCSV, Sender);
+
+end;
+
+procedure TFrmLitePDV.btnFabricanteClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoFabricante, Sender);
+end;
+
+procedure TFrmLitePDV.btnFornecedorClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoFornecedor, Sender);
+end;
+
+procedure TFrmLitePDV.btnProdCodigosClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoProdutoCodigos, Sender);
+end;
+
+procedure TFrmLitePDV.btnProdSituacaoEstoqueClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoProdutoSituacaoEstoque, Sender);
+
+end;
+
+procedure TFrmLitePDV.btnProdutosClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoProdutos, Sender);
+
+end;
+
+procedure TFrmLitePDV.btnUnidadeClick(Sender: TObject);
+begin
+  inherited;
+  ExecutarBotao(BotaoUnidade, Sender);
+end;
+
+end.
+```
