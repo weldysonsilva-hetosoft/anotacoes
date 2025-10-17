@@ -27,10 +27,11 @@ Exporta produtos do banco de dados para arquivo texto (CSV/TXT) com campos separ
 
 ### Declarações no `private`:
 
-pascal
+```pascal
 
-`procedure BotaoCSV;
-procedure ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);`
+procedure BotaoCSV;
+procedure ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
+```
 
 **Por que private?**
 
@@ -49,14 +50,14 @@ ProcedimentoFunçãoBotaoCSVCoordenador - gerencia processo (janela, SQL, valida
 
 ### 🔘 EVENTO DO BOTÃO
 
-pascal
+```pascal
 
-`procedure TFrmLitePDV.btnExportacaoCSVClick(Sender: TObject);
+procedure TFrmLitePDV.btnExportacaoCSVClick(Sender: TObject);
 begin
   inherited;
   ExecutarBotao(BotaoCSV, Sender);
-end;`
-
+end;
+```
 **Explicação:**
 
 - `inherited` → executa código da classe base primeiro
@@ -69,9 +70,9 @@ end;`
 
 ### **ETAPA 1: Preparação**
 
-pascal
+```pascal
 
-`procedure TFrmLitePDV.BotaoCSV;
+procedure TFrmLitePDV.BotaoCSV;
 var
   Qry: TFDQuery;
   Arquivo: string;
@@ -79,8 +80,8 @@ var
 begin
   SaveDialog := TSaveDialog.Create(nil);
   Qry := TFDQuery.Create(nil);
-  try`
-
+  try
+```
 **Variáveis:**
 
 - `Qry` → consulta SQL
@@ -91,14 +92,14 @@ begin
 
 ### **ETAPA 2: Configurar SaveDialog**
 
-pascal
+```pascal
 
-`SaveDialog.Title := 'Salvar Exportação de Produtos';
+SaveDialog.Title := 'Salvar Exportação de Produtos';
 SaveDialog.Filter := 'Arquivos TXT (*.txt)|*.txt|Arquivos CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*';
 SaveDialog.DefaultExt := 'txt';
 SaveDialog.FileName := 'Produtos_' + FormatDateTime('yyyymmdd_hhnnss', Now) + '.txt';
-SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));`
-
+SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
+```
 **Detalhes:**
 
 - **Filter**: 3 opções (TXT, CSV, Todos)
@@ -109,15 +110,15 @@ SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));`
 
 ### **ETAPA 3: Validar Usuário**
 
-pascal
+```pascal
 
-`if not SaveDialog.Execute then
+if not SaveDialog.Execute then
 begin
   ShowMessage('Exportação cancelada pelo usuário.');
   Exit;
 end;
-
-Arquivo := SaveDialog.FileName;`
+```
+`Arquivo := SaveDialog.FileName;`
 
 **Fluxo:**
 
@@ -128,9 +129,9 @@ Arquivo := SaveDialog.FileName;`
 
 ### **ETAPA 4: Executar SQL**
 
-pascal
+```pascal
 
-`Qry.Connection := Self.DadosDestino.Conexao;
+Qry.Connection := Self.DadosDestino.Conexao;
 Qry.SQL.Text :=
   'SELECT P.ID_PRODUTO, P.CODIGO, ' +
   '       COALESCE(P.CODIGO_BARRA, '''') AS CODIGO_BARRA, ' +
@@ -141,8 +142,8 @@ Qry.SQL.Text :=
   'LEFT JOIN FAMILIAS_PRODUTOS F ON F.ID_FAMILIA_PRODUTO = P.ID_FAMILIA_PRODUTO ' +
   'ORDER BY P.ID_PRODUTO';
 
-Qry.Open;`
-
+Qry.Open;
+```
 **Detalhes SQL:**
 
 - `COALESCE(campo, valor_padrão)` → se NULL, usa padrão
@@ -153,22 +154,22 @@ Qry.Open;`
 
 ### **ETAPA 5: Validar Dados**
 
-pascal
+```pascal
 
-`if Qry.IsEmpty then
+if Qry.IsEmpty then
 begin
   ShowMessage('Nenhum produto encontrado para exportar.');
   Exit;
-end;`
-
+end;
+```
 ---
 
 ### **ETAPA 6: Exportar**
 
-pascal
+```pascal
 
-`ExportarParaCSV(Qry, Arquivo, '|');`
-
+ExportarParaCSV(Qry, Arquivo, '|');
+```
 **Parâmetros:**
 
 1. `Qry` → dados
@@ -179,46 +180,46 @@ pascal
 
 ### **ETAPA 7: Sucesso**
 
-pascal
+```pascal
 
-`ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
+ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
                    'Total de produtos: %d' + sLineBreak +
                    'Arquivo: %s', [Qry.RecordCount, Arquivo]));
 ```
 
 **Resultado:**
-```
+
 Exportação concluída com sucesso!
 Total de produtos: 237
-Arquivo: C:\Export\Produtos_20241017_143025.txt`
+Arquivo: C:\Export\Produtos_20241017_143025.txt
 
 ---
 
 ### **ETAPA 8: Limpar Memória**
 
-pascal
+```pascal
 
-  `finally
+  finally
     Qry.Free;
     SaveDialog.Free;
   end;
-end;`
-
+end;
+```
 **Crítico:** `finally` sempre executa (evita memory leak)
 
 ---
 
 ### 💾 PROCEDIMENTO EXPORTARPARACSV (EXECUTOR)
 
-pascal
+```pascal
 
-`procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
+procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
 var
   CSVFile: TextFile;
   i: Integer;
   Line: string;
-begin`
-
+begin
+```
 **Por que `TDataSet`?**
 
 - Classe base de TODAS as fontes de dados
@@ -229,14 +230,14 @@ begin`
 
 ### **PASSO 1: Preparar Arquivo**
 
-pascal
+```pascal
 
-`if FileExists(FileName) then
+if FileExists(FileName) then
   DeleteFile(FileName);
 
 AssignFile(CSVFile, FileName);
-Rewrite(CSVFile);`
-
+Rewrite(CSVFile);
+```
 **Comandos:**
 
 ```
@@ -247,9 +248,9 @@ ComandoFunçãoFileExistsVerifica se arquivo existeDeleteFileApaga arquivo antig
 
 ### **PASSO 2: Escrever Cabeçalho**
 
-pascal
+```pascal
 
-`try
+try
   Line := '';
   for i := 0 to Query.FieldCount - 1 do
   begin
@@ -257,8 +258,8 @@ pascal
     if i < Query.FieldCount - 1 then
       Line := Line + SeparatorChar;
   end;
-  Writeln(CSVFile, Line);`
-
+  Writeln(CSVFile, Line);
+````
 **Exemplo de processamento:**
 
 ```
@@ -271,9 +272,9 @@ iCampoLineAdiciona separador?0ID_PRODUTO"ID_PRODUTO"✅ Sim1CODIGO"ID_PRODUTO|CO
 
 ### **PASSO 3: Escrever Dados**
 
-pascal
+```pascal
 
-`Query.First;
+Query.First;
 while not Query.Eof do
 begin
   Line := '';
@@ -285,8 +286,8 @@ begin
   end;
   Writeln(CSVFile, Line);
   Query.Next;
-end;`
-
+end;
+```
 **Loop:**
 
 - `Query.First` → vai para primeiro registro
@@ -300,13 +301,13 @@ end;`
 
 ### **PASSO 4: Fechar Arquivo**
 
-pascal
+```pascal
 
-  `finally
+  finally
     CloseFile(CSVFile);
   end;
-end;`
-
+end;
+```
 **Crítico:** Sem `CloseFile`, arquivo fica travado e dados podem ser perdidos!
 
 ---
@@ -315,29 +316,29 @@ end;`
 
 ### TRY...FINALLY
 
-pascal
+```pascal
 
-`try
+try
   *// código que pode dar erro*
 finally
   *// SEMPRE executado (limpeza)*
-end;`
-
+end;
+```
 **Uso:** Garantir liberação de recursos (memória, arquivos, conexões)
 
 ---
 
 ### CREATE e FREE
 
-pascal
+```pascal
 
-`Objeto := TClasse.Create(nil);
+Objeto := TClasse.Create(nil);
 try
   *// usar objeto*
 finally
   Objeto.Free;
-end;`
-
+end;
+```
 **Regra de ouro:** Tudo que você `.Create`, deve `.Free`
 
 ---
@@ -352,35 +353,35 @@ MembroDescriçãoFieldCountNúmero de colunasFields[i]Acessa campo pelo índiceF
 
 ### TextFile - Operações
 
-pascal
+```pascal
 
-`AssignFile(Arquivo, 'caminho.txt');  *// Associar*
+AssignFile(Arquivo, 'caminho.txt');  *// Associar*
 Rewrite(Arquivo);                     *// Criar/abrir*
 Writeln(Arquivo, 'texto');            *// Escrever linha*
 CloseFile(Arquivo);                   *// Fechar (crítico!)*`
-
+```
 ---
 
 ### Function vs Procedure
 
 **PROCEDURE** - só executa:
 
-pascal
+```pascal
 
-`procedure MostrarMensagem(texto: string);
+procedure MostrarMensagem(texto: string);
 begin
   ShowMessage(texto);
-end;`
-
+end;
+```
 **FUNCTION** - executa E retorna:
 
-pascal
+```pascal
 
-`function Somar(a, b: Integer): Integer;
+function Somar(a, b: Integer): Integer;
 begin
   Result := a + b;
-end;`
-
+end;
+```
 **Quando usar function?**
 
 - Quando **precisa do retorno** para decidir algo
@@ -394,20 +395,20 @@ end;`
 
 ### Exportar Clientes
 
-pascal
+```pascal
 
-`Qry.SQL.Text := 'SELECT * FROM PESSOAS WHERE TPCLIENTE = 1';
+Qry.SQL.Text := 'SELECT * FROM PESSOAS WHERE TPCLIENTE = 1';
 Qry.Open;
-ExportarParaCSV(Qry, 'C:\Temp\Clientes.csv', ';');`
-
+ExportarParaCSV(Qry, 'C:\Temp\Clientes.csv', ';');
+```
 ### Exportar Vendas (separador TAB)
 
-pascal
+```pascal
 
-`Qry.SQL.Text := 'SELECT * FROM MOVIMENTOS WHERE TIPO = 0';
+Qry.SQL.Text := 'SELECT * FROM MOVIMENTOS WHERE TIPO = 0';
 Qry.Open;
-ExportarParaCSV(Qry, 'C:\Temp\Vendas.tsv', #9);`
-
+ExportarParaCSV(Qry, 'C:\Temp\Vendas.tsv', #9);
+```
 ### Separadores Comuns
 
 ```
@@ -420,32 +421,32 @@ SeparadorCódigoUsoPipe'|'Padrão do projetoPonto e vírgula';'CSV BrasilVírgul
 
 ### ✅ Tratamento de Erros
 
-pascal
+```pascal
 
-`try
+try
   ExportarParaCSV(Qry, Arquivo, '|');
 except
   on E: Exception do
     ShowMessage('Erro ao exportar: ' + E.Message);
-end;`
-
+end;
+```
 ### ✅ Barra de Progresso (muitos registros)
 
-pascal
+```pascal
 
-`ProgressBar.Max := Query.RecordCount;
+ProgressBar.Max := Query.RecordCount;
 while not Query.Eof do
 begin
   *// exportar linha*
   ProgressBar.Position := ProgressBar.Position + 1;
   Query.Next;
-end;`
-
+end;
+```
 ### ✅ Encoding UTF-8 (acentos)
 
-pascal
+```pascal
 
-`var
+var
   Lista: TStringList;
 begin
   Lista := TStringList.Create;
@@ -456,16 +457,16 @@ begin
     Lista.Free;
   end;
 end;`
-
+```
 ### ⚠️ Atenção: Caracteres Especiais
 
 Se descrição contém `|`, vai "quebrar" colunas.
 
 **Solução:** Usar aspas ou escapar:
 
-pascal
+```pascal
 
-`Line := Line + '"' + StringReplace(Valor, '"', '""', [rfReplaceAll]) + '"';
+Line := Line + '"' + StringReplace(Valor, '"', '""', [rfReplaceAll]) + '"';
 ```
 
 ---
@@ -477,7 +478,7 @@ ID_PRODUTO|CODIGO|CODIGO_BARRA|DESCRICAO|DESCRICAO_FAMILIA|PRECO
 2|002|7891234567891|Feijão Preto 1kg|Alimentos|8.50
 3|003||Detergente Líquido|Limpeza|3.20
 4|004|7891234567892|Sabonete 90g|Higiene|2.50`
-
+```
 **Observe:** Linha 3 tem campo vazio (`||`) - produto sem código de barras
 
 ---
