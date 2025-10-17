@@ -712,14 +712,9 @@ O método usa encoding padrão do sistema (ANSI). Se precisar UTF-8, pode:
 
 ---
 
-🎉 **FIM DA EXPLICAÇÃO** 🎉
-
-
-
-
 ---
 
-# Explicação Completa do Código de Exportação CSV - Passo a Passo
+# 🎯 Explicação mais  Completa do Código de Exportação CSV - Passo a Passo   
 
 Vou explicar todo o sistema de exportação como se estivesse ensinando para alguém que está começando a programar em Delphi. Vamos com calma! 😊
 
