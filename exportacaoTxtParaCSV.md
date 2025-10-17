@@ -1,15 +1,5 @@
 # 📚 GUIA COMPLETO: EXPORTAÇÃO CSV - DO BÁSICO AO AVANÇADO
 
-## 📑 ÍNDICE
-
-1. [Visão Geral](https://www.notion.so/Pratica-Sol-ne-2866d2e107ee80be8812ed7d277864d2?pvs=21)
-2. [Estrutura do Código](https://www.notion.so/Pratica-Sol-ne-2866d2e107ee80be8812ed7d277864d2?pvs=21)
-3. [Implementação Passo a Passo](https://www.notion.so/Pratica-Sol-ne-2866d2e107ee80be8812ed7d277864d2?pvs=21)
-4. [Conceitos Fundamentais](https://www.notion.so/Pratica-Sol-ne-2866d2e107ee80be8812ed7d277864d2?pvs=21)
-5. [Exemplos de Uso](https://www.notion.so/Pratica-Sol-ne-2866d2e107ee80be8812ed7d277864d2?pvs=21)
-6. [Melhorias e Boas Práticas](https://www.notion.so/Pratica-Sol-ne-2866d2e107ee80be8812ed7d277864d2?pvs=21)
-
----
 
 ## 1. VISÃO GERAL
 
