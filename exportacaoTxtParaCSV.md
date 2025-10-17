@@ -350,16 +350,16 @@ FileName
 
 ```
 SELECT
-  P.ID_PRODUTO,                                      -- Campo 1
-  P.CODIGO,                                          -- Campo 2
-  COALESCE(P.CODIGO_BARRA, '') AS CODIGO_BARRA,     -- Campo 3 (vazio se NULL)
-  P.DESCRICAO,                                       -- Campo 4
-  COALESCE(F.DESCRICAO, '') AS DESCRICAO_FAMILIA,   -- Campo 5 (vazio se NULL)
-  COALESCE(P.PRECO_VENDA_1, 0) AS PRECO             -- Campo 6 (0 se NULL)
+  P.ID_PRODUTO,                                      
+  P.CODIGO,                                          
+  COALESCE(P.CODIGO_BARRA, '') AS CODIGO_BARRA,     
+  P.DESCRICAO,                                       
+  COALESCE(F.DESCRICAO, '') AS DESCRICAO_FAMILIA,   
+  COALESCE(P.PRECO_VENDA_1, 0) AS PRECO             
 FROM PRODUTOS P
-LEFT JOIN FAMILIAS_PRODUTOS F                       -- Busca família (pode não ter)
+LEFT JOIN FAMILIAS_PRODUTOS F                       
   ON F.ID_FAMILIA_PRODUTO = P.ID_FAMILIA_PRODUTO
-ORDER BY P.ID_PRODUTO;                              -- Ordena por ID
+ORDER BY P.ID_PRODUTO;                              
 ```
 
 **`COALESCE(campo, valor_padrao)`** - Se `campo` for NULL, usa `valor_padrao`
