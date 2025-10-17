@@ -850,7 +850,7 @@ SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
 1. **Título**: "Salvar Exportação de Produtos" (aparece no topo da janela)
 
 2. **Filter (Filtro de tipos)**: 
-```
+
    'Arquivos TXT (*.txt)|*.txt|Arquivos CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*'`
 
 - Formato: `Descrição|Padrão|Descrição|Padrão...`
@@ -877,7 +877,7 @@ SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
 
 ### **ETAPA 3: Validar se Usuário Confirmou**
 
-pascal
+```pascal
 
 `if not SaveDialog.Execute then
 begin
@@ -886,6 +886,7 @@ begin
 end;
 
 Arquivo := SaveDialog.FileName;`
+```
 
 **O que acontece:**
 
@@ -905,7 +906,7 @@ Arquivo := SaveDialog.FileName;`
 
 ### **ETAPA 4: Montar e Executar Consulta SQL**
 
-pascal
+```pascal
 
 `Qry.Connection := Self.DadosDestino.Conexao;
 Qry.SQL.Text :=
@@ -919,7 +920,7 @@ Qry.SQL.Text :=
   'ORDER BY P.ID_PRODUTO';
 
 Qry.Open;`
-
+```
 **Conectar ao banco:**
 
 - `Qry.Connection := Self.DadosDestino.Conexao`
@@ -929,49 +930,50 @@ Qry.Open;`
 
 Vou explicar a query SQL parte por parte:
 
-sql
+```sql
 
 `SELECT P.ID_PRODUTO, P.CODIGO,`
-
+```
 - Pega o ID e código interno do produto
 
-sql
+```sql
 
 `COALESCE(P.CODIGO_BARRA, '') AS CODIGO_BARRA,`
-
+```
 - **`COALESCE`** = "se for NULL, use o segundo valor"
 - Se produto não tem código de barras (NULL), coloca string vazia `''`
 - **Por que?** Evita problemas ao gravar no arquivo
 
-sql
+```sql
 
 `P.DESCRICAO,`
-
+```
 - Nome/descrição do produto
 
-sql
+```sql
 
 `COALESCE(F.DESCRICAO, '') AS DESCRICAO_FAMILIA,`
-
+```
 - Descrição da categoria/família do produto
 - Se produto não tem família, retorna vazio
 
-sql
+```sql
 
 `COALESCE(P.PRECO_VENDA_1, 0) AS PRECO`
-
+```
 - Preço de venda do produto
 - Se for NULL, usa 0
 
-sql
+```sql
 
 `FROM PRODUTOS P`
-
+```
 - Da tabela PRODUTOS (apelido `P` para simplificar)
 
-sql
+```sql
 
 `LEFT JOIN FAMILIAS_PRODUTOS F ON F.ID_FAMILIA_PRODUTO = P.ID_FAMILIA_PRODUTO`
+```
 
 - **LEFT JOIN** = "junte com outra tabela, mas traga TODOS os produtos"
 - Mesmo se produto não tiver família, ele aparece no resultado
@@ -982,9 +984,10 @@ sql
 - **INNER JOIN**: só traz produtos que TÊM família
 - **LEFT JOIN**: traz TODOS os produtos (com ou sem família)
 
-sql
+```sql
 
 `ORDER BY P.ID_PRODUTO`
+```
 
 - Ordena resultado por ID (do menor para o maior)
 
@@ -1000,14 +1003,14 @@ pascal
 
 ### **ETAPA 5: Validar se Há Dados**
 
-pascal
+```pascal
 
 `if Qry.IsEmpty then
 begin
   ShowMessage('Nenhum produto encontrado para exportar.');
   Exit;
 end;`
-
+```
 - **`Qry.IsEmpty`** = verifica se a consulta retornou 0 registros
 - Se estiver vazia: mostra mensagem e sai
 - **Por que validar?** Não faz sentido criar arquivo vazio
@@ -1016,10 +1019,10 @@ end;`
 
 ### **ETAPA 6: Chamar Exportação**
 
-pascal
+```pascal
 
 `ExportarParaCSV(Qry, Arquivo, '|');`
-
+```
 **Chama o procedimento especializado em gravar arquivo**
 
 - Parâmetros:
@@ -1031,7 +1034,7 @@ pascal
 
 ### **ETAPA 7: Mostrar Sucesso**
 
-pascal
+```pascal
 
 `ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
                    'Total de produtos: %d' + sLineBreak +
@@ -1045,7 +1048,7 @@ pascal
 - `sLineBreak` = quebra de linha
 
 **Resultado:**
-```
+
 Exportação concluída com sucesso!
 Total de produtos: 237
 Arquivo: C:\Export\Produtos_20241017_143025.txt`
@@ -1054,13 +1057,13 @@ Arquivo: C:\Export\Produtos_20241017_143025.txt`
 
 ### **ETAPA 8: Limpar Memória**
 
-pascal
+```pascal
 
 `finally
   Qry.Free;
   SaveDialog.Free;
 end;`
-
+```
 **Bloco FINALLY:**
 
 - **SEMPRE executado**, mesmo se houver erro
@@ -1078,7 +1081,7 @@ end;`
 
 Agora vamos ao procedimento que realmente grava o arquivo:
 
-pascal
+```pascal
 
 `procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
 var
@@ -1086,6 +1089,7 @@ var
   i: Integer;
   Line: string;
 begin`
+```
 
 **Parâmetros recebidos:**
 
@@ -1103,7 +1107,7 @@ begin`
 
 ### **PASSO 1: Deletar Arquivo Antigo (se existir)**
 
-pascal
+```pascal
 
 `if FileExists(FileName) then
   DeleteFile(FileName);`
@@ -1111,16 +1115,17 @@ pascal
 - `FileExists`: verifica se arquivo já existe
 - `DeleteFile`: apaga o arquivo
 - **Por que?** Garantir que criamos arquivo novo, sem restos de dados antigos
-
+```
 ---
 
 ### **PASSO 2: Abrir Arquivo para Escrita**
 
-pascal
+```pascal
 
 `AssignFile(CSVFile, FileName);
 Rewrite(CSVFile);`
 
+```
 **`AssignFile(CSVFile, FileName)`:**
 
 - **Associa** a variável `CSVFile` ao arquivo físico
@@ -1141,7 +1146,7 @@ Rewrite(CSVFile);`
 
 ### **PASSO 3: Criar Linha de Cabeçalho**
 
-pascal
+```pascal
 
 `try
   Line := '';
@@ -1151,6 +1156,8 @@ pascal
     if i < Query.FieldCount - 1 then
       Line := Line + SeparatorChar;
   end;`
+```
+
 
 **Bloco TRY:**
 
@@ -1170,7 +1177,7 @@ pascal
     - ... e assim por diante
 4. **Adicionar separador:**
 
-pascal
+```pascal
 
    `if i < Query.FieldCount - 1 then
      Line := Line + SeparatorChar;
@@ -1186,10 +1193,10 @@ ID_PRODUTO|CODIGO|CODIGO_BARRA|DESCRICAO|DESCRICAO_FAMILIA|PRECO`
 
 ### **PASSO 4: Gravar Cabeçalho**
 
-pascal
+```pascal
 
 `Writeln(CSVFile, Line);`
-
+```
 - **`Writeln`** = escreve no arquivo e pula linha
 - Grava o cabeçalho como primeira linha do arquivo
 
@@ -1199,7 +1206,7 @@ pascal
 
 **NOTA:** O código que você mostrou tem um problema - está incompleto! Falta o loop que grava os dados. Vou mostrar como deveria ser:
 
-pascal
+```pascal
 
 `Query.First;  *// Volta para o primeiro registro*
 while not Query.Eof do  *// Enquanto não chegar no fim*
@@ -1234,7 +1241,7 @@ end;
 5. **`Query.Next`**: avança para próximo produto
 
 **Exemplo de linhas geradas:**
-```
+
 1|001|7891234567890|Arroz Integral 1kg|Alimentos|15.90
 2|002|7891234567891|Feijão Preto 1kg|Alimentos|8.50
 3|003||Detergente Líquido|Limpeza|3.20`
@@ -1245,7 +1252,7 @@ Repare no terceiro produto: **não tem código de barras** (campo vazio entre `|
 
 ### **PASSO 6: Fechar Arquivo**
 
-pascal
+```pascal
 
 `finally
   CloseFile(CSVFile);
@@ -1261,7 +1268,7 @@ end;
 ## **6. RESUMO DO FLUXO COMPLETO**
 
 Vou resumir toda a jornada:
-```
+
 1. USUÁRIO CLICA NO BOTÃO
    ↓
 2. btnExportacaoCSVClick é disparado
@@ -1301,14 +1308,14 @@ Vou resumir toda a jornada:
 
 ### **TRY...FINALLY**
 
-pascal
+```pascal
 
 `try
   *// código que pode dar erro*
 finally
   *// SEMPRE executado (limpar memória)*
 end;`
-
+```
 **Por que usar?**
 
 - Garante limpeza mesmo com erro
@@ -1319,7 +1326,7 @@ end;`
 
 ### **CREATE e FREE**
 
-pascal
+```pascal
 
 `Objeto := TClasse.Create(nil);  *// Criar*
 try
@@ -1327,6 +1334,7 @@ try
 finally
   Objeto.Free;  *// Destruir*
 end;`
+```
 
 **Regra de ouro:**
 
@@ -1349,13 +1357,13 @@ end;`
 
 ### **ARQUIVO TEXTO (TextFile)**
 
-pascal
+```pascal
 
 `AssignFile(Arquivo, 'caminho.txt');  *// Associar*
 Rewrite(Arquivo);                     *// Abrir para escrita*
 Writeln(Arquivo, 'texto');            *// Escrever*
 CloseFile(Arquivo);                   *// Fechar*`
-
+```
 **Sempre feche o arquivo!**
 
 ---
@@ -1364,7 +1372,7 @@ CloseFile(Arquivo);                   *// Fechar*`
 
 1. **Falta tratamento de erro:**
 
-pascal
+```pascal
 
    `try
      *// código atual*
