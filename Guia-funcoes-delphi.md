@@ -170,7 +170,7 @@ Neste exemplo, a função recebe um `TClientDataSet` como parâmetro e retorna u
 
 **Faz uma ação, não retorna nada**
 
-pascal
+```pascal
 
 `procedure MostrarMensagem(texto: string);
 begin
@@ -179,14 +179,14 @@ end;
 
 *// Uso:*
 MostrarMensagem('Olá');  *// Executa e pronto*`
+````
 
----
 
 ## **FUNCTION** 📦
 
 **Faz uma ação E retorna um resultado**
 
-pascal
+```pascal
 
 `function Somar(a, b: Integer): Integer;
 begin
@@ -197,8 +197,8 @@ end;
 x := Somar(5, 3);  *// x recebe 8*
 if Somar(2, 2) = 4 then  *// Usa o retorno para decidir algo*
   ShowMessage('Correto!');`
+```
 
----
 
 ## **Quando usar cada um?**
 
@@ -206,7 +206,7 @@ if Somar(2, 2) = 4 then  *// Usa o retorno para decidir algo*
 SituaçãoUseSó executar algo (salvar, mostrar, deletar)ProcedurePrecisa do resultado para decidir/usar depoisFunctionCalcular, validar, verificar algoFunctionOperação sem retorno relevanteProcedure
 ```
 
----
+
 
 ## **Exemplo prático:**
 
@@ -229,16 +229,12 @@ end;
 if ExportarCSV(Query) then
   ShowMessage('Deu certo!')
 else
-  ShowMessage('Erro!');`
-
+  ShowMessage('Erro!');
 ```
 
 **Resumão:** Function = retorna algo útil | Procedure = só faz a ação 🎯
 
-
-
-
----
+--- 
 
 ## Callback em Delphi (Padrão Sol.NET)
 
