@@ -162,6 +162,81 @@ Neste exemplo, a função recebe um `TClientDataSet` como parâmetro e retorna u
   ```delphi
   var MinhaVariavel: Integer := 0;
   ```
+---
+
+# Function vs Procedure - Regra Prática
+
+## **PROCEDURE** 🔨
+
+**Faz uma ação, não retorna nada**
+
+pascal
+
+`procedure MostrarMensagem(texto: string);
+begin
+  ShowMessage(texto);  *// Só executa, não devolve nada*
+end;
+
+*// Uso:*
+MostrarMensagem('Olá');  *// Executa e pronto*`
+
+---
+
+## **FUNCTION** 📦
+
+**Faz uma ação E retorna um resultado**
+
+pascal
+
+`function Somar(a, b: Integer): Integer;
+begin
+  Result := a + b;  *// Retorna o resultado*
+end;
+
+*// Uso:*
+x := Somar(5, 3);  *// x recebe 8*
+if Somar(2, 2) = 4 then  *// Usa o retorno para decidir algo*
+  ShowMessage('Correto!');`
+
+---
+
+## **Quando usar cada um?**
+
+```
+SituaçãoUseSó executar algo (salvar, mostrar, deletar)ProcedurePrecisa do resultado para decidir/usar depoisFunctionCalcular, validar, verificar algoFunctionOperação sem retorno relevanteProcedure
+```
+
+---
+
+## **Exemplo prático:**
+
+```pascal
+
+`*// PROCEDURE - só exporta*
+procedure ExportarCSV(dados: TDataSet);
+begin
+  *// exporta e pronto*
+end;
+
+*// FUNCTION - exporta E diz se deu certo*
+function ExportarCSV(dados: TDataSet): Boolean;
+begin
+  *// exporta*
+  Result := True;  *// retorna sucesso/falha*
+end;
+
+*// Uso da function:*
+if ExportarCSV(Query) then
+  ShowMessage('Deu certo!')
+else
+  ShowMessage('Erro!');`
+
+```
+
+**Resumão:** Function = retorna algo útil | Procedure = só faz a ação 🎯
+
+
+
 
 ---
 
