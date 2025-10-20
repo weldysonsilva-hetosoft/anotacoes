@@ -1373,3 +1373,106 @@ CloseFile(Arquivo);                   *// Fechar*`
 2|002|7891234567891|Feijão Preto 1kg|Alimentos|8.50
 3|003||Detergente Líquido|Limpeza|3.20
 4|004|7891234567892|Sabonete 90g|Higiene|2.50``
+
+--- 
+# METODO COM TStringList(Sem ser generico).
+
+procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
+var
+    CSVFile: TextFile;
+  i: Integer;
+  Line: string;
+begin
+
+end;
+
+procedure TFrmLitePDV.BotaoCSV;
+var
+    ListaCampos, ListaValores: TStringList;
+  Consulta: TFDQuery; // TFDQuery = Executar comandos sql em bancos de dados.
+  Arquivo: string;
+  SaveDialog: TSaveDialog;
+  i: Integer;
+begin
+  ListaCampos := TStringList.Create;
+  ListaValores := TStringList.Create;
+  SaveDialog := TSaveDialog.Create(nil);
+  Consulta := TFDQuery.Create(nil);
+  try
+    ListaCampos.add('ID_PRODUTO');
+    ListaCampos.add('CODIGO');
+    ListaCampos.add('CODIGO_BARRA');
+    ListaCampos.add('DESCRICAO');
+    ListaCampos.add('DESCRICAO_FAMILIA');
+    ListaCampos.add('PRECO');
+    SaveDialog.Title := 'Salvar Exportação de Produtos';
+    SaveDialog.Filter := 'Arquivos TXT (*.txt)|*.txt|Arquivos CSV (*.csv)|*.csv|Todos os arquivos (*.*)|*.*';
+    SaveDialog.DefaultExt := 'txt';
+    SaveDialog.FileName := 'Produtos_' + FormatDateTime('yyyymmdd_hhnnss', Now) + '.txt';
+    SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
+
+    if not SaveDialog.Execute then
+    begin
+      ShowMessage('Exportação cancelada pelo usuário.');
+      Exit;
+    end;
+
+    Arquivo := SaveDialog.FileName;
+
+    Consulta.Connection := Self.DadosDestino.Conexao;
+    Consulta.SQL.Text :=
+      'SELECT P.ID_PRODUTO, P.CODIGO, ' +
+      '       P.STI_CODIGO, ' +
+      '       COALESCE(P.CODIGO_BARRA, '''') AS CODIGO_BARRA, ' +
+      '       P.DESCRICAO, ' +
+      '       COALESCE(F.DESCRICAO, '''') AS DESCRICAO_FAMILIA, ' +
+      '       COALESCE(P.PRECO_VENDA_1, 0) AS PRECO ' +
+      'FROM PRODUTOS P ' +
+      'LEFT JOIN FAMILIAS_PRODUTOS F ON F.ID_FAMILIA_PRODUTO = P.ID_FAMILIA_PRODUTO ' +
+      'ORDER BY P.ID_PRODUTO';
+
+    Consulta.Open;
+
+    if Consulta.IsEmpty then
+    begin
+      ShowMessage('Nenhum produto encontrado para exportar.');
+      Exit;
+    end;
+
+    var
+    StrLinha := '';
+
+    for i := 0 to ListaCampos.Count - 1 do
+    begin
+      StrLinha := StrLinha + ListaCampos[i] + '|';
+    end;
+
+    ListaValores.add(StrLinha);
+
+    while not Consulta.Eof do
+    begin
+      StrLinha := '';
+      for i := 0 to ListaCampos.Count - 1 do
+      begin
+        StrLinha := StrLinha + Consulta.FieldByName(ListaCampos[i]).ASstring;
+        if i < Consulta.FieldCount - 1 then
+          StrLinha := StrLinha + '|';
+      end;
+
+      ListaValores.add(StrLinha);
+      Consulta.next;
+
+    end;
+
+    ListaValores.SaveToFile(Arquivo);
+
+    ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
+      'Total de produtos: %d' + sLineBreak +
+      'Arquivo: %s', [Consulta.RecordCount, Arquivo]));
+
+  finally
+    Consulta.Free; // libera a memoria, feito pelo copilot.
+    SaveDialog.Free;
+  end;
+end;
+
