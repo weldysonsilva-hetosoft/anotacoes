@@ -623,7 +623,7 @@ end;
 
 **Exemplo 3: Exportar Fornecedores (CSV padrão)**
 
-```
+```pascal
 procedure ExportarFornecedores;
 var
   Qry: TFDQuery;
@@ -792,9 +792,9 @@ pascal
 
 **3. EVENTO DO BOTÃO - O GATILHO**
 
-pascal
-
-`procedure TFrmLitePDV.btnExportacaoCSVClick(Sender: TObject); begin inherited; ExecutarBotao(BotaoCSV, Sender); end;`
+```pascal
+procedure TFrmLitePDV.btnExportacaoCSVClick(Sender: TObject); begin inherited; ExecutarBotao(BotaoCSV, Sender); end;
+```
 
 **Explicação linha por linha:**
 
@@ -831,9 +831,10 @@ Vamos dividir em etapas:
 
 **ETAPA 1: Preparação**
 
-pascal
+```pascal
 
-`procedure TFrmLitePDV.BotaoCSV; var Qry: TFDQuery; Arquivo: string; SaveDialog: TSaveDialog; begin SaveDialog := TSaveDialog.Create(nil); Qry := TFDQuery.Create(nil); try`
+procedure TFrmLitePDV.BotaoCSV; var Qry: TFDQuery; Arquivo: string; SaveDialog: TSaveDialog; begin SaveDialog := TSaveDialog.Create(nil); Qry := TFDQuery.Create(nil); try`
+```
 
 **O que está acontecendo:**
 
@@ -888,7 +889,7 @@ SaveDialog.InitialDir := ExtractFilePath(ParamStr(0));
 
 **ETAPA 3: Validar se Usuário Confirmou**
 
-```
+```pascal
 `if not SaveDialog.Execute then
 begin
   ShowMessage('Exportação cancelada pelo usuário.');
@@ -916,7 +917,7 @@ Arquivo := SaveDialog.FileName;`
 
 **ETAPA 4: Montar e Executar Consulta SQL**
 
-```
+```pascal
 `Qry.Connection := Self.DadosDestino.Conexao;
 Qry.SQL.Text :=
   'SELECT P.ID_PRODUTO, P.CODIGO, ' +
@@ -940,13 +941,13 @@ Qry.Open;`
 
 Vou explicar a query SQL parte por parte:
 
-```
+```sql
 `SELECT P.ID_PRODUTO, P.CODIGO,`
 ```
 
 - Pega o ID e código interno do produto
 
-```
+```sql
 `COALESCE(P.CODIGO_BARRA, '') AS CODIGO_BARRA,`
 ```
 
@@ -954,20 +955,20 @@ Vou explicar a query SQL parte por parte:
 - Se produto não tem código de barras (NULL), coloca string vazia `''`
 - **Por que?** Evita problemas ao gravar no arquivo
 
-```
+```sql
 `P.DESCRICAO,`
 ```
 
 - Nome/descrição do produto
 
-```
+```sql
 `COALESCE(F.DESCRICAO, '') AS DESCRICAO_FAMILIA,`
 ```
 
 - Descrição da categoria/família do produto
 - Se produto não tem família, retorna vazio
 
-```
+```sql
 `COALESCE(P.PRECO_VENDA_1, 0) AS PRECO`
 ```
 
@@ -980,7 +981,7 @@ Vou explicar a query SQL parte por parte:
 
 - Da tabela PRODUTOS (apelido `P` para simplificar)
 
-```
+```sql
 `LEFT JOIN FAMILIAS_PRODUTOS F ON F.ID_FAMILIA_PRODUTO = P.ID_FAMILIA_PRODUTO`
 ```
 
@@ -1011,7 +1012,7 @@ pascal
 
 **ETAPA 5: Validar se Há Dados**
 
-```
+```pascal
 `if Qry.IsEmpty then
 begin
   ShowMessage('Nenhum produto encontrado para exportar.');
@@ -1027,7 +1028,7 @@ end;`
 
 **ETAPA 6: Chamar Exportação**
 
-```
+```pascal
 `ExportarParaCSV(Qry, Arquivo, '|');`
 ```
 
@@ -1042,7 +1043,7 @@ end;`
 
 **ETAPA 7: Mostrar Sucesso**
 
-```
+```pascal
 `ShowMessage(Format('Exportação concluída com sucesso!' + sLineBreak +
                    'Total de produtos: %d' + sLineBreak +
                    'Arquivo: %s', [Qry.RecordCount, Arquivo]));
@@ -1063,7 +1064,7 @@ Exportação concluída com sucesso! Total de produtos: 237 Arquivo: C:\Export\P
 
 **ETAPA 8: Limpar Memória**
 
-```
+```pascal
 `finally
   Qry.Free;
   SaveDialog.Free;
@@ -1087,7 +1088,7 @@ end;`
 
 Agora vamos ao procedimento que realmente grava o arquivo:
 
-```
+```pascal
 `procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
 var
   CSVFile: TextFile;
@@ -1112,12 +1113,12 @@ begin`
 
 **PASSO 1: Deletar Arquivo Antigo (se existir)**
 
-```
-`if FileExists(FileName) then
-  DeleteFile(FileName);`
+```pascal
+if FileExists(FileName) then
+  DeleteFile(FileName);
 
-- `FileExists`: verifica se arquivo já existe
-- `DeleteFile`: apaga o arquivo
+- FileExists`: verifica se arquivo já existe
+- DeleteFile`: apaga o arquivo
 - **Por que?** Garantir que criamos arquivo novo, sem restos de dados antigos
 ```
 
@@ -1125,9 +1126,9 @@ begin`
 
 **PASSO 2: Abrir Arquivo para Escrita**
 
-```
-`AssignFile(CSVFile, FileName);
-Rewrite(CSVFile);`
+```pascal
+AssignFile(CSVFile, FileName);
+Rewrite(CSVFile);
 
 ```
 
@@ -1151,15 +1152,15 @@ Rewrite(CSVFile);`
 
 **PASSO 3: Criar Linha de Cabeçalho**
 
-```
-`try
+```pascal
+try
   Line := '';
   for i := 0 to Query.FieldCount - 1 do
   begin
     Line := Line + Query.Fields[i].FieldName;
     if i < Query.FieldCount - 1 then
       Line := Line + SeparatorChar;
-  end;`
+  end;
 ```
 
 **Bloco TRY:**
@@ -1180,8 +1181,8 @@ Rewrite(CSVFile);`
     - ... e assim por diante
 4. **Adicionar separador:**
 
-```
-   `if i < Query.FieldCount - 1 then
+```pascal
+   if i < Query.FieldCount - 1 then
      Line := Line + SeparatorChar;
 ```
 
@@ -1190,9 +1191,9 @@ Rewrite(CSVFile);`
 
 **Resultado da linha:**
 
-```
+```pascal
 ID_PRODUTO|CODIGO|CODIGO_BARRA|DESCRICAO|DESCRICAO_FAMILIA|PRECO`
-
+```
 ---
 
 ### **PASSO 4: Gravar Cabeçalho**
@@ -1212,8 +1213,8 @@ ID_PRODUTO|CODIGO|CODIGO_BARRA|DESCRICAO|DESCRICAO_FAMILIA|PRECO`
 
 **NOTA:** O código que você mostrou tem um problema - está incompleto! Falta o loop que grava os dados. Vou mostrar como deveria ser:
 
-```
-`Query.First;  *// Volta para o primeiro registro*
+```pascal
+Query.First;  *// Volta para o primeiro registro*
 while not Query.Eof do  *// Enquanto não chegar no fim*
 begin
   Line := '';
@@ -1251,7 +1252,7 @@ Repare no terceiro produto: **não tem código de barras** (campo vazio entre�
 
 **PASSO 6: Fechar Arquivo**
 
-```
+```pascal
 `finally
   CloseFile(CSVFile);
 end;
@@ -1284,7 +1285,7 @@ Vou resumir toda a jornada:
 
 **TRY...FINALLY**
 
-```
+```pascal
 `try
   *// código que pode dar erro*
 finally
@@ -1302,7 +1303,7 @@ end;`
 
 **CREATE e FREE**
 
-```
+```pascal
 `Objeto := TClasse.Create(nil);  *// Criar*
 try
   *// usar objeto*
@@ -1347,7 +1348,7 @@ CloseFile(Arquivo);                   *// Fechar*`
 
 1. **Falta tratamento de erro:**
 
-```
+```pascal
    `try
      *// código atual*
    except
@@ -1377,14 +1378,6 @@ CloseFile(Arquivo);                   *// Fechar*`
 --- 
 # METODO COM TStringList(Sem ser generico).
 
-procedure TFrmLitePDV.ExportarParaCSV(Query: TDataSet; FileName, SeparatorChar: String);
-var
-    CSVFile: TextFile;
-  i: Integer;
-  Line: string;
-begin
-
-end;
 
 ```pascal
 procedure TFrmLitePDV.BotaoCSV;
