@@ -1386,6 +1386,7 @@ begin
 
 end;
 
+```pascal
 procedure TFrmLitePDV.BotaoCSV;
 var
     ListaCampos, ListaValores: TStringList;
@@ -1439,8 +1440,8 @@ begin
       Exit;
     end;
 
-    var
-    StrLinha := '';
+     // Montando o cabeçalho
+    var StrLinha: string := '';
 
     for i := 0 to ListaCampos.Count - 1 do
     begin
@@ -1449,6 +1450,7 @@ begin
 
     ListaValores.add(StrLinha);
 
+    // Extraindo Dados.
     while not Consulta.Eof do
     begin
       StrLinha := '';
@@ -1471,8 +1473,9 @@ begin
       'Arquivo: %s', [Consulta.RecordCount, Arquivo]));
 
   finally
-    Consulta.Free; // libera a memoria, feito pelo copilot.
+    Consulta.Free;
     SaveDialog.Free;
   end;
 end;
+```
 
