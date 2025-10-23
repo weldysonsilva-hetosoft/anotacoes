@@ -8,20 +8,31 @@ Este documento foi criado para desenvolvedores iniciantes e júniores que estão
 
 ## 📑 Índice
 
-1. [Variáveis e Constantes](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-2. [Operadores](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-3. [Estruturas de Decisão](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-4. [Estruturas de Repetição (Loops)](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-5. [Funções e Procedimentos](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-6. [Trabalhando com Strings](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-7. [Arrays e Listas](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-8. [Classes e Objetos](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-9. [Construtores e Destrutores](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-10. [Encapsulamento](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-11. [Herança](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-12. [Polimorfismo](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-13. [Classes Abstratas e Interfaces](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
-14. [Boas Práticas no Sol.NET](https://www.notion.so/Guia-Completo-de-Programa-o-Delphi-para-o-Sol-NET-2956d2e107ee80019d14e0449edb771e?pvs=21)
+Claro! Aqui está o índice com todos os links atualizados para apontarem para o repositório do GitHub:
+
+---
+
+## 📑 Índice
+
+1. [Variáveis e Constantes](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+2. [Operadores](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+3. [Estruturas de Decisão](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+4. [Estruturas de Repetição (Loops)](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+5. [Funções e Procedimentos](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+6. [Trabalhando com Strings](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+7. [Arrays e Listas](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+8. [Classes e Objetos](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+9. [Construtores e Destrutores](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+10. [Encapsulamento](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+11. [Herança](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+12. [Polimorfismo](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+13. [Classes Abstratas e Interfaces](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)  
+14. [Boas Práticas no Sol.NET](https://github.com/weldysonsilva-hetosoft/anotacoes/edit/main/GuiaCompletodePrograma%C3%A7%C3%A3oDelphi.MD)
+
+---
+
+Se quiser, posso também formatar esse índice em Markdown para facilitar a edição no GitHub. Deseja isso?
+
 
 ---
 
