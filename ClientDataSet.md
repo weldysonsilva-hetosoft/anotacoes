@@ -610,13 +610,13 @@ LocalizarBinario(MeuCds, 'CODIGO', 123);
 
 ### O que é um TClientDataSet
  
-É o objeto que armazena o resultado de uma consulta no banco de dados.
-Também armazena os metadados da consulta (Nome das colunas e seus tipos de dados, quantidade de registros carregados, etc)
+`É o objeto que armazena o resultado de uma consulta no banco de dados.
+Também armazena os metadados da consulta (Nome das colunas e seus tipos de dados, quantidade de registros carregados, etc)`
  
-Retorna o valor de uma coluna da linha selecionada através da chamada de cdsMeuCds.`FieldByName('NOME_DA_COLUNA').Value'. O Value pode ser convertido para um tipo específico para fins de segurança de valores null, ex: FieldByName('NOME_DA_COLUNA').AsInteger, AsString, AsDateTime, AsString, etc.
+`Retorna o valor de uma coluna da linha selecionada através da chamada de cdsMeuCds.`FieldByName('NOME_DA_COLUNA'`).Value'. O Value pode ser convertido para um tipo específico para fins de segurança de valores null, ex: FieldByName('NOME_DA_COLUNA').AsInteger, AsString, AsDateTime, AsString, etc`.
  
 ### Populando um TClientDataSet
- 
+ ```pascal
 var strList: TStringList := TStringList.Create;
 strList.Add('SELECT         ');
 strList.Add('    FIRST 5 *  ');
@@ -627,9 +627,10 @@ strList.Add('    descricao  ');
  
  
 MeuCds.Data := Dados.QryOpenOle(strList.Text);
- 
+ ````
 ### Fazendo operações com o TClientDataSet
- 
+
+ ```pascal
 while not MeuCds.Eof do
 begin
 	// Executa o código necessário, baseado na linha atual que o TClientDataSet está apontando
@@ -637,7 +638,7 @@ begin
 	// Move o cursor para a próxima posição (caso ela exista)
 	MeuCds.Next;
 end;
-
+````
 
 **Última atualização:** 24 de outubro de 2025  
 **Versão:** 1.0  
