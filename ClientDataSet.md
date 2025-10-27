@@ -13,7 +13,7 @@ O sistema Sol.NET utiliza principalmente dois tipos de TClientDataSet:
 - **Uso comum:** Listagens, relatórios, busca de dados
 - **Escopo:** Variável local ou global dependendo do contexto
 
-### 2. **cdsEntidade** (Nomenclatura Variável)
+### 2. **cdsGeral** (Nomenclatura Variável)
 - **Propósito:** Manipulação de entidades específicas do sistema
 - **Exemplos:** `cdsProdutos`, `cdsPessoas`, `cdsMovimentos`
 - **Uso comum:** CRUD de entidades, validações, processamentos
