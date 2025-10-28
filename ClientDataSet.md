@@ -639,7 +639,265 @@ begin
 	MeuCds.Next;
 end;
 ````
+Copilot said: # 📚 Documentação: `cdsBuscar` e `cdsGeral` no
+📚 Documentação: cdsBuscar e cdsGeral no Sol.NET
+Vou explicar detalhadamente esses dois componentes fundamentais usados nos CRUDs do Sol.NET.
 
-**Última atualização:** 24 de outubro de 2025  
-**Versão:** 1.0  
-**Responsável:** Equipe de Desenvolvimento Sol.NET
+🔍 1. cdsBuscar - ClientDataSet de Busca
+O que é?
+O cdsBuscar é um TClientDataSet utilizado especificamente para operações de consulta e localização de registros no banco de dados. Ele é otimizado para:
+
+✅ Buscas rápidas em telas de pesquisa
+✅ Autocompletar em campos de lookup
+✅ Listagens filtradas
+✅ Localização de registros para relacionamentos
+Características Principais
+delphi
+// Declaração típica
+var cdsBuscar: TClientDataSet;
+
+// Uso comum
+cdsBuscar := TClientDataSet.Create(nil);
+try
+  cdsBuscar.Data := DadosPrincipal.QryOpenOle(
+    'SELECT ID_PESSOA, NOME, CPF FROM PESSOAS WHERE ATIVO = 1'
+  );
+  
+  // Localização binária (mais eficiente)
+  if LocalizarBinário(cdsBuscar, 'ID_PESSOA', IdPessoa) then
+    ShowMessage('Pessoa encontrada: ' + cdsBuscar.FieldByName('NOME').AsString);
+finally
+  cdsBuscar.Free;
+end;
+Quando Usar cdsBuscar?
+Cenário	Exemplo
+Busca em telas de pesquisa	SELECT * FROM PRODUTOS WHERE DESCRICAO LIKE '%'+Texto+'%'
+Autocompletar de campos	Carregar lista de clientes ao digitar nome
+Validação de existência	Verificar se CPF já está cadastrado
+Montagem de combos/listas	Preencher dropdown de categorias
+Lookup de relacionamentos	Buscar ID_PRODUTO a partir do código de barras
+Boas Práticas com cdsBuscar
+delphi
+// ✅ CORRETO - Liberar memória
+var cdsBuscar: TClientDataSet := TClientDataSet.Create(nil);
+try
+  cdsBuscar.Data := DadosPrincipal.QryOpenOle('SELECT ...');
+  // Usar o dataset
+finally
+  cdsBuscar.Free; // Sempre liberar
+end;
+
+// ✅ CORRETO - Ordenar antes de LocalizarBinário
+cdsBuscar.IndexFieldNames := 'CODIGO';
+if LocalizarBinário(cdsBuscar, 'CODIGO', '12345') then
+  ShowMessage('Produto encontrado!');
+
+// ❌ EVITAR - Não liberar memória
+cdsBuscar := TClientDataSet.Create(nil);
+cdsBuscar.Data := DadosPrincipal.QryOpenOle('SELECT ...');
+// Faltou o Free → Memory Leak!
+
+// ❌ EVITAR - LocalizarBinário sem ordenação
+if LocalizarBinário(cdsBuscar, 'NOME', 'João') then // Erro se não estiver ordenado!
+🗂️ 2. cdsGeral - ClientDataSet Geral
+O que é?
+O cdsGeral é um TClientDataSet de uso genérico e temporário, utilizado para:
+
+✅ Operações auxiliares e cálculos
+✅ Armazenamento temporário de dados
+✅ Manipulação de dados antes de gravar no banco
+✅ Estruturas de dados complexas em memória
+Características Principais
+delphi
+// Uso típico em conversões
+var cdsGeral: TClientDataSet := TClientDataSet.Create(nil);
+try
+  cdsGeral.Data := DadosOrigem.QryOpenOle(
+    'SELECT * FROM TABELA_ORIGEM WHERE ID > 1000'
+  );
+  
+  // Processar dados
+  cdsGeral.First;
+  while not cdsGeral.Eof do
+  begin
+    // Aplicar transformações
+    var Nome := cdsGeral.FieldByName('NOME').AsString;
+    var CPF := SoNumeros(cdsGeral.FieldByName('CPF').AsString);
+    
+    // Gravar no destino
+    DadosDestino.QryExecutar(
+      Format('INSERT INTO PESSOAS (NOME, CPF) VALUES (%s, %s)',
+        [QuotedStr(Nome), QuotedStr(CPF)])
+    );
+    
+    cdsGeral.Next;
+  end;
+finally
+  cdsGeral.Free;
+end;
+Quando Usar cdsGeral?
+Cenário	Exemplo
+Processamento em lote	Importar 1000 produtos de arquivo CSV
+Cálculos complexos	Totalizar vendas antes de gravar
+Dados temporários	Armazenar itens do carrinho antes de finalizar venda
+Transformações de dados	Aplicar regras de negócio em memória
+Preview antes de salvar	Mostrar dados para usuário confirmar
+Exemplo Prático - Conversão com cdsGeral
+delphi
+procedure ConverterClientes;
+var
+  cdsGeral: TClientDataSet;
+  cdsBuscar: TClientDataSet;
+begin
+  cdsGeral := TClientDataSet.Create(nil);
+  cdsBuscar := TClientDataSet.Create(nil);
+  try
+    // 1. Carregar dados da origem
+    cdsGeral.Data := DadosOrigem.QryOpenOle(
+      'SELECT CODIGO, NOME, CPF, ID_CIDADE FROM CLIENTES_LEGADO'
+    );
+    
+    // 2. Carregar lookup de cidades (cdsBuscar)
+    cdsBuscar.Data := DadosDestino.QryOpenOle(
+      'SELECT ID_CIDADE, ID_CIDADE_NOVA FROM AUX_CIDADES'
+    );
+    cdsBuscar.IndexFieldNames := 'ID_CIDADE';
+    
+    // 3. Processar cada registro do cdsGeral
+    cdsGeral.First;
+    while not cdsGeral.Eof do
+    begin
+      var CPF := SoNumeros(cdsGeral.FieldByName('CPF').AsString);
+      
+      // Buscar novo ID da cidade usando cdsBuscar
+      var IdCidadeNova: Integer := 0;
+      if LocalizarBinário(cdsBuscar, 'ID_CIDADE', 
+         cdsGeral.FieldByName('ID_CIDADE').AsInteger) then
+      begin
+        IdCidadeNova := cdsBuscar.FieldByName('ID_CIDADE_NOVA').AsInteger;
+      end;
+      
+      // Gravar no destino
+      DadosDestino.QryExecutar(
+        Format('INSERT INTO PESSOAS (NOME, CPF, ID_CIDADE) VALUES (%s, %s, %d)',
+          [QuotedStr(cdsGeral.FieldByName('NOME').AsString),
+           QuotedStr(CPF),
+           IdCidadeNova])
+      );
+      
+      cdsGeral.Next;
+    end;
+  finally
+    cdsGeral.Free;
+    cdsBuscar.Free;
+  end;
+end;
+🆚 Diferenças Entre cdsBuscar e cdsGeral
+Aspecto	cdsBuscar	cdsGeral
+Propósito	Busca e localização	Processamento e manipulação
+Dados	Geralmente menor volume	Pode conter grandes volumes
+Tempo de vida	Curto (busca pontual)	Pode ser mais longo (loop)
+Modificação	Raramente modificado	Frequentemente modificado
+Ordenação	Quase sempre ordenado	Nem sempre precisa
+Exemplo de uso	Localizar produto por código	Processar 1000 vendas
+🔧 Padrões de Uso no Framework de Conversão
+No TConversao (classe base)
+delphi
+type
+  TConversao = class
+  private
+    FcdsOrigem: TClientDataSet;  // Equivalente ao cdsGeral (dados origem)
+    FcdsDestino: TClientDataSet; // Dados do destino
+  public
+    procedure ExecutarConversao;
+  end;
+
+procedure TConversao.ExecutarConversao;
+begin
+  // FcdsOrigem atua como "cdsGeral"
+  FcdsOrigem.Data := DadosOrigem.QryOpenOle(MontarSQLOrigem);
+  
+  FcdsOrigem.First;
+  while not FcdsOrigem.Eof do
+  begin
+    // Processar registro
+    ProcessarRegistro(FcdsOrigem);
+    FcdsOrigem.Next;
+  end;
+end;
+Exemplo com Ambos no Mesmo Método
+delphi
+procedure ConverterProdutosComCategorias;
+var
+  cdsGeral: TClientDataSet;   // Produtos origem
+  cdsBuscar: TClientDataSet;  // Categorias de/para
+begin
+  cdsGeral := TClientDataSet.Create(nil);
+  cdsBuscar := TClientDataSet.Create(nil);
+  try
+    // Carregar produtos
+    cdsGeral.Data := DadosOrigem.QryOpenOle(
+      'SELECT ID, DESCRICAO, ID_CATEGORIA FROM PRODUTOS_ORIGEM'
+    );
+    
+    // Carregar lookup de categorias
+    cdsBuscar.Data := DadosDestino.QryOpenOle(
+      'SELECT ID_CATEGORIA_ORIGEM, ID_CATEGORIA_DESTINO FROM AUX_CATEGORIAS'
+    );
+    cdsBuscar.IndexFieldNames := 'ID_CATEGORIA_ORIGEM';
+    
+    // Processar
+    cdsGeral.First;
+    while not cdsGeral.Eof do
+    begin
+      var IdCategoriaNova := 0;
+      
+      // Buscar categoria convertida
+      if LocalizarBinário(cdsBuscar, 'ID_CATEGORIA_ORIGEM',
+         cdsGeral.FieldByName('ID_CATEGORIA').AsInteger) then
+      begin
+        IdCategoriaNova := cdsBuscar.FieldByName('ID_CATEGORIA_DESTINO').AsInteger;
+      end;
+      
+      // Inserir produto
+      DadosDestino.QryExecutar(
+        Format('INSERT INTO PRODUTOS (DESCRICAO, ID_CATEGORIA) VALUES (%s, %d)',
+          [QuotedStr(cdsGeral.FieldByName('DESCRICAO').AsString),
+           IdCategoriaNova])
+      );
+      
+      cdsGeral.Next;
+    end;
+  finally
+    cdsGeral.Free;
+    cdsBuscar.Free;
+  end;
+end;
+✅ Checklist de Boas Práticas
+Para cdsBuscar:
+ Sempre ordenar antes de usar LocalizarBinário
+ Liberar memória com Free no finally
+ Usar para buscas pontuais e rápidas
+ Manter dados mínimos necessários (campos essenciais)
+Para cdsGeral:
+ Criar dentro de try/finally
+ Usar para processamento em lote
+ Validar se está vazio antes de processar (IsEmpty)
+ Liberar após processamento completo
+Ambos:
+ Nunca deixar datasets abertos desnecessariamente
+ Usar variáveis locais quando possível
+ Documentar o propósito do dataset no código
+ Verificar campos existem antes de acessar
+🎯 Resumo Executivo
+Dataset	Analogia	Uso Principal
+cdsBuscar	📖 Dicionário	"Procurar" informação específica
+cdsGeral	📦 Caixa de trabalho	"Processar" múltiplos itens
+Regra de Ouro:
+
+Use cdsBuscar para ENCONTRAR dados.
+Use cdsGeral para PROCESSAR dados.
+
+Precisa de exemplos mais específicos de algum cenário particular do Sol.NET? 🚀
+
+
