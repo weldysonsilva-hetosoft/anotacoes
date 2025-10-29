@@ -671,6 +671,240 @@ Concluído → Registros aparecem conciliados na tela
 
 ---
 
+# 📝 Resumo das Alterações no Botão "Desfazer" - Conciliação Bancária
+
+## 🎯 O que foi implementado?
+
+Foi adicionada a **restauração automática do valor original** do Controle Financeiro ao desfazer uma conciliação bancária que teve divergência confirmada.
+
+---
+
+## 🔄 Principais Mudanças
+
+### 1️⃣ **Renomeação de Variáveis para Maior Clareza**
+
+```
+// ❌ ANTES - Nomes genéricos
+cdsAux1  // Dados do Controle Financeiro
+cdsAux2  // Dados da Conciliação Bancária
+
+// ✅ DEPOIS - Nomes descritivos
+cdsControleFinanceiro    // Dados do Sistema (cdsOP)
+cdsConciliacaoBancaria  // Dados do Banco (cdsOFX)
+
+```
+
+### 2️⃣ **Lógica de Restauração de Valor Implementada**
+
+**ANTES:** Apenas desmarcava como conciliado, **SEM** restaurar valor
+
+```
+Dados.QryExecutar(
+  'UPDATE CONTROLE_FINANCEIRO ' +
+  'SET TP_CONCILIADO = 0, ID_VINCULO_CB = -1 ' +
+  'WHERE ID_VINCULO_CB = ' + Id
+);
+
+```
+
+**DEPOIS:** Verifica se houve divergência e **RESTAURA** o valor original
+
+```
+var SQLCF: string := 'UPDATE CONTROLE_FINANCEIRO SET TP_CONCILIADO = 0, ID_VINCULO_CB = -1 ';
+
+// 🔍 Localiza registro correspondente no banco
+cdsConciliacaoBancaria.Localizar('ID_VINCULO_CB', IdVinculo);
+
+// ✅ SE foi confirmado com divergência (TP_CONCILIADO = 2)
+if cdsConciliacaoBancaria.FieldByName('TP_CONCILIADO').AsInteger = 2 then
+begin
+  // 📌 ADICIONA RESTAURAÇÃO DO VALOR ORIGINAL
+  SQLCF := SQLCF + ', VALOR = :VALOR ';
+  LParametros := [VL_FINAL_ORIGINAL]; // ← Valor antes da alteração
+end;
+
+SQLCF := SQLCF + 'WHERE ID_VINCULO_CB = :ID_VINCULO_CB';
+Dados.QryExecutar(SQLCF, LParametros);
+
+```
+
+### 3️⃣ **Uso de Parâmetros Dinâmicos**
+
+```
+// ✅ NOVO - Array dinâmico de parâmetros
+var LParametros: TArray<Variant> := [];
+
+// Se precisa restaurar valor
+if (divergente) then
+  System.Insert(ValorOriginal, LParametros, Length(LParametros));
+
+// Sempre adiciona o ID
+System.Insert(IdVinculo, LParametros, Length(LParametros));
+
+Dados.QryExecutar(SQL, LParametros);
+
+```
+
+### 4️⃣ **Limpeza do Campo VL_FINAL_ORIGINAL**
+
+```
+// ✅ Limpa o valor original após restauração
+Dados.QryExecutar(
+  'UPDATE CONCILIACAO_BANCARIA ' +
+  'SET TP_CONCILIADO = 0, ID_VINCULO_CB = -1, VL_FINAL_ORIGINAL = 0 ' + // ← ZERADO
+  'WHERE ID_VINCULO_CB = :ID_VINCULO_CB',
+  varArrayOf([IdVinculo])
+);
+
+```
+
+### 5️⃣ **Atualização Visual Completa**
+
+```
+// ✅ Atualiza também o campo VL_FINAL_ORIGINAL no grid
+cdsOFX.Edit;
+cdsOFX.FieldByName('TP_CONCILIADO').AsInteger := 0;
+cdsOFX.FieldByName('OPCAO').AsInteger := 0;
+cdsOFX.FieldByName('ID_VINCULO_CB').AsFloat := -1;
+cdsOFX.FieldByName('VL_FINAL_ORIGINAL').AsFloat := 0; // ← NOVO
+cdsOFX.Post;
+
+```
+
+### 6️⃣ **Liberação Adequada de Memória**
+
+```
+// ✅ DEPOIS - Libera CDSs temporários
+finally
+  TryFreeAndNil(cdsConciliacaoBancaria, cdsControleFinanceiro);
+end;
+
+```
+
+---
+
+## 📊 Fluxo Lógico Completo
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ 1. USUÁRIO CLICA EM "DESFAZER"                         │
+└──────────────────┬──────────────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│ 2. CRIA CÓPIAS DOS CDS                                  │
+│    - cdsControleFinanceiro ← cdsOP                      │
+│    - cdsConciliacaoBancaria ← cdsOFX                   │
+└──────────────────┬──────────────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│ 3. PARA CADA REGISTRO SELECIONADO                       │
+│    ┌────────────────────────────────────────┐           │
+│    │ 3.1 Localizar registro no banco        │           │
+│    │ 3.2 Verificar TP_CONCILIADO = 2?       │           │
+│    │     ├─ SIM → Buscar VL_FINAL_ORIGINAL  │           │
+│    │     │         Adicionar ao UPDATE      │           │
+│    │     └─ NÃO → Apenas desmarcar          │           │
+│    └────────────────────────────────────────┘           │
+└──────────────────┬──────────────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│ 4. EXECUTAR UPDATE NO BANCO                             │
+│    ┌────────────────────────────────────────┐           │
+│    │ CONTROLE_FINANCEIRO:                   │           │
+│    │  - TP_CONCILIADO = 0                   │           │
+│    │  - ID_VINCULO_CB = -1                  │           │
+│    │  - VALOR = VL_FINAL_ORIGINAL (se div.) │ ← NOVO   │
+│    └────────────────────────────────────────┘           │
+│    ┌────────────────────────────────────────┐           │
+│    │ CONCILIACAO_BANCARIA:                  │           │
+│    │  - TP_CONCILIADO = 0                   │           │
+│    │  - ID_VINCULO_CB = -1                  │           │
+│    │  - VL_FINAL_ORIGINAL = 0               │ ← NOVO   │
+│    └────────────────────────────────────────┘           │
+└──────────────────┬──────────────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│ 5. COMMIT NO BANCO                                      │
+└──────────────────┬──────────────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│ 6. ATUALIZAR VISUAL (CDS)                               │
+│    - Desmarcar conciliação nos grids                    │
+│    - Zerar VL_FINAL_ORIGINAL                            │
+└──────────────────┬──────────────────────────────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────────┐
+│ 7. LIBERAR MEMÓRIA                                      │
+│    - TryFreeAndNil(cdsConciliacaoBancaria, ...)         │
+└─────────────────────────────────────────────────────────┘
+
+```
+
+---
+
+## 🎯 Conceitos Técnicos Aplicados
+
+### 1. **Array Dinâmico de Parâmetros**
+
+```
+var LParametros: TArray<Variant> := [];
+
+// Adiciona elementos dinamicamente
+System.Insert(Valor, LParametros, System.Length(LParametros));
+
+```
+
+**Por quê?** Permite SQL flexível (com ou sem atualização de valor)
+
+### 2. **Parâmetros SQL Seguros**
+
+```
+// ✅ Seguro contra SQL Injection
+Dados.QryExecutar('UPDATE ... WHERE ID = :ID', varArrayOf([123]));
+
+// ❌ NUNCA FAÇA (vulnerável)
+Dados.QryExecutar('UPDATE ... WHERE ID = ' + IdString);
+
+```
+
+### 3. **Localização Binária**
+
+```
+// Busca rápida em CDS ordenado
+cdsConciliacaoBancaria.Localizar('ID_VINCULO_CB', Valor);
+
+```
+
+### 4. **Transação Atômica**
+
+```
+Dados.InicairTransaction;
+try
+  // Múltiplos UPDATEs
+  Dados.Commit; // ← Tudo funciona ou nada funciona
+except
+  Dados.Rollback;
+end;
+
+```
+
+---
+
+## ✅ Resumo Final
+
+| Aspecto | Antes | Depois |
+| --- | --- | --- |
+| **Valor restaurado?** | ❌ Não | ✅ Sim (se divergente) |
+| **Nomes descritivos?** | ❌ cdsAux1/2 | ✅ cdsControleFinanceiro/cdsConciliacaoBancaria |
+| **Parâmetros dinâmicos?** | ❌ SQL fixo | ✅ Array dinâmico |
+| **Limpeza VL_FINAL_ORIGINAL?** | ❌ Não | ✅ Sim |
+| **Liberação memória?** | ⚠️ Parcial | ✅ Completa |
+| **Visual atualizado?** | ⚠️ Parcial | ✅ Completo |
+
+---
+
+**Conclusão:** O botão "Desfazer" agora **restaura corretamente** o valor original quando uma conciliação com divergência é desfeita, cumprindo o requisito da Issue #7105! 🎉
+
 **Documentação criada em:** 28/01/2025
 
 **Autor:** Copilot
