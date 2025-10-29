@@ -889,3 +889,197 @@ end;
 ## 🎓 Progressão sugerida
 
 Complete os exercícios sequencialmente para construir conhecimento gradualmente, sempre aplicando os padrões de código do Sol.NET (Clean Code, variáveis inline, nomenclatura PascalCase).
+
+---
+
+# 🧠 Exercícios de Domínio - Fundamentos Delphi
+
+Preparação para os **50 Exercícios Profissionais**
+
+---
+
+## 🧩 BLOCO 1: Variáveis, Constantes e Tipos (10 exercícios)
+
+**Ex 1.1 - Declaração Básica**  
+Declare variáveis de todos os tipos (`Integer`, `Double`, `String`, `Boolean`, `TDate`) e atribua valores. Exiba tudo em um `ShowMessage` formatado.  
+**Componentes:** Apenas `Button`
+
+**Ex 1.2 - Escopo de Variáveis**  
+Crie uma variável local dentro da `procedure` e outra no nível `private` da `form`. Mostre a diferença de acesso entre elas.  
+**Componentes:** `Button`
+
+**Ex 1.3 - Constantes vs Variáveis**  
+Declare `PI` como constante e `raio` como variável. Calcule área do círculo. Tente mudar `PI` (vai dar erro) para demonstrar imutabilidade.  
+**Componentes:** `Edit` (raio), `Button`, `Label` (resultado)
+
+**Ex 1.4 - Conversões de Tipo**  
+Receba um número em `Edit` (`String`), converta para `Integer`, `Double` e `Boolean` (`0=False`, outros=`True`). Exiba os 3 resultados.  
+**Componentes:** `Edit`, `Button`, `Label`
+
+**Ex 1.5 - Array Simples**  
+Declare array de 5 strings com nomes de frutas. Percorra com `FOR` e exiba em `ShowMessage`.  
+**Componentes:** `Button`
+
+**Ex 1.6 - Array Dinâmico**  
+Peça ao usuário quantos números quer armazenar. Crie array dinâmico, preencha e exiba a soma.  
+**Componentes:** `Edit` (quantidade), `Button`
+
+**Ex 1.7 - Tipos Numéricos**  
+Compare `Integer` vs `Double`: divida 10 por 3 nos dois tipos e mostre a diferença de resultado.  
+**Componentes:** `Button`
+
+**Ex 1.8 - String vs Char**  
+Receba uma palavra, acesse o primeiro caractere (`Char`) e exiba tipo e valor.  
+**Componentes:** `Edit`, `Button`
+
+**Ex 1.9 - Boolean em Prática**  
+Crie 3 variáveis `Boolean` (`temCNH`, `maiorIdade`, `aprovadoExame`). Use `AND` para verificar se pode dirigir.  
+**Componentes:** 3 `CheckBox`, `Button`, `Label`
+
+**Ex 1.10 - Constantes Tipadas**  
+Declare constantes para: taxa de juros (`Double`), nome empresa (`String`), ano fundação (`Integer`). Use todas em um cálculo/mensagem.  
+**Componentes:** `Edit`, `Button`
+
+---
+
+## 🔗 BLOCO 2: Operadores Lógicos e Relacionais (10 exercícios)
+
+**Ex 2.1 - Igual e Diferente**  
+Receba dois números, teste se são iguais (`=`) ou diferentes (`<>`). Exiba resultado.  
+**Componentes:** 2 `Edit`, `Button`, `Label`
+
+**Ex 2.2 - Maior e Menor**  
+Compare 3 números e diga qual é o maior, qual o menor e qual está no meio.  
+**Componentes:** 3 `Edit`, `Button`, `Label`
+
+**Ex 2.3 - Operador AND**  
+Valide login: usuário = `"admin"` AND senha = `"1234"`. Só aprova se ambos corretos.  
+**Componentes:** 2 `Edit`, `Button`
+
+**Ex 2.4 - Operador OR**  
+Sistema de desconto: cliente VIP OR compra > R$500 ganha 10%. Teste as 3 combinações.  
+**Componentes:** `Edit` (valor), `CheckBox` (VIP), `Button`
+
+**Ex 2.5 - Operador NOT**  
+Inverta uma condição: `NOT(idade < 18)` é o mesmo que `(idade >= 18)`. Demonstre.  
+**Componentes:** `Edit`, `Button`
+
+**Ex 2.6 - Combinação AND/OR**  
+Aprovação de crédito: `(renda > 2000 AND score > 600) OR (temFiador)`. Teste.  
+**Componentes:** 2 `Edit`, `CheckBox`, `Button`
+
+**Ex 2.7 - Precedência de Operadores**  
+Calcule: `10 + 5 * 2` vs `(10 + 5) * 2`. Mostre diferença de precedência.  
+**Componentes:** `Button`
+
+**Ex 2.8 - Comparação de Strings**  
+Compare duas strings: igual, diferente, maior (alfabeticamente), menor.  
+**Componentes:** 2 `Edit`, `Button`
+
+**Ex 2.9 - Operadores com Boolean**  
+Crie tabela verdade visual: `A AND B`, `A OR B`, `NOT A` para todos os casos (`True/False`).  
+**Componentes:** 2 `CheckBox` (A, B), `Button`, `Memo` (resultado)
+
+**Ex 2.10 - Condições Aninhadas**  
+Classificação de idade:  
+- 0-12: criança  
+- 13-17: adolescente  
+- 18-59: adulto  
+- 60+: idoso  
+**Componentes:** `Edit`, `Button`, `Label`
+
+---
+
+## 🧠 BLOCO 3: Estruturas de Decisão (10 exercícios)
+
+**Ex 3.1 - IF Simples**  
+Se número for par, exiba `"PAR"`, senão não faça nada.  
+**Componentes:** `Edit`, `Button`
+
+**Ex 3.2 - IF/ELSE Básico**  
+Número positivo ou negativo?  
+**Componentes:** `Edit`, `Button`, `Label`
+
+**Ex 3.3 - IF/ELSE IF**  
+Nota:  
+- 0-4: F  
+- 5-6: D  
+- 7-8: C  
+- 9-10: A  
+**Componentes:** `Edit`, `Button`, `Label`
+
+**Ex 3.4 - CASE Simples**  
+Menu de opções:  
+1 - Cadastrar  
+2 - Consultar  
+3 - Alterar  
+4 - Excluir  
+**Componentes:** `Edit` (opção), `Button`
+
+**Ex 3.5 - CASE com Faixas**  
+Classifique temperatura:  
+- <0: congelante  
+- 0-15: frio  
+- 16-25: agradável  
+- >25: quente  
+**Componentes:** `Edit`, `Button`, `Label`
+
+**Ex 3.6 - IF Aninhado**  
+Calcule frete:  
+- Nacional: SP = 10, outros = 20  
+- Internacional: 50  
+**Componentes:** 2 `RadioButton` (Nacional/Internacional), `Edit` (estado), `Button`
+
+**Ex 3.7 - Múltiplas Condições**  
+Triângulo válido: `a+b>c AND a+c>b AND b+c>a`  
+**Componentes:** 3 `Edit`, `Button`
+
+**Ex 3.8 - Short-Circuit**  
+Demonstre short-circuit: `IF (x <> 0) AND (10/x > 5)`  
+**Componentes:** `Edit`, `Button`
+
+**Ex 3.9 - Validações Sequenciais**  
+Valide formulário:  
+- Nome não vazio  
+- Idade entre 18-100  
+- Email com `@`  
+Use `IFs` sequenciais com `Exit`.  
+**Componentes:** 3 `Edit`, `Button`
+
+**Ex 3.10 - Decisão Complexa**  
+Calcule imposto progressivo:  
+- até 2k: isento  
+- 2-4k: 7.5%  
+- 4-6k: 15%  
+- 6k+: 22.5%  
+**Componentes:** `Edit`, `Button`, `Label`
+
+---
+
+## 🔁 BLOCO 4: Loops (10 exercícios)
+
+**Ex 4.1 - FOR Crescente**  
+Conte de 1 a 10 e exiba cada número.  
+**Componentes:** `Button`, `Memo`
+
+**Ex 4.2 - FOR Decrescente**  
+Contagem regressiva: 10 até 0 usando `DOWNTO`.  
+**Componentes:** `Button`, `Memo`
+
+**Ex 4.3 - WHILE com Condição**  
+Some números digitados até o usuário digitar 0.  
+**Componentes:** `Edit`, `Button`, `Label` (soma)
+
+**Ex 4.4 - REPEAT-UNTIL**  
+Peça senha até acertar `"123"`. Mínimo 1 tentativa garantida.  
+**Componentes:** `Edit`, `Button`
+
+**Ex 4.5 - Break em FOR**  
+Procure número 7 em array de 1 a 10. Use `Break` ao encontrar.  
+**Componentes:** `Button`
+
+**Ex 4.6 - Continue em FOR**  
+Exiba apenas ímpares de 1 a 20 usando `Continue`.  
+**Componentes:** `Button`, `Memo`
+
+**Ex 4.7 - Loop Aninhado
