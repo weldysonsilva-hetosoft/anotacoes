@@ -904,21 +904,122 @@ Preparação para os **50 Exercícios Profissionais**
 Declare variáveis de todos os tipos (`Integer`, `Double`, `String`, `Boolean`, `TDate`) e atribua valores. Exiba tudo em um `ShowMessage` formatado.  
 **Componentes:** Apenas `Button`
 
+```pascal
+procedure TForm1.Bloco1;
+var
+    int: Integer;
+  D: double;
+  S: string;
+  Date: TDate;
+  B: boolean;
+  TDate: TdateTime;
+begin
+  int := 20;
+  D := 11.2;
+  S := 'Alastor';
+  B := False;
+  TDate := Now;
+  ShowMessage('Inteiro: ' + IntToStr(int) + sLineBreak + 'Double: '
+    + FloatToStr(D) + sLineBreak + 'String: ' + S + sLineBreak + 'Boolean: ' +
+    BoolToStr(B, True) + sLineBreak + 'Data/Hora: ' + DateTimeToStr(TDate));
+
+end;
+```
+
 **Ex 1.2 - Escopo de Variáveis**  
 Crie uma variável local dentro da `procedure` e outra no nível `private` da `form`. Mostre a diferença de acesso entre elas.  
 **Componentes:** `Button`
+
+```pascal
+procedure TForm1.Bloco2;
+var
+    local: string;
+begin
+  local := 'Essa é local';
+  global := 'Essa é Global';
+
+  ShowMessage(local + #13#10 + global);
+end;
+```
 
 **Ex 1.3 - Constantes vs Variáveis**  
 Declare `PI` como constante e `raio` como variável. Calcule área do círculo. Tente mudar `PI` (vai dar erro) para demonstrar imutabilidade.  
 **Componentes:** `Edit` (raio), `Button`, `Label` (resultado)
 
+```pascal
+procedure TForm1.Bloco3;
+const
+    pi = 3.14;
+var
+    raio, area: double;
+begin
+  raio := 3;
+  area := pi * (raio * raio);
+
+  ShowMessage('A área do círculo é: ' + FloatToStr(area));
+end;
+
+```
+
 **Ex 1.4 - Conversões de Tipo**  
 Receba um número em `Edit` (`String`), converta para `Integer`, `Double` e `Boolean` (`0=False`, outros=`True`). Exiba os 3 resultados.  
 **Componentes:** `Edit`, `Button`, `Label`
 
+```pascal
+procedure TForm1.Bloco4;
+var
+    entrada: string;
+  numInt: Integer;
+  numDouble: double;
+  numBool: boolean;
+begin
+  entrada := edt1.Text;
+
+  if not TryStrToInt(entrada, numInt) then
+  begin
+    ShowMessage('Valor inválido para conversão em Integer.');
+    Exit;
+  end;
+
+  if not TryStrToFloat(entrada, numDouble) then
+  begin
+    ShowMessage('Valor inválido para conversão em Double.');
+    Exit;
+  end;
+
+  numBool := numInt <> 0;
+
+  lbl1.Caption := 'Integer: ' + IntToStr(numInt) + sLineBreak + 'Double: ' + FloatToStr(numDouble) + sLineBreak + 'Boolean: ' +
+    BoolToStr(numBool, True);
+
+end;
+```
+
 **Ex 1.5 - Array Simples**  
 Declare array de 5 strings com nomes de frutas. Percorra com `FOR` e exiba em `ShowMessage`.  
 **Componentes:** `Button`
+```pascal
+procedure TForm1.Bloco5;         // array simples
+var
+    Frutas: array [0 .. 5] of String;
+  lista: string;
+  i: Integer;
+begin
+
+  Frutas[1] := 'Limão';
+  Frutas[2] := 'Laranja';
+  Frutas[3] := 'Morango';
+  Frutas[4] := 'Melão';
+  Frutas[5] := 'Goiaba';
+
+  lista := '';
+  for i := 1 to 5 do
+    lista := lista + Frutas[i] + sLineBreak;
+  ShowMessage('Frutas:' + sLineBreak + lista);
+
+end;
+```
+
 
 **Ex 1.6 - Array Dinâmico**  
 Peça ao usuário quantos números quer armazenar. Crie array dinâmico, preencha e exiba a soma.  
