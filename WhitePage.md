@@ -290,6 +290,353 @@ Usuário poderá:
 
 ---
 
+# 🗺️ Mapeamento de Consultas e Eventos - Issue #7303
+## Pesquisa de Produtos por Similar
+
+---
+
+## 📍 **COMPONENTES VISUAIS PRINCIPAIS**
+
+### **Formulário:** `uFrmCadastroProdutos`
+
+#### **1. ComboBox de Campo a Pesquisar**
+- **Componente:** `cbxVisCampoPesquisado` (TComboBoxPlus)
+- **Localização DFM:** Linha ~150-247
+- **Função:** Permite selecionar qual campo usar para buscar produtos
+- **Eventos:**
+  - `OnChange`: `cbxVisCampoPesquisadoChange` - linha ~1687
+  - `OnCloseUp`: `cbxVisCampoPesquisadoCloseUp` - linha ~1352
+
+#### **2. Campo de Texto para Pesquisa**
+- **Componente:** `txtVisBuscar` (TGenEditBtn)
+- **Função:** Campo onde o usuário digita o conteúdo da pesquisa
+- **Eventos:**
+  - `OnDblClick`: `txtVisBuscarDblClick`
+  - `OnLeftButtonClick`: `txtVisBuscarLeftButtonClick`
+  - `OnRightButtonClick`: `txtVisBuscarDblClick`
+
+#### **3. ComboBox de Similar (Filtro por ID)**
+- **Componente:** `cbxSimilarVis` (TComboBoxPlus)
+- **Localização DFM:** Linha ~1001
+- **Localização PAS:** Linha ~1049
+- **Função:** Filtra produtos por ID do Similar (já existe)
+- **Preenchimento:** Linha ~15794
+
+#### **4. Botão Buscar**
+- **Componente:** `btnBuscar1`, `btnBuscar2`, etc.
+- **Evento:** `OnClick` → `btnBuscar1Click`
+- **Chamadas:** Linhas 16211, 16220
+
+---
+
+## 🔍 **FLUXO DE CONSULTA PRINCIPAL**
+
+### **1. Evento de Busca (Botão F5)**
+
+```
+Usuário clica em "Buscar" (F5)
+    ↓
+btnBuscar1Click (ou similar)
+    ↓
+Chama procedure Buscar (herdada)
+    ↓
+Linha ~2955: DalProduto.SqlBuscarProduto(...)
+```
+
+### **2. Procedure Buscar - Linha ~2950-3000**
+
+**Arquivo:** `Sol.NET\FormEspecias\uFrmCadastroProdutos.pas`
+
+```pascal
+// Linha 2950-2962
+if varBuscarTipo = tbIdTabela then
+  cdsGeral.Data := DalProduto.SqlBuscarProdutoId(cdsBuscar.FieldByName(varBuscarIdTabela).AsFloat)
+else
+begin
+  cdsBuscar.Data := DalProduto.SqlBuscarProduto(
+    cbxTodosRegistros.AsInteger,     // Todos registros ou limitado
+    cbxVisCampoPesquisado,           // Campo selecionado para pesquisar
+    cbxCondicao,                      // Condição (Contém, Inicia com, etc)
+    txtVisBuscar,                     // Texto digitado pelo usuário
+    cbxVisCampoPesquisado2,          // Campo 2 (pesquisa avançada)
+    cbxCondicao2,                     // Condição 2
+    txtVisBuscar2,                    // Texto 2
+    TipoConsulta,                     // Tipo: Produto ou Serviço
+    0,                                // vlId
+    cbxStatusReg,                     // Status (Ativo/Inativo)
+    cbxListaVis.AsFloat,             // Lista de produtos
+    cbxConsultasOpcoes.AsInteger,    // Consultas especiais
+    cbxConsultasOpcoes2.AsInteger,   // Consultas de estoque
+    txtVisEmpresas.IdLista,          // Empresas
+    cbxMoedaVis.AsFloat,            // Moeda
+    cbxVisData.AsInteger,            // Tipo de data
+    txtVisDtInicial.AsDateTime,      // Data inicial
+    txtVisDtFinal.AsDateTime,        // Data final
+    cbxTipoItemVis.AsInteger,        // Tipo de item
+    cbxErrosVis.AsInteger,           // Divergências
+    cbxEstoque.AsInteger,            // Estoque
+    varIdsLimitador,                 // IDs limitadores
+    vIdsPromocoes,                   // IDs de promoções
+    cbxCondicaoE,                    // Condição E
+    txtVisBuscarE,                   // Busca E (localização)
+    cbxProdEmpresa,                  // Produto por empresa
+    varIdEmpresa,                    // ID empresa
+    cbxProdInd.AsInteger,            // Produto individual
+    cbxVisDataMov.AsInteger,         // Data movimento
+    txtVisDtInicialMov.AsDateTime,   // Data inicial movimento
+    txtVisDtFinalMov.AsDateTime,     // Data final movimento
+    cbxEmpresaVisMov.AsFloat,        // Empresa movimento
+    cbxSitSituacaoEstoque3.AsFloat,  // Situação estoque
+    cbxSitLocalEstoque3.AsFloat,     // Local estoque
+    txtHoraInicial.AsDateTime,       // Hora inicial
+    txtHoraFinal.AsDateTime,         // Hora final
+    cbxStatusImagem,                 // Status imagem
+    cbxHStatusImagem,                // Hetosoft status imagem
+    cbxSimilarVis,                   // ⭐ SIMILAR POR ID (já existe)
+    cbxSugestaoVis,                  // Sugestão por ID
+    cbxImgCodCliente,                // Imagem código cliente
+    cbxEstatistica.AsInteger         // Estatística
+  );
+
+  Dados.Salvar_SQL;
+  Dados.Mostrar_SQL;
+  GetPromocaoVinculos;
+end;
+```
+
+---
+
+## 🎯 **FUNÇÃO DAL DE CONSULTA**
+
+### **Arquivo:** `Sol.NET\Dal\uDalProduto.pas`
+
+#### **1. Declaração da Função (Interface)**
+- **Linha:** ~99-108
+- **Função:** `SqlBuscarProduto`
+
+#### **2. Implementação da Função**
+- **Linha:** ~1048-2500
+- **Onde monta a consulta SQL completa**
+
+#### **3. Bloco de Filtro por Similar (ID) - Já Existente**
+**Linha:** ~2347-2355
+
+```pascal
+// Similar por ID
+if (objSimilarVis <> nil) and (objSimilarVis.AsFloat > 0) then
+begin
+  strAux.Clear;
+  strAux.Append(' SELECT SIMM.ID_PRODUTO                                           ' + BR);
+  strAux.Append(' FROM PRODUTO_SIMILARES SIMM  ' + SQL.WithNoLock + '             ' + BR);
+  strAux.Append(' WHERE SIMM.ID_SIMILAR = ' + objSimilarVis.AsFloat.ToString + '  ' + BR);
+
+  strSql.Append(' AND PROD.ID_PRODUTO IN (' + strAux.ToString + ') ');
+end;
+```
+
+#### **4. Bloco de Filtro por Sugestão (Similar)**
+**Linha:** ~2358-2366
+
+```pascal
+// Sugestao por ID
+if (objSugestaoVis <> nil) and (objSugestaoVis.AsFloat > 0) then
+begin
+  strAux.Clear;
+  strAux.Append(' SELECT SUGG.ID_PRODUTO                                             ' + BR);
+  strAux.Append(' FROM PRODUTO_SUGESTAO SUGG  ' + SQL.WithNoLock + '                ' + BR);
+  strAux.Append(' WHERE SUGG.ID_SUGESTAO = ' + objSugestaoVis.AsFloat.ToString + '  ' + BR);
+
+  strSql.Append(' AND PROD.ID_PRODUTO IN (' + strAux.ToString + ') ');
+end;
+```
+
+**📍 É APÓS ESTE BLOCO QUE VOCÊ ADICIONARÁ O FILTRO POR DESCRIÇÃO DO SIMILAR**
+
+---
+
+## ⚙️ **EVENTOS RELACIONADOS**
+
+### **1. Mudança de Campo Pesquisado**
+**Arquivo:** `uFrmCadastroProdutos.pas`
+**Linha:** ~1687
+
+```pascal
+procedure TFrmCadastroProdutos.cbxVisCampoPesquisadoChange(Sender: TObject);
+```
+
+**Função:** Executado quando o usuário muda o campo a pesquisar no combo.
+
+### **2. Ajuste de Comportamento do Campo de Busca**
+**Arquivo:** `uFrmCadastroProdutos.pas`
+**Linha:** ~25600-25750
+
+```pascal
+procedure TFrmCadastroProdutos.MudaStatusDaConsulta(Limpar: Boolean);
+```
+
+**Função:** Define o comportamento do campo `txtVisBuscar` de acordo com o campo selecionado:
+- Se for lookup (ID): abre tela de consulta
+- Se for texto: permite digitação livre
+- Se for número: valida como número
+
+**Exemplo de bloco relevante (linha ~25647):**
+```pascal
+// Com Texto
+if (cbxVisCampoPesquisado.Text = 'Automático') or 
+   (cbxVisCampoPesquisado.Text = 'Automático Condição') or
+   (cbxVisCampoPesquisado.Text = 'Código Produto/Descrição') or 
+   (cbxVisCampoPesquisado.Text = 'Descrição') or 
+   (cbxVisCampoPesquisado.Text = 'Descrição/Códigos') or
+   (varListaCamposCCC_Texto.IndexOf(cbxVisCampoPesquisado.Text) > -1) or 
+   (cbxVisCampoPesquisado.Text = 'Código Fabricante') or
+   (cbxVisCampoPesquisado.Text = 'Código Fornecedor') or 
+   (cbxVisCampoPesquisado.Text = 'Código Barra') or 
+   (cbxVisCampoPesquisado.Text = 'CST ICMS')
+then
+begin
+  txtVisBuscar.Hint := '';
+  txtVisBuscar.TextHint := 'Coloque o conteúdo';
+  txtVisBuscar.AHS_TipoEdit := teString;
+  txtVisBuscar.AHS_TrocarPontoVirg := False;
+  txtVisBuscar.AHS_ReadOnly2 := False;
+end;
+```
+
+### **3. Menu de Contexto - Localizar Similares**
+**Arquivo:** `uFrmCadastroProdutos.pas`
+**Linha:** ~23089
+
+```pascal
+procedure TFrmCadastroProdutos.mnLocalizarSimilaresClick(Sender: TObject);
+```
+
+**Função:** Menu de contexto que localiza todos os produtos com o mesmo similar do produto selecionado.
+
+**Como funciona:**
+1. Pega o produto selecionado na grid
+2. Busca o ID_SIMILAR desse produto
+3. Busca todos os produtos que têm o mesmo ID_SIMILAR
+4. Exibe na grid de visualização
+
+---
+
+## 📊 **ESTRUTURA DE DADOS**
+
+### **Tabelas Envolvidas:**
+
+```sql
+-- Tabela de Similares (mestre)
+SIMILARES
+├─ ID_SIMILAR (PK)
+└─ DESCRICAO
+
+-- Tabela de Vínculo Produto-Similar
+PRODUTO_SIMILARES
+├─ ID_PRODUTO_SIMILAR (PK)
+├─ ID_PRODUTO (FK → PRODUTOS)
+└─ ID_SIMILAR (FK → SIMILARES)
+
+-- Tabela de Produtos
+PRODUTOS
+├─ ID_PRODUTO (PK)
+├─ DESCRICAO
+├─ PRODUTO_SIMILAR (flag: 0/1)
+└─ ... outros campos
+```
+
+---
+
+## 🔄 **FLUXO COMPLETO DE PESQUISA**
+
+```
+1. FormShow (Inicialização)
+   ↓
+   Linha ~2400-2500: Preenche combos e configurações
+   ↓
+   Linha ~15794: cbxSimilarVis.Preencher(cdsSistema, [0, 1])
+
+2. Usuário seleciona campo no cbxVisCampoPesquisado
+   ↓
+   cbxVisCampoPesquisadoChange (linha ~1687)
+   ↓
+   MudaStatusDaConsulta (linha ~25600)
+   ↓
+   Define comportamento do txtVisBuscar
+
+3. Usuário digita no txtVisBuscar
+
+4. Usuário clica em Buscar (F5)
+   ↓
+   btnBuscar1Click
+   ↓
+   Procedure Buscar (linha ~2950)
+   ↓
+   DalProduto.SqlBuscarProduto (linha ~2955)
+   ↓
+   Monta SQL com todos os filtros (uDalProduto.pas linha ~1048-2500)
+   ↓
+   Linha ~2347: Aplica filtro de Similar por ID (se selecionado)
+   ↓
+   Executa consulta e retorna dados
+   ↓
+   Exibe na grid dbgBuscar
+```
+
+---
+
+## 🎯 **ONDE ADICIONAR O FILTRO POR DESCRIÇÃO**
+
+### **Para implementar a busca por descrição do Similar:**
+
+#### **1. No arquivo `uDalProduto.pas`:**
+- **Linha ~108:** Adicionar parâmetro na declaração
+- **Linha ~1049:** Adicionar parâmetro na implementação
+- **Linha ~2366:** Adicionar bloco SQL (após objSugestaoVis)
+
+#### **2. No arquivo `uFrmCadastroProdutos.pas`:**
+- **Linha ~2961:** Passar novo parâmetro na chamada
+- **Linha ~25647:** Adicionar tratamento em MudaStatusDaConsulta
+
+#### **3. No arquivo `uFrmCadastroProdutos.dfm`:**
+- **Linha ~195:** Adicionar em AHS_ItemsID.Strings
+- **Linha ~247:** Adicionar em Items.Strings
+
+---
+
+## 📚 **FUNÇÕES DE APOIO**
+
+### **Preenchimento de Combos**
+- **Linha ~15794:** `cbxSimilarVis.Preencher(cdsSistema, [0, 1])`
+- Busca dados da tabela SIMILARES e preenche o combo
+
+### **Salvamento de Configurações**
+- `BuscarCampoGenerico` - Carrega configuração salva
+- `SalvarCampoGenerico` - Salva seleção do usuário
+
+### **Montagem de SQL**
+- **uDalProduto.pas linha ~1100-2500:** Monta SQL complexo com múltiplos filtros
+- Usa `strSql` (StringBuilder) para concatenar partes do SQL
+- Usa `strAux` (StringBuilder) para subconsultas
+
+---
+
+## 💡 **DICA IMPORTANTE**
+
+A lógica já está toda pronta para campos de texto! Você só precisa:
+
+1. **Adicionar a opção no combo** (dfm)
+2. **Passar o parâmetro correto** (quando "Similar (Descrição)" estiver selecionado)
+3. **Implementar o SQL de busca** (espelhando-se no bloco de Sugestão)
+
+O sistema já sabe:
+- ✅ Como tratar campos de texto
+- ✅ Como montar subconsultas com IN
+- ✅ Como fazer LIKE com UPPER para case-insensitive
+- ✅ Como combinar múltiplos filtros
+
+---
+
 **Data do Mapeamento:** 30/10/2025
 **Issue:** #7303
-**Branch:** 7303-243174-solnet---adicionar-campo-a-pesquisar-codigo-similar-no-cadastro-de-produtos-onde-traz-todo
+**Desenvolvedor:** Copilot
+
