@@ -1025,6 +1025,37 @@ end;
 Peça ao usuário quantos números quer armazenar. Crie array dinâmico, preencha e exiba a soma.  
 **Componentes:** `Edit` (quantidade), `Button`
 
+```pascal
+procedure TForm1.Bloco6;
+var
+    quantidade, i, soma: Integer;
+  numeros: array of Integer;
+begin
+  // 1. Ler a quantidade digitada
+  if not TryStrToInt(edt1.Text, quantidade) or (quantidade <= 0) then
+  begin
+    ShowMessage('Digite uma quantidade válida (maior que zero).');
+    Exit;
+  end;
+
+  // 2. Criar array dinâmico com o tamanho informado
+  SetLength(numeros, quantidade);
+
+  // 3. Preencher o array com valores (ex: i * 2)
+  soma := 0;
+  for i := 0 to quantidade - 1 do
+  begin
+    numeros[i] := i + 1; // ou qualquer lógica que quiser
+    soma := soma + numeros[i];
+  end;
+
+  // 4. Exibir a soma
+  ShowMessage('Soma dos números: ' + IntToStr(soma));
+end;
+
+
+```
+
 **Ex 1.7 - Tipos Numéricos**  
 Compare `Integer` vs `Double`: divida 10 por 3 nos dois tipos e mostre a diferença de resultado.  
 **Componentes:** `Button`
