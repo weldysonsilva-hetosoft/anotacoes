@@ -1522,7 +1522,7 @@ end;`
 
 **Exemplo prático:**
 
-delphi
+
 
 `// VARIÁVEL - Acesso direto
 var Contador: Integer := 0;
@@ -1556,7 +1556,7 @@ Um evento é um **método especial** que é executado automaticamente quando a
 
 **Eventos no ciclo de vida dos formulários Sol.NET:**
 
-delphi
+```pascal
 
 `type
   TFrmProdutos = class(TFrmHeranca)
@@ -1571,6 +1571,7 @@ delphi
     procedure txtPrecoKeyPress(Sender: TObject; var Key: Char); // OnKeyPress
   end;`
 
+```
 **Ordem de execução (Nascimento → Vida → Morte):**
 
 Code
@@ -1588,7 +1589,7 @@ OnClose → OnDeactivate → OnHide → OnDestroy`
 
 **Passo a passo:**
 
-delphi
+
 
 `// 1. Configurar componentes (normalmente feito visualmente no IDE)
 cdsBuscar: TClientDataSet;  // Dataset
@@ -1610,7 +1611,7 @@ cdsBuscar.Open;
 
 **Exemplo completo em um formulário:**
 
-delphi
+```pascal
 
 `procedure TFrmProdutos.BuscarProdutos;
 begin
@@ -1634,7 +1635,7 @@ begin
   DBGridBuscar.Columns[1].Title.Caption := 'Descrição';
   DBGridBuscar.Columns[2].Width := 120;
 end;`
-
+```
 ---
 
 ## **🎯 Resumo Visual**
@@ -1652,5 +1653,6 @@ EVENTO (Reação)         →  procedure btnSalvarClick(Sender: TObject);
 
 FUNCTION (Retorna)      →  function Calcular: Double;
 PROCEDURE (Não retorna) →  procedure Limpar;`
+
 
 
