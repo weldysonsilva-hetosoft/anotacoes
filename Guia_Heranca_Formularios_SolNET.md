@@ -1332,3 +1332,325 @@ Este guia apresentou os conceitos fundamentais de herança de formulários no So
 💡 **Lembre-se:** A melhor forma de aprender é praticando! Comece com formulários simples e vá evoluindo gradualmente.
 
 🚀 **Bom desenvolvimento!**
+
+[Documentação Básica de Programação Sol.NET.pdf](https://github.com/user-attachments/files/23264362/Documentacao.Basica.de.Programacao.Sol.NET.pdf)
+
+## **📚 Respostas às Questões Fundamentais**
+
+### **1️⃣ O que é uma variável?**
+
+Uma variável é um espaço nomeado na memória que armazena um valor que pode ser alterado durante a execução do programa.
+
+**No padrão Sol.NET (Delphi 12.2):**
+
+delphi
+
+`// Declaração inline (padrão do projeto)
+var MinhaVariavel: Integer := 0;
+var NomeCliente: string := 'João Silva';
+var PrecoUnitario: Double := 10.50;
+var DataCadastro: TDateTime := Now;`
+
+### **2️⃣ O que é uma classe?**
+
+Uma classe é um modelo/template que define a estrutura e comportamento de objetos. É como uma "planta" que determina:
+
+- **Propriedades** (características)
+- **Métodos** (ações/comportamentos)
+- **Eventos** (reações a acontecimentos)
+
+**Exemplo no Sol.NET:**
+
+delphi
+
+`type
+  TIntegracaoBase = class(TInterfacedObject, IIntegracaoBase)
+  private
+    FNomeIntegracao: string;  // Campo privado
+    FDados: TDados;
+  protected
+    procedure LogAdd(Msg: string); virtual;  // Método protegido
+  public
+    constructor Create(Owner: TForm; Dados: TDados);
+    property NomeIntegracao: string read FNomeIntegracao write FNomeIntegracao;
+  end;`
+
+### **3️⃣ O que é um objeto?**
+
+Um objeto é uma **instância concreta** de uma classe. É a classe "materializada" na memória.
+
+**Exemplo:**
+
+delphi
+
+`// TClientDataSet é a CLASSE
+// cdsBuscar é o OBJETO (instância da classe)
+var cdsBuscar: TClientDataSet := TClientDataSet.Create(Self);
+
+// Outro exemplo
+var MinhaIntegracao: TIntegracaoBase := TIntegracaoBase.Create(Self, Dados);`
+
+### **4️⃣ O que é um método?**
+
+Um método é uma **função ou procedimento** que pertence a uma classe e define um comportamento/ação que o objeto pode executar.
+
+**Exemplo no contexto de formulários:**
+
+delphi
+
+`type
+  TFrmProdutos = class(TFrmHeranca)
+  private
+    procedure ConfigurarGrid;  // Método privado
+  protected
+    procedure FrmMostrar; override;  // Método protegido (sobrescrito)
+  public
+    procedure BuscarProdutos;  // Método público
+    function ValidarCodigoBarras(Codigo: string): Boolean;  // Função
+  end;
+
+implementation
+
+procedure TFrmProdutos.BuscarProdutos;
+begin
+  // Implementação
+  cdsBuscar.Close;
+  cdsBuscar.CommandText := 'SELECT * FROM PRODUTOS';
+  cdsBuscar.Open;
+end;
+
+function TFrmProdutos.ValidarCodigoBarras(Codigo: string): Boolean;
+begin
+  Result := Length(Codigo) >= 8;
+end;`
+
+### **5️⃣ Quais os tipos de método?**
+
+**a) Procedure (Procedimento):**
+
+- Não retorna valor
+- Executa ações
+
+delphi
+
+`procedure TFrmProdutos.LimparCampos;
+begin
+  txtDescricao.Clear;
+  txtPreco.Clear;
+end;`
+
+**b) Function (Função):**
+
+- Retorna um valor
+- Executa ações E retorna resultado
+
+delphi
+
+`function TFrmProdutos.CalcularPrecoVenda(PrecoCusto: Double): Double;
+begin
+  Result := PrecoCusto * 1.3; // Margem de 30%
+end;`
+
+**c) Constructor:**
+
+- Método especial para criar/inicializar objetos
+
+delphi
+
+`constructor TIntegracaoBase.Create(Owner: TForm; Dados: TDados);
+begin
+  inherited Create;
+  FOwner := Owner;
+  FDados := Dados;
+end;`
+
+**d) Destructor:**
+
+- Método especial para destruir/liberar objetos
+
+delphi
+
+`destructor TIntegracaoBase.Destroy;
+begin
+  FDados.Free;
+  inherited;
+end;`
+
+### **6️⃣ O que é uma propriedade?**
+
+Uma propriedade é uma interface pública para acessar/modificar dados privados de uma classe de forma controlada.
+
+**Sintaxe:**
+
+delphi
+
+`property NomePropriedade: Tipo read GetMethod write SetMethod;`
+
+**Exemplo completo:**
+
+delphi
+
+`type
+  TProduto = class
+  private
+    FDescricao: string;
+    FPreco: Double;
+    procedure SetPreco(const Value: Double);  // Validação ao definir
+  public
+    property Descricao: string read FDescricao write FDescricao;
+    property Preco: Double read FPreco write SetPreco;
+  end;
+
+implementation
+
+procedure TProduto.SetPreco(const Value: Double);
+begin
+  if Value < 0 then
+    raise Exception.Create('Preço não pode ser negativo');
+  FPreco := Value;
+end;`
+
+### **7️⃣ Qual a diferença entre "variável x propriedade"?**
+
+| **Aspecto** | **Variável** | **Propriedade** |
+| --- | --- | --- |
+| **Escopo** | Local ou global | Membro de classe |
+| **Acesso** | Direto | Controlado (via read/write) |
+| **Validação** | Não tem | Pode ter lógica de validação |
+| **Encapsulamento** | Não se aplica | Protege campo privado |
+| **Visibilidade** | Definida por seção | Sempre public |
+
+**Exemplo prático:**
+
+delphi
+
+`// VARIÁVEL - Acesso direto
+var Contador: Integer := 0;
+Contador := Contador + 1;  // Sem validação
+
+// PROPRIEDADE - Acesso controlado
+type
+  TContador = class
+  private
+    FValor: Integer;
+    procedure SetValor(const Value: Integer);
+  public
+    property Valor: Integer read FValor write SetValor;
+  end;
+
+procedure TContador.SetValor(const Value: Integer);
+begin
+  if Value < 0 then
+    FValor := 0  // Validação!
+  else
+    FValor := Value;
+end;
+
+// Uso
+var MeuContador: TContador := TContador.Create;
+MeuContador.Valor := -5;  // Será convertido para 0`
+
+### **8️⃣ O que é um Evento?**
+
+Um evento é um **método especial** que é executado automaticamente quando algo específico acontece (ex: clique do mouse, tecla pressionada, formulário sendo exibido).
+
+**Eventos no ciclo de vida dos formulários Sol.NET:**
+
+delphi
+
+`type
+  TFrmProdutos = class(TFrmHeranca)
+  private
+    procedure FrmCriar(Sender: TObject);     // OnCreate
+    procedure FrmMostrar(Sender: TObject);   // OnShow
+    procedure FrmPintar(Sender: TObject);    // OnPaint
+    procedure FrmFechar(Sender: TObject; var Action: TCloseAction); // OnClose
+    procedure FrmDestroi(Sender: TObject);   // OnDestroy
+    
+    procedure btnSalvarClick(Sender: TObject);  // OnClick do botão
+    procedure txtPrecoKeyPress(Sender: TObject; var Key: Char); // OnKeyPress
+  end;`
+
+**Ordem de execução (Nascimento → Vida → Morte):**
+
+Code
+
+`NASCIMENTO:
+OnCreate → OnShow → OnActivate → OnPaint
+
+VIDA:
+Eventos dos componentes (Click, KeyPress, Change, etc.)
+
+MORTE:
+OnClose → OnDeactivate → OnHide → OnDestroy`
+
+### **9️⃣ Como mostrar dados de um TClientDataSet em um DBGrid?**
+
+**Passo a passo:**
+
+delphi
+
+`// 1. Configurar componentes (normalmente feito visualmente no IDE)
+cdsBuscar: TClientDataSet;  // Dataset
+dsBuscar: TDataSource;      // Ponte
+DBGridBuscar: TDBGrid;      // Grid visual
+
+// 2. Conectar os componentes
+dsBuscar.DataSet := cdsBuscar;      // DataSource aponta para ClientDataSet
+DBGridBuscar.DataSource := dsBuscar; // Grid aponta para DataSource
+
+// 3. Definir a consulta SQL
+cdsBuscar.Close;
+cdsBuscar.CommandText := 'SELECT ID_PRODUTO, DESCRICAO, PRECO FROM PRODUTOS WHERE ATIVO = 1';
+
+// 4. Abrir o dataset
+cdsBuscar.Open;
+
+// PRONTO! Os dados aparecerão automaticamente no grid`
+
+**Exemplo completo em um formulário:**
+
+delphi
+
+`procedure TFrmProdutos.BuscarProdutos;
+begin
+  cdsBuscar.Close;
+  
+  var SQL: string := 
+    'SELECT ' +
+    '  P.ID_PRODUTO, ' +
+    '  P.DESCRICAO, ' +
+    '  P.CODIGO_BARRA, ' +
+    '  P.PRECO_VENDA, ' +
+    '  P.ESTOQUE_ATUAL ' +
+    'FROM PRODUTOS P ' +
+    'WHERE P.DESCRICAO LIKE ' + QuotedStr('%' + txtPesquisa.Text + '%');
+  
+  cdsBuscar.CommandText := SQL;
+  cdsBuscar.Open;
+  
+  // Opcional: Configurar colunas do grid
+  DBGridBuscar.Columns[0].Title.Caption := 'Código';
+  DBGridBuscar.Columns[1].Title.Caption := 'Descrição';
+  DBGridBuscar.Columns[2].Width := 120;
+end;`
+
+---
+
+## **🎯 Resumo Visual**
+
+Code
+
+`CLASSE (Molde)          →  OBJETO (Instância)
+TClientDataSet          →  cdsBuscar: TClientDataSet
+
+VARIÁVEL (Dado solto)   →  var Total: Double := 100.50;
+PROPRIEDADE (Dado encapsulado) → property Preco: Double read FPreco write SetPreco;
+
+MÉTODO (Ação)           →  procedure Salvar;
+EVENTO (Reação)         →  procedure btnSalvarClick(Sender: TObject);
+
+FUNCTION (Retorna)      →  function Calcular: Double;
+PROCEDURE (Não retorna) →  procedure Limpar;`
+
+
