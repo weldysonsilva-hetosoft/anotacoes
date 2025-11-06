@@ -838,25 +838,578 @@ end;
 ## 🔧 Nível Intermediário (Exercícios 16–35)
 
 16. Desenvolva um CRUD completo (Create, Read, Update, Delete) para uma tabela de Clientes usando `TFDQuery` e `TFDConnection` com Firebird.
-17. Implemente um sistema de login que valide usuário e senha contra uma tabela no banco de dados, criptografando a senha com MD5.
-18. Crie um formulário de cadastro de produtos com validação de código de barras (EAN-13) incluindo cálculo do dígito verificador.
-19. Desenvolva um relatório de vendas usando `TFDQuery` que agrupe por período, categoria de produto e vendedor, exibindo totais em um `TDBGrid`.
-20. Implemente um sistema de estoque que controle entradas e saídas de produtos, atualizando o saldo automaticamente e impedindo vendas com estoque zerado.
-21. Crie um importador de arquivo CSV que leia dados de clientes e insira automaticamente em uma tabela usando transações.
-22. Desenvolva um exportador de dados que gere arquivo XML com estrutura hierárquica a partir de uma consulta SQL (Pedidos → Itens).
-23. Implemente um sistema de backup automático do banco de dados Firebird que execute em horários agendados usando `TTimer`.
-24. Crie um formulário de pesquisa avançada de produtos com filtros dinâmicos (nome, categoria, faixa de preço) construindo SQL dinamicamente.
-25. Desenvolva um sistema de auditoria que registre todas as alterações (insert, update, delete) em uma tabela de log com data, hora, usuário e valores anteriores/novos.
-26. Implemente um gerador de código de barras que converta um código numérico em imagem Code128 ou EAN-13 e exiba em um `TImage`.
-27. Crie um sistema de contas a pagar/receber com controle de vencimento, juros, multa e baixa de títulos.
-28. Desenvolva um módulo de integração REST que consuma uma API externa (ex: ViaCEP) e preencha automaticamente campos de endereço ao digitar o CEP.
-29. Implemente um sistema de impressão de etiquetas personalizadas com preview, usando componentes de relatório (ex: QuickReport ou FastReport).
-30. Crie um dashboard com gráficos (`TChart`) exibindo: vendas por mês, produtos mais vendidos e ticket médio.
-31. Desenvolva um sistema de permissões de usuário que controle acesso a formulários e funcionalidades específicas baseado em perfis (Admin, Vendedor, Caixa).
-32. Implemente um sincronizador de dados que compare duas tabelas (local e servidor) e aplique apenas as diferenças (delta sync).
-33. Crie um módulo de envio de emails automáticos usando Indy (`IdSMTP`) com anexos e templates HTML.
-34. Desenvolva um sistema de controle de versão de banco de dados que execute scripts SQL sequenciais para atualização de estrutura.
-35. Implemente um gerenciador de filas de processamento assíncrono que execute tarefas em background sem travar a interface.
+    ```pascal
+
+    unit Crud;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, FireDAC.Comp.Client,
+  FireDAC.Stan.Param, Vcl.StdCtrls, Data.DB, Vcl.Grids, Vcl.DBGrids,
+  FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf,
+  FireDAC.Phys.Intf, FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async,
+  FireDAC.Phys, FireDAC.Phys.FB, FireDAC.Phys.FBDef, FireDAC.VCLUI.Wait,
+  FireDAC.DApt, System.StrUtils, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.Comp.DataSet, FireDAC.Phys.PGDef, FireDAC.Phys.PG, FireDAC.Phys.MSSQLDef,
+  FireDAC.Phys.ODBCBase, FireDAC.Phys.MSSQL;
+
+type
+  TForm1 = class(TForm)
+
+    FDConnection1: TFDConnection;
+    FDQuery1: TFDQuery;
+    DataSource1: TDataSource;
+
+    DBGrid1: TDBGrid;
+
+    edtNome: TEdit;
+    edtCPF: TEdit;
+    edtEmail: TEdit;
+    edtTelefone: TEdit;
+    chkAtivo: TCheckBox;
+
+    btnNovo: TButton;
+    btnSalvar: TButton;
+    btnEditar: TButton;
+    btnExcluir: TButton;
+    btnCancelar: TButton;
+    btnPesquisar: TButton;
+
+    lblNome: TLabel;
+    lblCPF: TLabel;
+    lblEmail: TLabel;
+    lblTelefone: TLabel;
+    FDPhysMSSQLDriverLink: TFDPhysMSSQLDriverLink;
+
+    procedure FormCreate(Sender: TObject);
+    procedure btnNovoClick(Sender: TObject);
+    procedure btnSalvarClick(Sender: TObject);
+    procedure btnEditarClick(Sender: TObject);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnCancelarClick(Sender: TObject);
+    procedure btnPesquisarClick(Sender: TObject);
+    procedure DBGrid1DblClick(Sender: TObject);
+
+  private
+    FModoEdicao: Boolean;
+    FIdClienteAtual: Integer;
+
+    procedure ConfigurarConexao;
+    procedure CarregarClientes;
+    procedure LimparCampos;
+    procedure HabilitarCampos(Habilitar: Boolean);
+    procedure ValidarCampos;
+
+    procedure CriarCliente;
+    procedure AtualizarCliente;
+    procedure ExcluirCliente;
+    procedure CarregarClienteParaEdicao(IdCliente: Integer);
+
+  public
+    { Public declarations }
+  end;
+
+var
+    Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+
+uses UFuncoes;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  FDConnection1.Params.Clear;
+  ConfigurarConexao;
+  CarregarClientes;
+  LimparCampos;
+  HabilitarCampos(False);
+  FModoEdicao := False;
+  FIdClienteAtual := 0;
+end;
+
+{===============================================================================
+  CONFIGURAÇÃO DA CONEXÃO COM SQL SERVER
+  Padrão Sol.NET - Usa Params.Values[] ao invés de Params.Add()
+===============================================================================}
+procedure TForm1.ConfigurarConexao;
+begin
+  // Limpa parâmetros anteriores
+  FDConnection1.Params.Clear;
+  
+  // Define o driver (MSSQL = SQL Server)
+  FDConnection1.DriverName := 'MSSQL';
+
+  // Configura parâmetros de conexão (Padrão Sol.NET)
+  FDConnection1.Params.Values['Server'] := 'Localhost';        // Servidor SQL Server
+  FDConnection1.Params.Values['Database'] := 'WeldysonTeste';  // Nome do banco de dados
+  FDConnection1.Params.Values['User_Name'] := 'sa';            // Usuário
+  FDConnection1.Params.Values['Password'] := 'Heto124353';     // Senha
+  FDConnection1.Params.Values['CharacterSet'] := 'UTF8';       // Codificação
+  FDConnection1.Params.Values['LoginTimeout'] := '30';         // Timeout de login (30s)
+  FDConnection1.Params.Values['MetaDefSchema'] := 'dbo';       // Schema padrão
+  FDConnection1.Params.Values['DriverID'] := 'MSSQL';          // ID do driver
+
+  // Verifica se conectou com sucesso
+  if FDConnection1.Connected then
+    ShowMessage('Conexão estabelecida com sucesso!');
+  Exit;
+  
+  // Caso não conecte, exibe mensagem de erro
+  if not FDConnection1.Connected then
+    ShowMessage('Erro ao conectar ao banco: ');
+end;
+
+procedure TForm1.CarregarClientes;
+begin
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('SELECT');
+  FDQuery1.SQL.Add('  ID_PESSOA,');
+  FDQuery1.SQL.Add('  NOME,');
+  FDQuery1.SQL.Add('  CPF,');
+  FDQuery1.SQL.Add('  EMAIL,');
+  FDQuery1.SQL.Add('  TELEFONE,');
+  FDQuery1.SQL.Add('  INATIVO,');
+  FDQuery1.SQL.Add('  DT_CADASTRO');
+  FDQuery1.SQL.Add('FROM PESSOAS');
+  FDQuery1.SQL.Add('ORDER BY NOME');
+
+  FDQuery1.Open;
+
+  if FDQuery1.IsEmpty then
+    ShowMessage('Não há Cliente a ser carregado!');
+
+end;
+
+procedure TForm1.btnPesquisarClick(Sender: TObject);
+var
+    Filtro: string;
+begin
+  Filtro := InputBox('Pesquisar Cliente', 'Digite o nome:', '');
+
+  if Filtro.Trim.IsEmpty then
+  begin
+    CarregarClientes;
+    Exit;
+  end;
+
+  FDQuery1.Close;
+  FDQuery1.SQL.Clear;
+  FDQuery1.SQL.Add('SELECT * FROM CLIENTES');
+  FDQuery1.SQL.Add('WHERE UPPER(NOME) LIKE :NOME');
+  FDQuery1.SQL.Add('ORDER BY NOME');
+  FDQuery1.ParamByName('NOME').AsString := '%' + UpperCase(Filtro) + '%';
+
+  try
+    FDQuery1.Open;
+
+    if FDQuery1.IsEmpty then
+      ShowMessage('️ Nenhum cliente encontrado com esse nome.');
+  except
+    on E: Exception do
+      ShowMessage(' Erro na pesquisa: ' + E.Message);
+  end;
+end;
+
+procedure TForm1.btnNovoClick(Sender: TObject);
+begin
+  LimparCampos;
+  HabilitarCampos(True);
+  FModoEdicao := False;
+  FIdClienteAtual := 0;
+  edtNome.SetFocus;
+end;
+
+procedure TForm1.CriarCliente;
+var
+    QueryInsert: TFDQuery;
+begin
+  ValidarCampos;
+
+  QueryInsert := TFDQuery.Create(nil);
+  try
+    QueryInsert.Connection := FDConnection1;
+    QueryInsert.SQL.Clear;
+    QueryInsert.SQL.Add('INSERT INTO CLIENTES (');
+    QueryInsert.SQL.Add('  NOME,');
+    QueryInsert.SQL.Add('  CPF,');
+    QueryInsert.SQL.Add('  EMAIL,');
+    QueryInsert.SQL.Add('  TELEFONE,');
+    QueryInsert.SQL.Add('  ATIVO');
+    QueryInsert.SQL.Add(') VALUES (');
+    QueryInsert.SQL.Add('  :NOME,');
+    QueryInsert.SQL.Add('  :CPF,');
+    QueryInsert.SQL.Add('  :EMAIL,');
+    QueryInsert.SQL.Add('  :TELEFONE,');
+    QueryInsert.SQL.Add('  :ATIVO');
+    QueryInsert.SQL.Add(')');
+
+    QueryInsert.ParamByName('NOME').AsString := edtNome.Text;
+    QueryInsert.ParamByName('CPF').AsString := TFuncoes.SoNumeros(edtCPF.Text);
+    QueryInsert.ParamByName('EMAIL').AsString := edtEmail.Text;
+    QueryInsert.ParamByName('TELEFONE').AsString := TFuncoes.SoNumeros(edtTelefone.Text);
+    QueryInsert.ParamByName('ATIVO').AsString := IfThen(chkAtivo.Checked, 'S', 'N');
+
+    try
+      FDConnection1.StartTransaction;
+      QueryInsert.ExecSQL;
+      FDConnection1.Commit;
+
+      ShowMessage(' Cliente cadastrado com sucesso!');
+      CarregarClientes;
+      LimparCampos;
+      HabilitarCampos(False);
+    except
+      on E: Exception do
+      begin
+        FDConnection1.Rollback;
+        raise Exception.Create(' Erro ao cadastrar cliente: ' + E.Message);
+      end;
+    end;
+  finally
+    QueryInsert.Free;
+  end;
+end;
+
+
+{===============================================================================
+  BOTÃO EDITAR - CARREGA CLIENTE SELECIONADO PARA EDIÇÃO
+  Pega o cliente clicado no grid e carrega seus dados nos campos
+===============================================================================}
+procedure TForm1.btnEditarClick(Sender: TObject);
+begin
+  // Verifica se há algum registro selecionado
+  if FDQuery1.IsEmpty then
+  begin
+    ShowMessage('Selecione um cliente para editar.');
+    Exit;
+  end;
+
+  // Pega o ID do cliente selecionado no grid
+  FIdClienteAtual := FDQuery1.FieldByName('ID_PESSOA').AsInteger;
+  
+  // Carrega os dados do cliente nos campos
+  CarregarClienteParaEdicao(FIdClienteAtual);
+  
+  // Habilita os campos para edição
+  HabilitarCampos(True);
+  
+  // Define modo como "edição" (não é novo cadastro)
+  FModoEdicao := True;
+  
+  // Posiciona cursor no campo Nome
+  edtNome.SetFocus;
+end;
+
+{===============================================================================
+  CARREGA DADOS DO CLIENTE PARA EDIÇÃO
+  Busca o cliente pelo ID e preenche os campos do formulário
+===============================================================================}
+procedure TForm1.CarregarClienteParaEdicao(IdCliente: Integer);
+var
+    QueryLoad: TFDQuery;
+begin
+  // Cria query temporária para carregar dados
+  QueryLoad := TFDQuery.Create(nil);
+  try
+    // Conecta à conexão principal
+    QueryLoad.Connection := FDConnection1;
+    
+    // Monta SELECT filtrando pelo ID
+    QueryLoad.SQL.Text := 'SELECT * FROM CLIENTES WHERE ID_PESSOA = :ID';
+    QueryLoad.ParamByName('ID').AsInteger := IdCliente;
+    
+    // Executa a consulta
+    QueryLoad.Open;
+
+    // Se encontrou o cliente, preenche os campos
+    if not QueryLoad.IsEmpty then
+    begin
+      edtNome.Text := QueryLoad.FieldByName('NOME').AsString;
+      edtCPF.Text := QueryLoad.FieldByName('CPF').AsString;
+      edtEmail.Text := QueryLoad.FieldByName('EMAIL').AsString;
+      edtTelefone.Text := QueryLoad.FieldByName('TELEFONE').AsString;
+      
+      // Marca/desmarca checkbox conforme valor no banco
+      chkAtivo.Checked := QueryLoad.FieldByName('ATIVO').AsString = 'S';
+    end;
+  finally
+    // Sempre libera a memória
+    QueryLoad.Free;
+  end;
+end;
+
+
+{===============================================================================
+  OPERAÇÃO UPDATE - ATUALIZAR CLIENTE EXISTENTE
+  Valida dados e executa UPDATE na tabela CLIENTES
+===============================================================================}
+procedure TForm1.AtualizarCliente;
+var
+    QueryUpdate: TFDQuery;
+begin
+  // Valida campos antes de atualizar
+  ValidarCampos;
+
+  // Verifica se tem um ID válido selecionado
+  if FIdClienteAtual <= 0 then
+    raise Exception.Create(' Nenhum cliente selecionado para atualização.');
+
+  // Cria query temporária para UPDATE
+  QueryUpdate := TFDQuery.Create(nil);
+  try
+    // Conecta à conexão principal
+    QueryUpdate.Connection := FDConnection1;
+    
+    // Monta comando UPDATE
+    QueryUpdate.SQL.Clear;
+    QueryUpdate.SQL.Add('UPDATE CLIENTES SET');
+    QueryUpdate.SQL.Add('  NOME = :NOME,');
+    QueryUpdate.SQL.Add('  CPF = :CPF,');
+    QueryUpdate.SQL.Add('  EMAIL = :EMAIL,');
+    QueryUpdate.SQL.Add('  TELEFONE = :TELEFONE,');
+    QueryUpdate.SQL.Add('  ATIVO = :ATIVO,');
+    QueryUpdate.SQL.Add('  DATA_ALTERACAO = CURRENT_TIMESTAMP');  // Atualiza data automaticamente
+    QueryUpdate.SQL.Add('WHERE ID_PESSOA = :ID');  // Filtra pelo ID
+
+    // Define valores dos parâmetros
+    QueryUpdate.ParamByName('NOME').AsString := edtNome.Text;
+    QueryUpdate.ParamByName('CPF').AsString := TFuncoes.SoNumeros(edtCPF.Text);
+    QueryUpdate.ParamByName('EMAIL').AsString := edtEmail.Text;
+    QueryUpdate.ParamByName('TELEFONE').AsString := TFuncoes.SoNumeros(edtTelefone.Text);
+    QueryUpdate.ParamByName('ATIVO').AsString := IfThen(chkAtivo.Checked, 'S', 'N');
+    QueryUpdate.ParamByName('ID').AsInteger := FIdClienteAtual;
+
+    try
+      // Inicia transação
+      FDConnection1.StartTransaction;
+      
+      // Executa UPDATE
+      QueryUpdate.ExecSQL;
+      
+      // Confirma alterações
+      FDConnection1.Commit;
+
+      // Mensagem de sucesso
+      ShowMessage(' Cliente atualizado com sucesso!');
+      
+      // Atualiza grid
+      CarregarClientes;
+      
+      // Limpa campos e desabilita edição
+      LimparCampos;
+      HabilitarCampos(False);
+      FModoEdicao := False;
+    except
+      on E: Exception do
+      begin
+        // Se houver erro, desfaz alterações
+        FDConnection1.Rollback;
+        raise Exception.Create('Erro ao atualizar cliente: ' + E.Message);
+      end;
+    end;
+  finally
+    // Libera memória
+    QueryUpdate.Free;
+  end;
+end;
+
+
+{===============================================================================
+  BOTÃO EXCLUIR - CONFIRMA E EXCLUI CLIENTE
+  Pede confirmação antes de excluir o cliente selecionado
+===============================================================================}
+procedure TForm1.btnExcluirClick(Sender: TObject);
+begin
+  // Verifica se há registro selecionado
+  if FDQuery1.IsEmpty then
+  begin
+    ShowMessage(' Selecione um cliente para excluir.');
+    Exit;
+  end;
+
+  // Pede confirmação mostrando o nome do cliente
+  if MessageDlg('Confirma a exclusão do cliente "' +
+    FDQuery1.FieldByName('NOME').AsString + '"?',
+    mtConfirmation, [mbYes, mbNo], 0) = mrYes then
+  begin
+    // Pega o ID do cliente
+    FIdClienteAtual := FDQuery1.FieldByName('ID_PESSOA').AsInteger;
+    
+    // Executa a exclusão
+    ExcluirCliente;
+  end;
+end;
+
+{===============================================================================
+  OPERAÇÃO DELETE - EXCLUIR CLIENTE DO BANCO
+  Remove permanentemente o cliente da tabela
+===============================================================================}
+procedure TForm1.ExcluirCliente;
+var
+    QueryDelete: TFDQuery;
+begin
+  // Valida se tem ID válido
+  if FIdClienteAtual <= 0 then
+    raise Exception.Create(' Nenhum cliente selecionado para exclusão.');
+
+  // Cria query temporária para DELETE
+  QueryDelete := TFDQuery.Create(nil);
+  try
+    // Conecta à conexão principal
+    QueryDelete.Connection := FDConnection1;
+    
+    // Monta comando DELETE
+    QueryDelete.SQL.Text := 'DELETE FROM CLIENTES WHERE ID_PESSOA = :ID';
+    QueryDelete.ParamByName('ID').AsInteger := FIdClienteAtual;
+
+    try
+      // Inicia transação
+      FDConnection1.StartTransaction;
+      
+      // Executa DELETE
+      QueryDelete.ExecSQL;
+      
+      // Confirma exclusão
+      FDConnection1.Commit;
+
+      // Mensagem de sucesso
+      ShowMessage(' Cliente excluído com sucesso!');
+      
+      // Atualiza grid
+      CarregarClientes;
+      
+      // Limpa campos
+      LimparCampos;
+      
+      // Reseta ID
+      FIdClienteAtual := 0;
+    except
+      on E: Exception do
+      begin
+        // Se houver erro, desfaz exclusão
+        FDConnection1.Rollback;
+        raise Exception.Create(' Erro ao excluir cliente: ' + E.Message);
+      end;
+    end;
+  finally
+    // Libera memória
+    QueryDelete.Free;
+  end;
+end;
+
+procedure TForm1.LimparCampos;
+begin
+  edtNome.Clear;
+  edtCPF.Clear;
+  edtEmail.Clear;
+  edtTelefone.Clear;
+  chkAtivo.Checked := True;
+end;
+
+procedure TForm1.HabilitarCampos(Habilitar: Boolean);
+begin
+  edtNome.Enabled := Habilitar;
+  edtCPF.Enabled := Habilitar;
+  edtEmail.Enabled := Habilitar;
+  edtTelefone.Enabled := Habilitar;
+  chkAtivo.Enabled := Habilitar;
+
+  btnSalvar.Enabled := Habilitar;
+  btnCancelar.Enabled := Habilitar;
+  btnNovo.Enabled := not Habilitar;
+  btnEditar.Enabled := not Habilitar;
+  btnExcluir.Enabled := not Habilitar;
+  btnPesquisar.Enabled := not Habilitar;
+end;
+
+procedure TForm1.ValidarCampos;
+var
+    CPF: string;
+begin
+  if Trim(edtNome.Text) = '' then
+    raise Exception.Create('O campo NOME é obrigatório.');
+
+  if Trim(edtCPF.Text) <> '' then
+  begin
+    CPF := TFuncoes.SoNumeros(edtCPF.Text);
+    if Length(CPF) <> 11 then
+      raise Exception.Create('CPF deve conter 11 dígitos.');
+  end;
+
+  // Valida: Email (se preenchido) deve ter @
+  if Trim(edtEmail.Text) <> '' then
+  begin
+    if Pos('@', edtEmail.Text) = 0 then
+      raise Exception.Create('Email inválido.');
+  end;
+end;
+
+{===============================================================================
+  BOTÃO SALVAR - DECIDE ENTRE INSERT OU UPDATE
+  Se está editando, atualiza. Se é novo, insere.
+===============================================================================}
+procedure TForm1.btnSalvarClick(Sender: TObject);
+begin
+  try
+    // Verifica o modo atual
+    if FModoEdicao then
+      AtualizarCliente    // Estava editando = UPDATE
+    else
+      CriarCliente;       // Era novo = INSERT
+  except
+    on E: Exception do
+      ShowMessage(E.Message);  // Exibe mensagem de erro se houver
+  end;
+end;
+
+{===============================================================================
+  BOTÃO CANCELAR - CANCELA OPERAÇÃO ATUAL
+  Limpa campos e volta ao modo visualização
+===============================================================================}
+procedure TForm1.btnCancelarClick(Sender: TObject);
+begin
+  LimparCampos;               // Limpa todos os campos
+  HabilitarCampos(False);     // Desabilita edição
+  FModoEdicao := False;       // Sai do modo edição
+  FIdClienteAtual := 0;       // Reseta ID
+end;
+
+{===============================================================================
+  DUPLO CLIQUE NO GRID - ATALHO PARA EDITAR
+  Ao dar duplo clique em um cliente, abre para edição
+===============================================================================}
+procedure TForm1.DBGrid1DblClick(Sender: TObject);
+begin
+  btnEditarClick(Sender);     // Chama o método do botão Editar
+end;
+
+end.
+
+
+
+    ```
+18. Implemente um sistema de login que valide usuário e senha contra uma tabela no banco de dados, criptografando a senha com MD5.
+19. Crie um formulário de cadastro de produtos com validação de código de barras (EAN-13) incluindo cálculo do dígito verificador.
+20. Desenvolva um relatório de vendas usando `TFDQuery` que agrupe por período, categoria de produto e vendedor, exibindo totais em um `TDBGrid`.
+21. Implemente um sistema de estoque que controle entradas e saídas de produtos, atualizando o saldo automaticamente e impedindo vendas com estoque zerado.
+22. Crie um importador de arquivo CSV que leia dados de clientes e insira automaticamente em uma tabela usando transações.
+23. Desenvolva um exportador de dados que gere arquivo XML com estrutura hierárquica a partir de uma consulta SQL (Pedidos → Itens).
+24. Implemente um sistema de backup automático do banco de dados Firebird que execute em horários agendados usando `TTimer`.
+25. Crie um formulário de pesquisa avançada de produtos com filtros dinâmicos (nome, categoria, faixa de preço) construindo SQL dinamicamente.
+26. Desenvolva um sistema de auditoria que registre todas as alterações (insert, update, delete) em uma tabela de log com data, hora, usuário e valores anteriores/novos.
+27. Implemente um gerador de código de barras que converta um código numérico em imagem Code128 ou EAN-13 e exiba em um `TImage`.
+28. Crie um sistema de contas a pagar/receber com controle de vencimento, juros, multa e baixa de títulos.
+29. Desenvolva um módulo de integração REST que consuma uma API externa (ex: ViaCEP) e preencha automaticamente campos de endereço ao digitar o CEP.
+30. Implemente um sistema de impressão de etiquetas personalizadas com preview, usando componentes de relatório (ex: QuickReport ou FastReport).
+31. Crie um dashboard com gráficos (`TChart`) exibindo: vendas por mês, produtos mais vendidos e ticket médio.
+32. Desenvolva um sistema de permissões de usuário que controle acesso a formulários e funcionalidades específicas baseado em perfis (Admin, Vendedor, Caixa).
+33. Implemente um sincronizador de dados que compare duas tabelas (local e servidor) e aplique apenas as diferenças (delta sync).
+34. Crie um módulo de envio de emails automáticos usando Indy (`IdSMTP`) com anexos e templates HTML.
+35. Desenvolva um sistema de controle de versão de banco de dados que execute scripts SQL sequenciais para atualização de estrutura.
+36. Implemente um gerenciador de filas de processamento assíncrono que execute tarefas em background sem travar a interface.
 
 ---
 
