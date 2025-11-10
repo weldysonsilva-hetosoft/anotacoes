@@ -53,3 +53,6 @@ end;
 - 🎯 **Debug visual** durante a execução
 
 **Dica:** Use `Evaluate/Modify` (Ctrl + F7) durante o debug para testar expressões e modificar valores de variáveis em tempo real.
+
+
+**Classe é a definição de como vai ser e Objerto é a realização dessa definição. A partir do momento que cria algo seguindo a definiçãoestamos instanciando o objeto dessa classe. criando o objeto** 
