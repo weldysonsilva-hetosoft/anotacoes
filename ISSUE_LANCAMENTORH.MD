@@ -271,64 +271,58 @@ begin
   // Chama métodos com filtro
   PreencherTiposDocumentosRH;
   PreencherPortadoresRH;
-  
-  // Vincula evento OnChange (CRÍTICO!)
-  cbxTipoOperacaoRH.OnChange := cbxTipoOperacaoRHChange;
 end;
 ```
 
-**Por que vincular OnChange aqui?**
-- Garante que o evento esteja ativo assim que o form carregar
-- Se vincular apenas no Designer, pode ser sobrescrito em runtime
-- Boa prática: eventos críticos sempre vinculados em código
+**Observação:**
+- O evento `OnExit` é vinculado diretamente no Designer (Object Inspector)
+- Não é necessário vincular em código pois não há risco de sobrescrita
+- O método `cbxTipoOperacaoRHExit` é chamado automaticamente quando o usuário sai do campo
 
 ---
 
-### 3.5 Modificação: cbxTipoOperacaoRHCloseUp
+### 3.5 Evento: cbxTipoOperacaoRHExit
 
-**Localização:** `uFrmCadastroRH.pas` (linha ~1792) e `uFrmCadastroLancamentoRH.pas` (linha ~2013)
+**Localização:** `uFrmCadastroRH.pas` (linha ~1500) e `uFrmCadastroLancamentoRH.pas` (linha ~2015)
 
-**Código Adicionado:**
+**Código Implementado:**
 ```pascal
-procedure TFrmCadastroRH.cbxTipoOperacaoRHCloseUp(Sender: TObject);
+procedure TFrmCadastroRH.cbxTipoOperacaoRHExit(Sender: TObject);
 begin
-  // ... código existente ...
-  
-  // ADICIONADO: Dispara atualização dos combos
-  cbxTipoOperacaoRHChange(Sender);
+  inherited;
+  PreencherTiposDocumentosRH;
+  PreencherPortadoresRH;
 end;
 ```
 
-**Por que?**
-- `OnCloseUp` dispara quando usuário fecha o dropdown do combo
-- Garante atualização mesmo se usuário clicar e selecionar rapidamente
-- `OnChange` nem sempre dispara em todos os cenários de interação
+**Por que OnExit ao invés de OnChange?**
+- `OnExit` dispara apenas quando usuário **sai do campo**
+- Evita múltiplas recargas desnecessárias durante digitação/navegação
+- Melhor performance: atualiza combos apenas quando necessário
+- Padrão recomendado pelo supervisor para este tipo de operação
 
 ---
 
-### 3.6 Modificação: cbxTipoOperacaoRHKeyUp
+### 3.6 Comportamento do Evento OnExit
 
-**Localização:** `uFrmCadastroRH.pas` (linha ~1794) e `uFrmCadastroLancamentoRH.pas` (linha ~2015)
+**Quando dispara:**
+- Usuário seleciona valor e **pressiona Tab**
+- Usuário seleciona valor e **clica em outro campo**
+- Usuário navega com teclado e **sai do controle**
 
-**Código Adicionado:**
-```pascal
-procedure TFrmCadastroRH.cbxTipoOperacaoRHKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  // ADICIONADO: Dispara atualização dos combos
-  cbxTipoOperacaoRHChange(Sender);
-end;
+**Vantagens:**
+- ✅ Performance: atualiza apenas 1 vez (na saída)
+- ✅ UX: não trava interface durante seleção
+- ✅ Simplicidade: apenas 1 evento para gerenciar
+- ✅ Padrão: alinhado com orientação do supervisor
+
+**Fluxo de Execução:**
 ```
-
-**Por que?**
-- `OnKeyUp` dispara quando usuário navega com teclado (setas, Enter, etc.)
-- Combos podem ser alterados via digitação das iniciais
-- Exemplo: usuário digita "D" → seleciona "Débito" → precisa atualizar
-
-**Cobertura Completa:**
-```
-OnChange   → Mudança direta de valor
-OnCloseUp  → Seleção via mouse no dropdown
-OnKeyUp    → Navegação/seleção via teclado
+1. Usuário abre combo "Tipo Operação"
+2. Seleciona "- DÉBITO"
+3. Pressiona Tab ou clica em outro campo
+4. OnExit dispara → chama PreencherTiposDocumentosRH e PreencherPortadoresRH
+5. Combos são recarregados com filtro correto
 ```
 
 ---
@@ -387,7 +381,7 @@ OnKeyUp    → Navegação/seleção via teclado
                         ↓
 ┌─────────────────────────────────────────────────────────┐
 │ ❌ MENSAGEM: "NÃO PERMITIDO"                           │
-│                                                         │
+│                                                        │
 │ Usuário precisa:                                       │
 │ - Voltar no formulário                                 │
 │ - Trocar o portador                                    │
@@ -708,37 +702,37 @@ PreencherPortadoresRH; // Mostra só compatíveis
 
 ---
 
-### 7.3 Por que Usar OnChange + OnCloseUp + OnKeyUp?
+### 7.3 Por que Usar OnExit ao Invés de OnChange?
 
-**Eventos de ComboBox em Delphi:**
+**Comparação de Eventos:**
 
-| Evento | Quando Dispara | Caso de Uso |
-|--------|----------------|-------------|
-| `OnChange` | Valor do combo muda | Mudança direta de seleção |
-| `OnCloseUp` | Dropdown fecha após seleção | Click no item com mouse |
-| `OnKeyUp` | Tecla liberada | Navegação com setas/Enter |
+| Evento | Quando Dispara | Performance | UX |
+|--------|----------------|-------------|----|
+| `OnChange` | A cada mudança de valor | ⚠️ Múltiplas execuções | ⚠️ Interface trava durante seleção |
+| `OnExit` | Ao sair do campo | ✅ Executa apenas 1 vez | ✅ Interface responsiva |
 
-**Por que usar os 3?**
-
-**Problema:** `OnChange` nem sempre dispara em todas as interações
+**Problema com OnChange:**
 ```
-Cenário 1: Usuário clica no dropdown, escolhe item → OnCloseUp dispara primeiro
-Cenário 2: Usuário navega com setas, pressiona Enter → OnKeyUp dispara
-Cenário 3: Programação muda valor → Apenas OnChange
+Usuário navega pelo combo com setas:
+  Passa por "+ CRÉDITO"  → OnChange dispara → Recarrega combos
+  Passa por "- DÉBITO"   → OnChange dispara → Recarrega combos  
+  Passa por "- SALDO"    → OnChange dispara → Recarrega combos
+  
+Resultado: 3 recargas desnecessárias!
 ```
 
-**Solução:** Cobrir todos os cenários
-```pascal
-procedure cbxTipoOperacaoRHCloseUp(Sender: TObject);
-begin
-  cbxTipoOperacaoRHChange(Sender); // Garante atualização
-end;
-
-procedure cbxTipoOperacaoRHKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-begin
-  cbxTipoOperacaoRHChange(Sender); // Garante atualização
-end;
+**Vantagem do OnExit:**
 ```
+Usuário navega pelo combo com setas:
+  Passa por "+ CRÉDITO"  → Nada acontece
+  Passa por "- DÉBITO"   → Nada acontece
+  Seleciona "- SALDO" e pressiona Tab → OnExit dispara → Recarrega 1 vez
+  
+Resultado: Apenas 1 recarga, melhor performance!
+```
+
+**Decisão Técnica:**
+Orientação do supervisor: usar OnExit para evitar sobrecarga desnecessária e melhorar experiência do usuário.
 
 **Resultado:** Não importa como usuário interage, filtros sempre atualizam.
 
