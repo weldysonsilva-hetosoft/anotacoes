@@ -1,0 +1,6 @@
+COMANDO TCP/IP PARA RODAR O SQLANYWHERE NO DBEAVER, JÁ QUE A IDE DO SQLANYWHERE NÃO PERMITE ABRIR MULTIPLAS PAGINAS. 
+Enquanto a janela do SQL Anywhere estiver aberta = servidor rodando, você pode conectar
+Se você fechar a janela = servidor para, conexões caem
+Se você desligar o PC = servidor para automaticamente (normal)
+
+https://claude.ai/share/a08b94bd-4005-48cb-9f21-eb6666c13804 (ACESSO PRIVADO SÓ EU TENHO ACESSO);
