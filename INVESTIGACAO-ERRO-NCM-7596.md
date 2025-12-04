@@ -440,6 +440,54 @@ SEM REGISTROS, MAS COM ESTRUTURA COMPLETA! ✅
    ↓
 10. ✅ SUCESSO - Formulário abre corretamente!
 ```
+## 🎯 O que a correção faz:
+Cenário: Cliente com integração desatualizada
+
+**ANTES da correção:**
+1. Cliente abre tela NCM → Grid VAZIO (integração desatualizada)
+2. Clica em botão "Novo" (cadastro normal)
+3. Clica no ComboBox "Classificação Tributária" para pesquisar
+4. Abre popup de pesquisa (grid vazio)
+5. Clica F6 "Novo Registro" no popup
+   ↓
+6. Abre formulário clone
+7. cdsBuscar do clone está VAZIO (sem estrutura)
+8. Herança tenta: ClonarVazio(cdsBuscar, cdsGeral)
+9. cdsGeral fica SEM CAMPOS
+10. txtCodigo tenta acessar campo 'NCM'
+    ↓
+**❌ ERRO: "Field 'NCM' not found"**
+
+**DEPOIS da correção:**
+
+1. Cliente abre tela NCM → Grid VAZIO (integração desatualizada)
+2. Clica em botão "Novo"
+3. Clica no ComboBox "Classificação Tributária"
+4. Abre popup de pesquisa (grid vazio)
+5. Clica F6 "Novo Registro" no popup
+   ↓
+6. Abre formulário clone
+7. cdsBuscar do clone está VAZIO
+8. Herança tenta: ClonarVazio(cdsBuscar, cdsGeral)
+9. cdsGeral fica SEM CAMPOS
+   ↓
+✅ CORREÇÃO ENTRA:
+10. Detecta: varClona=True + Estado='I' + cdsGeral inativo
+11. Executa: cdsGeral.Data = SELECT * FROM TABELA_NCM WHERE 1=0
+12. cdsGeral AGORA TEM ESTRUTURA (NCM, DESCRICAO, EX...)
+    ↓
+13. txtCodigo acessa campo 'NCM'
+✅ SUCESSO: Cliente consegue cadastrar novo NCM manualmente!
+
+📝 Resumo:
+A correção garante que o cliente com integração desatualizada consiga:
+
+- ✅ Clicar F6 sem erro
+- ✅ Abrir formulário de cadastro
+- ✅ Cadastrar manualmente novos códigos de Classificação Tributária
+- ✅ Continuar trabalhando mesmo sem integração atualizada
+
+
 
 ---
 
