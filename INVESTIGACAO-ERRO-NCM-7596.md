@@ -691,13 +691,13 @@ Recomendo enviar para teste no ambiente do cliente para validação final."
 
 ## O fluxo real é:
 
-**FrmCriar (linha 98)** → Só configura variáveis (varBuscarTabela, etc.)
-**Usuário clica F6** → Chama NovoRegistroF61Click
-**NovoRegistroF61Click** → Abre formulário clone e chama ShowModal
-**ShowModal** → Sistema chama Novo(dsGeral) (da classe pai TFrmHeranca)
-**Novo** → Muda Estado = 'I' e chama TabCadastroMostrar
-**TabCadastroMostrar (herança)** → Tenta ClonarVazio(cdsBuscar, cdsGeral) ❌ ERRO aqui
-**TabCadastroMostrar (NCM - linha 269)** → ✅ Correção executa DEPOIS do inherited`
+- **FrmCriar (linha 98)** → Só configura variáveis (varBuscarTabela, etc.)
+- **Usuário clica F6** → Chama NovoRegistroF61Click
+- **NovoRegistroF61Click** → Abre formulário clone e chama ShowModal
+- **ShowModal** → Sistema chama Novo(dsGeral) (da classe pai TFrmHeranca)
+- **Novo** → Muda Estado = 'I' e chama TabCadastroMostrar
+- **TabCadastroMostrar (herança)** → Tenta ClonarVazio(cdsBuscar, cdsGeral) ❌ ERRO aqui
+- **TabCadastroMostrar (NCM - linha 269)** → ✅ Correção executa DEPOIS do inherited`
 
 ## 📞 **SUPORTE**
 
