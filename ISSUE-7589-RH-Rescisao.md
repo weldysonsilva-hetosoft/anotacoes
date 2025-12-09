@@ -1,14 +1,16 @@
+[ISSUE-7589-RH-Rescisao.md](https://github.com/user-attachments/files/24057177/ISSUE-7589-RH-Rescisao.md)
 # Issue #7589 - Adicionar "Rescisão" em Lançamento de RH
 
 ## 📋 Resumo
-Implementação da opção "Rescisão" como tipo de registro em Lançamento de RH, permitindo cadastrar, filtrar e visualizar lançamentos do tipo Rescisão.
+Implementação da opção "Rescisão" como tipo de registro em Lançamento de RH e Configuração de RH, permitindo cadastrar, filtrar e visualizar lançamentos do tipo Rescisão.
 
 ---
 
-## 🎯 Solicitação
-- Adicionar "Rescisão" no ComboBox de Registro (Cadastro)
-- Adicionar "Rescisão" no ComboBox de Registro (Pesquisa/Filtro)
-- Garantir que o sistema salve e exiba corretamente os registros tipo Rescisão
+## 🎯 Solicitação Original
+1. ✅ Adicionar "Rescisão" no ComboBox de Registro em **Lançamento de RH** (Cadastro)
+2. ✅ Adicionar "Rescisão" no ComboBox de Registro em **Lançamento de RH** (Pesquisa/Filtro)
+3. ✅ Adicionar "Rescisão" no ComboBox de Registro em **Configuração de RH** (Pesquisa/Filtro)
+4. ✅ Garantir que o sistema salve e exiba corretamente os registros tipo Rescisão
 
 ---
 
@@ -16,16 +18,19 @@ Implementação da opção "Rescisão" como tipo de registro em Lançamento de R
 
 ### 1️⃣ **Arquivos Modificados**
 
-| Arquivo | Alteração |
-|---------|-----------|
-| `uFrmCadastroLancamentoRH.dfm` | Adicionados items "Rescisão" e ID "3" nos combos |
-| `uDalGetText.pas` | Adicionado case 3 no método `GetTextCds_RHFerias` |
+| Arquivo | Alteração | Telas Afetadas |
+|---------|-----------|----------------|
+| `uFrmCadastroLancamentoRH.dfm` | Adicionados items "Rescisão" e ID "3" nos combos | Lançamento de RH |
+| `uFrmCadastroRH.dfm` | Adicionado combo `cbxVisRegistroRH` com filtro | Configuração de RH |
+| `uFrmCadastroRH.pas` | Declaração do combo e atualização das chamadas DAL | Configuração de RH |
+| `uDalPessoa.pas` | Parâmetro `objRegistroRH` nas funções de busca | Configuração de RH |
+| `uDalGetText.pas` | Adicionado case 3 no método `GetTextCds_RHFerias` | Ambas |
 
 ---
 
 ### 2️⃣ **Detalhamento das Alterações**
 
-#### **A) ComboBox de Cadastro (`cbxRegistroRH`)**
+#### **A) Lançamento de RH - ComboBox de Cadastro (`cbxRegistroRH`)**
 **Arquivo:** `Sol.NET\Form\uFrmCadastroLancamentoRH.dfm` (linha ~2186)
 
 **Alteração:**
@@ -49,14 +54,111 @@ Items.Strings = (
 
 ---
 
-#### **B) ComboBox de Filtro (`cbxRegistroRHVis`)**
+#### **B) Lançamento de RH - ComboBox de Filtro (`cbxRegistroRHVis`)**
 **Arquivo:** `Sol.NET\Form\uFrmCadastroLancamentoRH.dfm` (linha ~329)
 
 **Alteração:** Idêntica ao combo de cadastro (mesmos items e IDs).
 
 ---
 
-#### **C) Método de Conversão de Texto (`GetTextCds_RHFerias`)**
+#### **C) Configuração de RH - ComboBox de Filtro (`cbxVisRegistroRH`)**
+**Arquivo:** `Sol.NET\Form\uFrmCadastroRH.dfm` (linha ~176)
+
+**Novo componente criado:**
+```delphi
+object cbxVisRegistroRH: TComboBoxPlus
+  Left = 526
+  Top = 53
+  Width = 114
+  Height = 22
+  Cursor = crHandPoint
+  EditLabel.Width = 40
+  EditLabel.Height = 13
+  EditLabel.Caption = 'Registro'
+  LabelSpacing = 0
+  AHS_ItemsID.Strings = (
+    '-1'
+    '0'
+    '1'
+    '2'
+    '3')
+  AHS_CampoObrigatorio = False
+  AHS_ClientDataSetCampo = 'FERIAS'
+  AHS_ClientDataSetCampoAgrupar = False
+  AHS_ClientDataSetNaoGravar = False
+  AHS_NaoUsarEnterForm = False
+  AHS_Caption = 'Registro'
+  AHS_TipoComboBox = tbInteger
+  AHS_Auditoria = False
+  Style = csOwnerDrawFixed
+  Color = clWhite
+  TabOrder = 6
+  Items.Strings = (
+    ''
+    'Normal'
+    'Férias'
+    'Décimo Terceiro'
+    'Rescisão')
+end
+```
+
+**Posicionamento:** TabSheet "Pesquisar por", ao lado dos outros filtros de busca.
+
+---
+
+#### **D) Configuração de RH - Declaração e Chamadas**
+**Arquivo:** `Sol.NET\Form\uFrmCadastroRH.pas`
+
+**Declaração do componente (linha ~96):**
+```delphi
+cbxVisRegistroRH: TComboBoxPlus;
+```
+
+**Atualização de todas as chamadas (6 locais):**
+```delphi
+// Exemplo da chamada principal (linha ~369):
+cdsBuscar.Data := DalPessoa.SqlBuscarConfiguracaoRH(-1, cbxVisCampoPesquisado, 
+  cbxVisCondicao, txtVisBuscar, cbxVisIdEmpresa, cbxVisIdEmpresa2,
+  txtPlanoConta, txtCentroCusto, cbxVisRegistroRH);  // ← Parâmetro adicionado
+```
+
+---
+
+#### **E) DAL - Funções de Busca**
+**Arquivo:** `Sol.NET\Dal\uDalPessoa.pas`
+
+**Assinatura das funções atualizadas:**
+```delphi
+// Função principal (linha ~129):
+function SqlBuscarConfiguracaoRH(vlIdTabela: Double; objCampoAPesquisar1: TComboBoxPlus; 
+  objCondicao1: TComboBoxPlus; objTextoOuIdPesquisar1: TGenEditBtn; 
+  idEmpresa: TCheckedComboBoxPlus; idEmpresa2: TCheckedComboBoxPlus;
+  objPlanoContas: TGenEditBtn; objCentroCusto: TGenEditBtn; 
+  objRegistroRH: TComboBoxPlus; IdPessoa: Double = 0): OleVariant;  // ← Parâmetro adicionado
+
+// Função resumo (linha ~133):
+function SqlBuscarConfiguracaoRH_Resumo(objCampoAPesquisar1: TComboBoxPlus; 
+  objCondicao1: TComboBoxPlus; objTextoOuIdPesquisar1: TGenEditBtn; 
+  idEmpresa: TCheckedComboBoxPlus; idEmpresa2: TCheckedComboBoxPlus;
+  objPlanoContas: TGenEditBtn; objCentroCusto: TGenEditBtn; 
+  objRegistroRH: TComboBoxPlus): OleVariant;  // ← Parâmetro adicionado
+```
+
+**Lógica de filtro SQL implementada (linhas ~1811 e ~1894):**
+```delphi
+if objRegistroRH.AsInteger > -1 then
+begin
+  strSql.Append('AND (RH.FERIAS = ' + objRegistroRH.AsStringValor + ') ');
+end;
+```
+
+**Comportamento:**
+- Quando `cbxVisRegistroRH` está vazio (valor -1): mostra todos os registros
+- Quando um valor é selecionado (0, 1, 2 ou 3): filtra apenas registros daquele tipo
+
+---
+
+#### **F) Método de Conversão de Texto (`GetTextCds_RHFerias`)**
 **Arquivo:** `Framework\Dal\uDalGetText.pas` (linha ~1994)
 
 **COMO CHEGAMOS AQUI:**
@@ -100,34 +202,51 @@ end;
 
 ## 🗄️ Banco de Dados
 
-### **Campo Utilizado**
-- **Tabela:** `LANCAMENTO_RH`
-- **Campo:** `FERIAS` (tipo `SMALLINT`)
-- **Valores:**
-  - `0` = Normal
-  - `1` = Férias
-  - `2` = Décimo Terceiro
-  - `3` = Rescisão (NOVO)
+### **Tabelas Afetadas**
 
-**Nenhuma alteração de estrutura foi necessária** - o campo já aceita valores numéricos.
+#### **1. LANCAMENTO_RH**
+- **Campo:** `FERIAS` (tipo `SMALLINT`)
+- **Uso:** Armazena o tipo de registro do lançamento
+- **Tela:** Lançamento de RH
+
+#### **2. PESSOA_RH**
+- **Campo:** `FERIAS` (tipo `SMALLINT`)
+- **Uso:** Armazena o tipo de registro da configuração
+- **Tela:** Configuração de RH
+
+### **Valores Padronizados**
+| Valor | Descrição |
+|-------|-----------|
+| `0` | Normal |
+| `1` | Férias |
+| `2` | Décimo Terceiro |
+| `3` | Rescisão (NOVO) |
+
+**Nenhuma alteração de estrutura foi necessária** - os campos já aceitam valores numéricos.
 
 ---
 
 ## ✅ Fluxo de Funcionamento
 
-### **1. Cadastro**
+### **1. Lançamento de RH - Cadastro**
 ```
 Usuário seleciona "Rescisão" → cbxRegistroRH retorna ID 3 → 
-Sistema salva FERIAS = 3 no banco
+Sistema salva FERIAS = 3 na tabela LANCAMENTO_RH
 ```
 
-### **2. Filtro/Pesquisa**
+### **2. Lançamento de RH - Filtro/Pesquisa**
 ```
 Usuário seleciona "Rescisão" no filtro → cbxRegistroRHVis passa valor 3 → 
-SQL busca registros WHERE FERIAS = 3
+SQL busca registros WHERE FERIAS = 3 na tabela LANCAMENTO_RH
 ```
 
-### **3. Visualização Grid**
+### **3. Configuração de RH - Filtro/Pesquisa**
+```
+Usuário seleciona "Rescisão" no filtro → cbxVisRegistroRH passa valor 3 → 
+SQL busca registros WHERE RH.FERIAS = 3 na tabela PESSOA_RH
+```
+
+### **4. Visualização Grid (ambas as telas)**
 ```
 Grid carrega registro com FERIAS = 3 → 
 Evento OnGetText chama GetTextCds_RHFerias → 
@@ -141,158 +260,78 @@ Case 3 retorna "RESCISÃO" → Grid exibe "RESCISÃO"
 ✅ Não há validações no código limitando valores de 0 a 2  
 ✅ Não há CASE statements em SQL que precisem atualização  
 ✅ Não há constraints CHECK no banco bloqueando valor 3  
-✅ Campo `FERIAS` é do tipo numérico (aceita valor 3)  
+✅ Campos `FERIAS` são do tipo numérico (aceitam valor 3)  
+✅ Todas as 6 chamadas à `SqlBuscarConfiguracaoRH` foram atualizadas  
+✅ Ambas as funções DAL (`SqlBuscarConfiguracaoRH` e `SqlBuscarConfiguracaoRH_Resumo`) incluem o filtro  
 
 ---
 
 ## 🎓 Observações Técnicas
 
+### Nomenclatura Legada
 - O nome do campo `FERIAS` é legado - originalmente só armazenava se era Férias (1) ou Normal (0)
 - O campo foi evoluído para armazenar: Décimo (2) e agora Rescisão (3)
-- Manter o nome por compatibilidade com código existente
+- Nome mantido por compatibilidade com código existente e evitar refatoração massiva
 
+### Padrão de Implementação
+- **Lançamento de RH**: Componente já existia, apenas adicionados novos valores
+- **Configuração de RH**: Componente criado do zero, replicando padrão do Lançamento de RH
+- **Framework**: Método de conversão compartilhado entre ambas as telas
 
-# 🧪 Plano de Testes - Issue #7589
-
-## Objetivo
-Validar a funcionalidade "Rescisão" em Lançamento de RH (cadastro, filtro e exibição).
-
----
-
-## ⚙️ Preparação
-
-1. **Compilar o projeto:**
-   - Certifique-se de que os arquivos foram salvos
-   - Compile o `Sol.NET` em modo Debug (x64)
-
-2. **Abrir o Sol.NET:**
-   - Execute a aplicação
-   - Entre com usuário e senha
-   - Selecione a empresa de testes
+### Compatibilidade
+- **Firebird 3.0/5.0**: ✅ Compatível
+- **SQL Server**: ✅ Compatível
+- **Código ISO SQL**: ✅ Utilizado nas queries
 
 ---
 
-## 📋 Testes a Executar
+## 🧪 Testes Recomendados
 
-### **Teste 1: Cadastro de Novo Lançamento RH com Rescisão**
+### Teste Manual 1: Lançamento de RH
+1. Abrir tela "Lançamento de RH"
+2. Criar novo registro com Registro = "Rescisão"
+3. Salvar e verificar que foi gravado com `FERIAS = 3`
+4. Filtrar por "Rescisão" na aba de pesquisa
+5. Verificar que apenas registros tipo Rescisão são exibidos
+6. Verificar que o grid mostra "RESCISÃO" na coluna Registro
 
-| Passo | Ação | Resultado Esperado |
-|-------|------|-------------------|
-| 1 | Acesse o menu de **Lançamento de RH** | Formulário de cadastro abre |
-| 2 | Clique em **Novo** | Formulário limpo pronto para cadastro |
-| 3 | Abra o ComboBox **Registro** | Deve aparecer: Normal, Férias, Décimo Terceiro, **Rescisão** |
-| 4 | Selecione **Rescisão** | Campo fica com valor "Rescisão" |
-| 5 | Preencha os demais campos obrigatórios | Campos preenchidos |
-| 6 | Clique em **Salvar** | Mensagem de sucesso, registro salvo |
-| 7 | Localize o registro recém-criado no grid | Registro aparece no grid |
-| 8 | Verifique a coluna "Registro" no grid | Deve exibir **"RESCISÃO"** (não "NORMAL") |
+### Teste Manual 2: Configuração de RH
+1. Abrir tela "Configuração de RH"
+2. Selecionar filtro Registro = "Rescisão"
+3. Verificar que apenas configurações tipo Rescisão são exibidas
+4. Verificar que o grid mostra "RESCISÃO" na coluna Registro
 
-**✅ Critério de Sucesso:**
-- ComboBox mostra "Rescisão"
-- Sistema salva sem erro
-- Grid exibe "RESCISÃO" corretamente
-
----
-
-### **Teste 2: Edição de Lançamento RH Existente**
-
-| Passo | Ação | Resultado Esperado |
-|-------|------|-------------------|
-| 1 | Localize o registro criado no Teste 1 | Registro está no grid com "RESCISÃO" |
-| 2 | Dê duplo clique para editar | Formulário abre com dados carregados |
-| 3 | Verifique o ComboBox **Registro** | Deve estar selecionado **"Rescisão"** |
-| 4 | Altere algum outro campo (ex: observação) | Campo alterado |
-| 5 | Clique em **Salvar** | Registro salvo sem erro |
-| 6 | Verifique o grid novamente | Continua exibindo "RESCISÃO" |
-
-**✅ Critério de Sucesso:**
-- Combo carrega "Rescisão" corretamente ao editar
-- Alterações são salvas mantendo o tipo Rescisão
+### Teste Manual 3: Integração
+1. Criar lançamento com tipo Rescisão
+2. Verificar que aparece corretamente na Configuração de RH
+3. Testar com ambos os SGBDs (Firebird e SQL Server)
 
 ---
 
-### **Teste 3: Filtro por Rescisão**
+## 📊 Review de Código
 
-| Passo | Ação | Resultado Esperado |
-|-------|------|-------------------|
-| 1 | Na tela de Lançamento RH, localize o filtro | Filtro visível no topo da tela |
-| 2 | Abra o ComboBox **Registro** do filtro | Deve aparecer: (vazio), Normal, Férias, Décimo Terceiro, **Rescisão** |
-| 3 | Selecione **Rescisão** | Filtro ativado |
-| 4 | Clique em **Pesquisar/Filtrar** | Grid atualiza |
-| 5 | Verifique os registros no grid | Apenas registros com tipo "RESCISÃO" aparecem |
-| 6 | Limpe o filtro (selecione opção vazia) | Todos os registros voltam a aparecer |
+**Status:** ✅ APROVADO
 
-**✅ Critério de Sucesso:**
-- Filtro mostra opção "Rescisão"
-- Grid filtra corretamente apenas Rescisões
-- Limpar filtro restaura todos os registros
+**Comentários da Revisão:**
+> "Code Review: No defects detected in the new `cbxVisRegistroRH` filter flow (`uFrmCadastroRH.dfm/.pas`, `uDalPessoa.pas`). The component is properly declared, wired into every `SqlBuscarConfiguracaoRH`/`_Resumo` call, and the DAL now applies the expected `RH.FERIAS` predicate when a value is chosen."
 
----
-
-### **Teste 4: Validação de Banco de Dados**
-
-**Este teste é opcional - use apenas se tiver acesso direto ao banco:**
-
-| Passo | Ação | Resultado Esperado |
-|-------|------|-------------------|
-| 1 | Conecte-se ao banco Firebird/SQL Server | Conexão estabelecida |
-| 2 | Execute a query: `SELECT * FROM LANCAMENTO_RH WHERE FERIAS = 3` | Retorna os registros criados nos testes 1 e 2 |
-| 3 | Verifique o campo `FERIAS` | Deve conter valor **3** |
-
-**✅ Critério de Sucesso:**
-- Campo `FERIAS` armazena corretamente valor 3
-
----
-
-## 🔍 Checklist Geral
-
-- [ ] Compilação sem erros
-- [ ] Cadastro com "Rescisão" funciona
-- [ ] Grid exibe "RESCISÃO" (não "NORMAL")
-- [ ] Edição mantém tipo "Rescisão"
-- [ ] Filtro encontra apenas Rescisões
-- [ ] Banco armazena valor 3 no campo FERIAS
-
----
-
-## 🐛 Em Caso de Erro
-
-### **Se o grid exibir "NORMAL" ao invés de "RESCISÃO":**
-- Verifique se `uDalGetText.pas` foi compilado com o case 3
-- Verifique se o projeto foi completamente recompilado (Build All)
-
-### **Se não aparecer "Rescisão" no ComboBox:**
-- Confirme que `uFrmCadastroLancamentoRH.dfm` foi salvo com as alterações
-- Confirme que ambos combos (`cbxRegistroRH` e `cbxRegistroRHVis`) foram alterados
-
-### **Se houver erro ao salvar:**
-- Verifique se há validações personalizadas no código do formulário
-- Verifique se o banco suporta valor 3 no campo FERIAS
-
----
-
-## 📊 Relatório de Testes
-
-Após executar os testes, preencha:
-
-| Teste | Status | Observações |
-|-------|--------|-------------|
-| Teste 1: Cadastro | ⬜ Pass / ⬜ Fail | |
-| Teste 2: Edição | ⬜ Pass / ⬜ Fail | |
-| Teste 3: Filtro | ⬜ Pass / ⬜ Fail | |
-| Teste 4: BD | ⬜ Pass / ⬜ Fail / ⬜ Não executado | |
-
----
-
-**Testado por:** _______________  
-**Data:** _______________  
-**Versão:** _______________
-
-
+**Riscos Residuais:**
+- Testar manualmente com Firebird e SQL Server
+- Confirmar comportamento do filtro vazio (mostrar todos)
+- Verificar exibição correta em todos os grids
 
 ---
 
 **Implementado por:** Weldyson Azevedo  
-**Data:** 03/12/2025  
+**Data Inicial:** 03/12/2025  
+**Data Conclusão:** 09/12/2025  
 **Issue:** #7589  
-**Branch:** `7563-246926-solnet---erros---lancamento-rhao-inserir-um-debito-com-portador-a-vista-aviso-de-n`
+**Branch:** `7589-247472-solnet---rh-melhorias-incluir-rescisao-em-registro-na-tela-lancamento-de-rh-ima`
+
+---
+
+## 📚 Referências
+
+- Issue Original: GitHub #7589
+- Tabelas: `LANCAMENTO_RH`, `PESSOA_RH`
+- Manual Sol.NET: https://hetosoft.com.br/Arquivos/Manual/index.htm
