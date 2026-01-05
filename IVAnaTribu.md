@@ -817,6 +817,81 @@ end
 3. Revisar documentação da Reforma Tributária 2026
 4. Conferir estrutura da TABELA_NCM no banco de dados
 
+
+
+## DUVIDA--- CASO NÃO QUEIRA UTILIZAR O FINDFIELD EU PODERIA UTILIZAR O TRY EXCEPT QUE FICARIA 
+
+```PASCAL
+procedure TfrmCadastroProdutos.CarregarTributacaoNCM(IdNCM: Integer);
+begin
+  // ... código anterior ...
+  
+  // Copiar informações de IVA (Reforma Tributária 2026) do NCM para o produto
+  if not cds.EstaVazio(cdsTributacao) then
+  begin
+    cdsAux2.Data := DalDiversos.SqlBuscarTabelaNCMeEX(IdNCM);
+    
+    if cdsAux2.RecordCount > 0 then
+    begin
+      // Coloca dataset em modo de edição
+      if not (cdsTributacao.State in [dsEdit, dsInsert]) then
+        cdsTributacao.Edit;
+      
+      // Copiar todos os campos de IVA usando try-except
+      try
+        cdsTributacao.FieldByName('CBS_ALIQUOTA').AsFloat := 
+          cdsAux2.FieldByName('CBS_ALIQUOTA').AsFloat;
+      except
+        // Campo não existe, ignora
+      end;
+      
+      try
+        cdsTributacao.FieldByName('CBS_ALIQUOTA_REDUCAO').AsFloat := 
+          cdsAux2.FieldByName('CBS_ALIQUOTA_REDUCAO').AsFloat;
+      except
+        // Campo não existe, ignora
+      end;
+      
+      try
+        cdsTributacao.FieldByName('IBS_ALIQUOTA_UF').AsFloat := 
+          cdsAux2.FieldByName('IBS_ALIQUOTA_UF').AsFloat;
+      except
+        // Campo não existe, ignora
+      end;
+      
+      try
+        cdsTributacao.FieldByName('IBS_ALIQUOTA_UF_REDUCAO').AsFloat := 
+          cdsAux2.FieldByName('IBS_ALIQUOTA_UF_REDUCAO').AsFloat;
+      except
+        // Campo não existe, ignora
+      end;
+      
+      try
+        cdsTributacao.FieldByName('IBS_ALIQUOTA_MUN').AsFloat := 
+          cdsAux2.FieldByName('IBS_ALIQUOTA_MUN').AsFloat;
+      except
+        // Campo não existe, ignora
+      end;
+      
+      try
+        cdsTributacao.FieldByName('IBS_ALIQUOTA_MUN_REDUCAO').AsFloat := 
+          cdsAux2.FieldByName('IBS_ALIQUOTA_MUN_REDUCAO').AsFloat;
+      except
+        // Campo não existe, ignora
+      end;
+    end;
+  end;
+end;
+```
+
+
+
+
+<img width="1176" height="444" alt="Captura de tela 2026-01-05 154013" src="https://github.com/user-attachments/assets/b7dedcae-9f23-444a-92a0-03695ee9d4b2" />
+
+
+
+
 ---
 
 **Documento criado:** 30/12/2025  
