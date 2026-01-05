@@ -26,7 +26,7 @@
 1. **DFM (Interface Visual):**
    - ✅ Atualizado caption do GroupBox IVA
    - ✅ Configurados 6 campos como somente leitura
-   - ✅ GroupBox "ICMS Estimativa Simplificada" ocultado (Visible=False)
+   - ✅ GroupBox "ICMS Estimativa Simplificada" ocultado (DELETA)
 
 2. **PAS (Lógica de Negócio):**
    - ✅ Adicionado código para copiar valores IVA do NCM para o produto quando NCM é alterado
